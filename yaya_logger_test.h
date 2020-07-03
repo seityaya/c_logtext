@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define NUL 0 // NULL
+#define LOGGER_NULL 0 // NULL
 
 //ОТЛАДКА - ТРИ ТИПА СООБЩЕНИЙ
 #define DEBEG_LEVEL 0
@@ -35,11 +35,11 @@
 #endif
 
 static void logger_test(uintmax_t line, uintmax_t coun, uintmax_t L_1, uintmax_t L_2, char *mesg, ...) {
-    print_t0("%ld : %ld - log_", coun, line);
-    print_t1("%ld : %ld\nf log_", coun, line);
-    print_t2("%ld : %ld\n", coun, line);
+    print_t0("%03ld : %03ld - log_", coun, line);
+    print_t1("%03ld : %03ld\nf log_", coun, line);
+    print_t2("%03ld : %03ld\n", coun, line);
 
-    if (L_1 == NUL) {
+    if (L_1 == LOGGER_NULL) {
         print_t0("_");
         print_t1("_");
         print_t2("A: L_1 == NUL\n");
@@ -48,7 +48,7 @@ static void logger_test(uintmax_t line, uintmax_t coun, uintmax_t L_1, uintmax_t
         print_t1("A");
         print_t2("A: L_2 == %ld\n", L_1);
     }
-    if (L_2 == NUL) {
+    if (L_2 == LOGGER_NULL) {
         print_t0("_");
         print_t1("_");
         print_t2("B: L_2 == NUL\n");
@@ -57,7 +57,7 @@ static void logger_test(uintmax_t line, uintmax_t coun, uintmax_t L_1, uintmax_t
         print_t1("B");
         print_t2("B: L_2 == %ld\n", L_2);
     }
-    if (mesg == NUL) {
+    if (mesg == LOGGER_NULL) {
         print_t0("_");
         print_t1("_");
         print_t2("C: MES == NUL\n");
@@ -67,7 +67,7 @@ static void logger_test(uintmax_t line, uintmax_t coun, uintmax_t L_1, uintmax_t
         print_t2("C: MES == %s\n", mesg);
     }
 
-    if (mesg != NUL) {
+    if (mesg != LOGGER_NULL) {
         va_list list;
         va_list list_copy;
 
@@ -77,7 +77,7 @@ static void logger_test(uintmax_t line, uintmax_t coun, uintmax_t L_1, uintmax_t
         uintmax_t flag = va_arg(list_copy, uintmax_t);
         va_end(list_copy);
 
-        if (flag == NUL) {
+        if (flag == LOGGER_NULL) {
             print_t0("_");
             print_t1("_");
             print_t2("D: ARG == NUL\n");
@@ -96,7 +96,7 @@ static void logger_test(uintmax_t line, uintmax_t coun, uintmax_t L_1, uintmax_t
         uintmax_t flag = va_arg(list, uintmax_t);
         va_end(list);
 
-        if (flag == NUL) {
+        if (flag == LOGGER_NULL) {
             print_t0("_");
             print_t1("_");
             print_t2("D: ARG == NUL\n");

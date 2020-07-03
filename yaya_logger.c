@@ -20,16 +20,19 @@ int main() {
     log(L_TEST, "test"); //2
 
     log(L_TEST, L_TEST, "test"); //3
-    //log(L_TEST, "%s", "test");   //3
-    //log(L_TEST, "%c %s", 't', "test"); //3 + 1
+    log(L_TEST, "%s", "test");   //3
 
-    //log(L_TEST, L_TEST, "H%s", "W"); //4
-    //log(L_TEST, L_TEST, "H %c %s", 'W', "!");  //4 + 1
+    log(L_TEST, "%c %s", 't', "test"); //3 + 1
 
-    //log(L_TEST, L_TEST, NULL, "W"); //4 + E
-    //log(L_TEST, L_TEST, NULL, "W", 1); //4 + 1 + E
+    log(L_TEST, L_TEST, "H%s", "W");                  //4
+    log(L_TEST, L_TEST, "H %c %s", 'W', "!");         //4 + 1
+    log(L_TEST, L_TEST, "H %c %s %d", 'W', "!", 666); //4 + 2
 
-    //log(NULL, NULL, NULL, "W", 1); //4N + 1 + E
+    log(L_TEST, L_TEST, NULL, "W");    //4 + E
+    log(L_TEST, L_TEST, NULL, "W", 1); //4 + 1 + E
+
+    log(LOGGER_NULL, LOGGER_NULL, NULL, "W", 1); //4N + 1 + E
 #endif
+
     return 0;
 }
