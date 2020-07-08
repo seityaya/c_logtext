@@ -2,7 +2,6 @@
 #define YAYA_LOGGER_H_
 
 #include "yaya_defines.h"
-#include "yaya_logger_test.h"
 #include <inttypes.h>
 #include <stdarg.h>
 #include <stdint.h>
@@ -10,22 +9,29 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define LOGGER_NULL 0
-
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // BEG // FORMAT
 
-typedef struct {
-    const intmax_t n;
-    const char *name;
+typedef struct
+{                      /*список ключей*/
+    const intmax_t id; /*идентификатор*/
+    const char *name;  /*текстовое представление ключей*/
 } logger_format;
 
-typedef enum
-{
+typedef struct
+{ /**/
+    uintmax_t beg;
+    uintmax_t end;
+    uintmax_t id;
+} logger_format_mas;
+
+typedef enum {
     LEF_SEPARATOR,
+    LEF_STRING,
+    LEF_TOKEN,
     LEF_PROG,
-    LEF_PROJ,
     LEF_PROJPATH,
+    LEF_PROJ,
     LEF_VERSION,
     LEF_DATA_BUILD,
     LEF_TIME_BUILD,
@@ -38,6 +44,10 @@ typedef enum
     LEF_TIKSEC,
     LEF_TIK_RTOS,
     LEF_TIK_UNIX,
+    LEF_TYPE_FILTER,
+    LEF_NAME_FILTER,
+    LEF_TYPE_NUM,
+    LEF_NAME_NUM,
     LEF_TYPE,
     LEF_NAME,
     LEF_DATA,
@@ -51,52 +61,74 @@ typedef enum
     LEF_NEWLINE,
     LEF_ALIGNL,
     LEF_ALIGGT,
-    LEF_END,
-    LEF_ENDEND
-} logger_enum_format;
+    LEF_END
+} logger_forma_id;
 
-static logger_format logger_format_list[LEF_ENDEND] = {{LEF_SEPARATOR, "$"},           // - метка
-                                                       {LEF_PROG, "prog"},             // - название програмы
-                                                       {LEF_PROJ, "proj"},             // - название проекта
-                                                       {LEF_PROJPATH, "projpath"},     // - расположение проекта
-                                                       {LEF_VERSION, "version"},       // - версия верси программы
-                                                       {LEF_DATA_BUILD, "data_build"}, // - дата компиляции
-                                                       {LEF_TIME_BUILD, "time_build"}, // - время компиляции
-                                                       {LEF_SEED, "seed"},             // - сид запуска ГПСЧ
-                                                       {LEF_COMPILER, "compiler"},     // - версия компилятора
-                                                       {LEF_CURNUM, "curnum"},         // - номер выведеного сообщения
-                                                       {LEF_ABSNUM, "absnum"}, // - номер сообщения без учета фильтрации
-                                                       {LEF_COUNT, "count"},   // - номер сообщения, на основе __COUNTER__
-                                                       {LEF_TIK, "tik"},       // - счетчик тактов процесора
-                                                       {LEF_TIKSEC, "tiksec"},    // - счетчик секунд от старта
-                                                       {LEF_TIK_RTOS, "tikrtos"}, // - счетчик rtos
-                                                       {LEF_TIK_UNIX, "tikunix"}, // - счетчик времени
-                                                       {LEF_TYPE, "type"},        // - тип сообщения
-                                                       {LEF_NAME, "name"},        // - имя сообщения
-                                                       {LEF_DATA, "data"},        // - дата сообщения
-                                                       {LEF_TIME, "time"},        // - время сообщения
-                                                       {LEF_FULLPATH, "fullpath"}, // - полный путь к файлу, из которого сообщение
-                                                       {LEF_SHORPATH, "shorpath"}, // - короткий путь к файлу, из которого сообщение
-                                                       {LEF_FILENAME, "filename"}, // - файл
-                                                       {LEF_LINE, "line"},         // - номер строки
-                                                       {LEF_FUNC, "func"},         // - имя функции
-                                                       {LEF_MESAGE, "mesage"},     // - тело сообщения
-                                                       {LEF_NEWLINE, "nl"},        // - перевод строки
-                                                       {LEF_ALIGNL, "alignl"},     // - выравнивание при переносе
-                                                       {LEF_ALIGGT, "aliggt"},     // - выравнивание принудительное
-                                                       {LEF_END, " "}};
+static logger_format logger_format_list[LEF_END] = {{LEF_SEPARATOR, "$"},          // - токен
+                                                    {LEF_STRING, "_string"},       // - строка,
+                                                    {LEF_TOKEN, "_token"},         // - токен
+                                                    {LEF_PROG, "prog"},            // - название програмы
+                                                    {LEF_PROJPATH, "projpath"},    // - расположение проекта
+                                                    {LEF_PROJ, "proj"},            // - название проекта
+                                                    {LEF_VERSION, "version"},      // - версия верси программы
+                                                    {LEF_DATA_BUILD, "databuild"}, // - дата компиляции
+                                                    {LEF_TIME_BUILD, "timebuild"}, // - время компиляции
+                                                    {LEF_SEED, "seed"},            // - сид запуска ГПСЧ
+                                                    {LEF_COMPILER, "compiler"},    // - версия компилятора
+                                                    {LEF_CURNUM, "curnum"},        // - номер выведеного сообщения
+                                                    {LEF_ABSNUM, "absnum"}, // - номер сообщения без учета фильтрации
+                                                    {LEF_COUNT, "count"},   // - номер сообщения, на основе __COUNTER__
+                                                    {LEF_TIK, "tik"},       // - счетчик тактов процесора
+                                                    {LEF_TIKSEC, "tiksec"}, // - счетчик секунд от старта
+                                                    {LEF_TIK_RTOS, "tikrtos"},    // - счетчик rtos
+                                                    {LEF_TIK_UNIX, "tikunix"},    // - счетчик времени
+                                                    {LEF_TYPE_FILTER, "typenum"}, // - вывод настроек фильтрации типа
+                                                    {LEF_NAME_FILTER, "namenum"}, // - вывод настроек фильтрации имени
+                                                    {LEF_TYPE_NUM, "typenum"},    // - имя типа сообщения, номерами
+                                                    {LEF_NAME_NUM, "namenum"},    // - имя названия сообщения, номерами
+                                                    {LEF_TYPE, "type"},           // - имя типа сообщения
+                                                    {LEF_NAME, "name"},           // - имя названия сообщения
+                                                    {LEF_DATA, "data"},           // - дата сообщения
+                                                    {LEF_TIME, "time"},           // - время сообщения
+                                                    {LEF_FULLPATH, "fullpath"}, // - полный путь к файлу, из которого сообщение
+                                                    {LEF_SHORPATH, "shorpath"}, // - короткий путь к файлу, из которого сообщение
+                                                    {LEF_FILENAME, "filename"}, // - файл
+                                                    {LEF_LINE, "line"},         // - номер строки
+                                                    {LEF_FUNC, "func"},         // - имя функции
+                                                    {LEF_MESAGE, "mesage"},     // - тело сообщения
+                                                    {LEF_NEWLINE, "nl"},        // - перевод строки
+                                                    {LEF_ALIGNL, "alignl"},     // - выравнивание при переносе
+                                                    {LEF_ALIGGT, "aliggt"}};    // - выравнивание принудительное
+
 // // END // FORMAT
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// // BEG // FORMAT STYLE
+typedef enum { LSM_NONE, LSM_STRAIGHT, LSM_ITALIC, LSM_LIGHT, LSM_BOLD } logger_style_mode;
+
+typedef struct logger_style
+{
+    const uintmax_t format;
+    const uintmax_t font[3];
+    const uintmax_t back[3];
+    const uintmax_t mode;
+} logger_style;
+
+static logger_style logger_style_def[] = {{LEF_SEPARATOR, {0, 0, 0}, {0, 0, 0}, LSM_NONE},
+                                          {LEF_PROG, {0, 0, 0}, {0, 0, 0}, LSM_NONE},
+                                          {LEF_PROJ, {0, 0, 0}, {0, 0, 0}, LSM_NONE}};
+
+// // END // FORMAT STYLE
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // BEG // FLAG LIST
 
-typedef struct {
-    const uintmax_t n;
+typedef struct
+{
+    const uintmax_t id;
     const uintmax_t flag;
     const char *name;
 } logger_list;
 
-typedef enum
-{
+typedef enum {
     L_NUL = FLAG_NUL,
     L_VOID = FLAG(0),
     L_INFO = FLAG(1),
@@ -141,97 +173,89 @@ static logger_list logger_type_def[] = {LOGGER_LIST_GENERETE(0, L_NUL),
                                         LOGGER_LIST_GENERETE(17, L_TEST),
                                         LOGGER_LIST_GENERETE(18, L_ALL)};
 
+// // END // FLAG LIST
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-typedef enum
-{
-    LL_NUL = FLAG_NUL,
-    LL_MAIN = FLAG(0),
-    LL_INIT = FLAG(1),
-    LL_ALL = FLAG_ALL
-} logger_flag_neme;
+// // BEG // NAME LIST
+typedef enum { LL_NUL = FLAG_NUL, LL_MAIN = FLAG(0), LL_INIT = FLAG(1), LL_my_F = FLAG(2), LL_ALL = FLAG_ALL } logger_flag_neme;
 
 static logger_list logger_name_def[] = {LOGGER_LIST_GENERETE(0, LL_NUL),
                                         LOGGER_LIST_GENERETE(1, LL_MAIN),
                                         LOGGER_LIST_GENERETE(2, LL_INIT),
-                                        LOGGER_LIST_GENERETE(3, LL_ALL)};
-// // END // FLAG LIST
+                                        LOGGER_LIST_GENERETE(3, LL_my_F),
+                                        LOGGER_LIST_GENERETE(4, LL_ALL)};
+// // END // NAME LIST
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // BEG // SETTING
 
-typedef enum
-{
-    L_STDOUT,
-    L_STDERR,
-    L_STDFILE,
-    L_STDLOG,
-    L_STDNET,
-    L_STDBUFF
-} logger_streams;
+typedef enum { L_STDOUT, L_STDERR, L_STDFILE, L_STDLOG, L_STDNET, L_STDBUF } logger_streams;
 
-typedef struct logger_seting {
-    char *format_head;
-    char *format_logs;
-    uintmax_t type;
-    uintmax_t title;
-    uintmax_t stream;
-    uintmax_t style;
-    uintmax_t log_head;
+typedef struct logger_seting
+{
+    const char *format_head;
+    const char *format_logs;
+    const uintmax_t type;
+    const uintmax_t name;
+    const uintmax_t stream;
+    const uintmax_t style;
 } logger_setting;
 
-static logger_setting logger_setting_def[1] = {{"$prog $version $data_assembly $time_assembly $seed",
-                                                "$actnum $absnum $type $name $data $time $path $line $func $mesage",
-                                                L_INFO,
+static logger_setting logger_setting_def[1] = {{"HELLO my header: $prog $version$databuild #$timebuild $$ $seed $name-$type \"bay\" "
+                                                "$projpath$line$func",
+                                                "## $prog | $type | $name | $func | $line | $mesage",
                                                 L_ALL,
+                                                LL_ALL,
                                                 L_STDOUT,
-                                                TRUE,
-                                                TRUE}};
+                                                FALSE}};
 
 // // END // SETTING
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// // BEG // STYLE
-
-typedef struct logger_style {
-    intmax_t t;
-} logger_style;
-
-static logger_style logger_style_def[1];
-
-// // END // STYLE
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // BEG // DEFINE
 
-typedef struct logger_define {
-    intmax_t seed;
-    char *prog;
-    char *proj;
-    char *version;
-    char *type;
-    char *compiler;
+typedef struct logger_define
+{
+    const intmax_t seed;
+    const char *prog;
+    const char *proj;
+    const char *version;
+    const char *compiler;
 } logger_define;
 
-static logger_define logger_define_def[1];
+static logger_define logger_define_def[] = {{0, "yaya_logger", "yaya_library_collection_for_C", "v0.1", "gcc 7 64-bit"}};
 
 // // END // DEFINE
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // BEG // VARIABLES
 
-typedef struct logger_variables {
-    uintmax_t log_init;
-    uintmax_t log_head;
+typedef struct logger_variables
+{
+    //FLAG
+    uintmax_t log_init_flag;
+    uintmax_t log_head_flag;
 
-    logger_list *type;
+    //PTR
+    logger_list *ptype;
     uintmax_t type_num;
-
-    logger_list *name;
+    logger_list *pname;
     uintmax_t name_num;
+    logger_setting *psett;
+    logger_style *pstyl;
+    logger_define *pdefn;
+    struct logger_variables *pglob;
 
-    logger_setting *sett;
-    logger_style *styl;
-    logger_define *defn;
+    uintmax_t type_num_token;
+    uintmax_t name_num_token;
 
-    intmax_t format_head_list[LEF_END];
-    intmax_t format_logs_list[LEF_END];
+    logger_format_mas *logger_token_mas_opt;
+
+    // PARAM
+    char *vfile;
+    uintmax_t vcount;
+    uintmax_t vline;
+    char *vfunc;
+    uintmax_t vtype;
+    uintmax_t vname;
+    char *vmesg;
+    va_list vprm;
 
     char *data_assembly;
     char *time_assembly;
@@ -240,18 +264,9 @@ typedef struct logger_variables {
     intmax_t absnum;
 } logger_variables;
 
-static logger_variables logger_variables_global[1] = {{FALSE, FALSE, NULL, 0, NULL, 0, NULL, NULL, NULL, {0}, {0}, NULL, NULL, NULL, FALSE, FALSE}};
+static logger_variables logger_variables_global[1] = {{FALSE, FALSE}};
 
 // // END // VARIABLES
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// // BEG // DECLARATION
-
-void yaya_log_init(logger_list *type, logger_list *name, logger_setting *setting, logger_define *define, logger_style *style);
-void yaya_log_head(void);
-void yaya_log_func(
-    char *data, char *time, char *file, uintmax_t line, uintmax_t count, const char *func, uintmax_t type, uintmax_t name, const char *mes, ...);
-
-// // END // DECLARATION
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // BEG // MACROS OPERATOR OVERLOADING
 
@@ -317,44 +332,44 @@ void yaya_log_func(
 
 #define log_0() log_____()
 #define log_1(A) log_A___(A)
-
 //#define log_2(A, B) log_AB__(A, B)
 #define log_2(A, BC) _Generic((A), int : log_2_BC(A, BC))
 #define log_2_BC(A, BC) _Generic((BC), int : log_AB__(A, BC), char * : log_A_C_(A, BC))
-
 //#define log_3(A, B, C) log_ABC_(A, B, C)
 #define log_3(A, BC, ...) _Generic((A), int : log_3_BC_CD(A, BC, __VA_ARGS__))
 #define log_3_BC_CD(A, BC, ...) _Generic((BC), int : log_3_B_C(A, BC, __VA_ARGS__), char * : log_3_C_D(A, BC, __VA_ARGS__))
 #define log_3_B_C(A, BC, ...) log_ABC_(A, BC, __VA_ARGS__)
 #define log_3_C_D(A, BC, ...) log_A_CD(A, BC, __VA_ARGS__)
-
 //#define log_4(A, B, C, ...) log_ABCD(A, B, C, ##__VA_ARGS__)
 #define log_4(A, B, C, ...) _Generic((A), int : log_4_B(A, B, C, __VA_ARGS__))
 #define log_4_B(A, B, C, ...) _Generic((B), int : log_4_C(A, B, C, __VA_ARGS__), char * : log_4_D(A, B, C, __VA_ARGS__))
 #define log_4_C(A, B, C, ...) log_ABCD(A, B, C, __VA_ARGS__)
 #define log_4_D(A, B, C, ...) log_A_CD(A, B, C, __VA_ARGS__)
 
-#define log_____() /*              */ _logger_cal_str  0, 0, 0, 0)           _logger_cal_stp //0
-#define log_A___(A) /*             */ _logger_cal_str  A, 0, 0, 0)           _logger_cal_stp //1
-#define log_AB__(A, B) /*          */ _logger_cal_str  A, B, 0, 0)           _logger_cal_stp //2
-#define log_A_C_(A, C) /*          */ _logger_cal_str  A, 0, C, 0)           _logger_cal_stp //2
-#define log_ABC_(A, B, ...) /*     */ _logger_cal_str  A, B, __VA_ARGS__, 0) _logger_cal_stp //3
-#define log_A_CD(A, C, ...) /*     */ _logger_cal_str  A, 0, C, __VA_ARGS__) _logger_cal_stp //3
-#define log_ABCD(A, B, C, ...) /*  */ _logger_cal_str  A, B, C, __VA_ARGS__) _logger_cal_stp //4
+#define log_____() /*            */ yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, 0, 0, 0, 0)           // 0
+#define log_A___(A) /*           */ yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, A, 0, 0, 0)           // 1
+#define log_AB__(A, B) /*        */ yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, A, B, 0, 0)           // 2
+#define log_A_C_(A, C) /*        */ yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, A, 0, C, 0)           // 2
+#define log_ABC_(A, B, ...) /*   */ yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, A, B, __VA_ARGS__, 0) // 3
+#define log_A_CD(A, C, ...) /*   */ yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, A, 0, C, __VA_ARGS__) // 3
+#define log_ABCD(A, B, C, ...) /**/ yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, A, B, C, __VA_ARGS__) // 4
 
 // // END // MACROS OPERATOR OVERLOADING
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // BEG // MACRO BINDING
 
-#define _logger_cal_str yaya_log_func(NULL, NULL, __FILE__, __LINE__, __COUNTER__, __FUNCTION__,
-//yaya_log_func_test_mini(__LINE__, __COUNTER__,
-#define _logger_cal_stp
-
 #define log_init(A, B, C, D, E) yaya_log_init(A, B, C, D, E)
-#define log_test_fnc() yaya_log_test_func_set()
-#define log_test_mac() yaya_log_test_macros_set()
+#define log_head(MESG, ...) yaya_log_head(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, MESG, ##__VA_ARGS__)
 
 // // END // MACRO BINDING
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// // BEG // DECLARATION
+
+void yaya_log_init(logger_list *type, logger_list *name, logger_setting *setting, logger_define *define, logger_style *style);
+void yaya_log_head(uintmax_t count, char *file, uintmax_t line, const char *func, const char *mes, ...);
+void yaya_log_func(uintmax_t count, char *file, uintmax_t line, const char *func, uintmax_t type, uintmax_t name, const char *mes, ...);
+
+// // END // DECLARATION
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif /*YAYA_LOGGER_H_*/

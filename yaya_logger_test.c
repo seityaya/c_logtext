@@ -1,3 +1,4 @@
+#include "yaya_logger_test.h"
 #include "yaya_defines.h"
 #include "yaya_logger.h"
 
@@ -10,12 +11,10 @@
 #define LOGGER_TYPE_NUM 19
 extern logger_list logger_type_def[];
 
-void yaya_log_func_maxi(
+void yaya_log_func_test_maxi(
     char *data, char *time, char *file, uintmax_t line, uintmax_t count, const char *func, uintmax_t type, uintmax_t name, const char *mes, ...) {
     printf("Data   : %s\nTime   : %s\nCount  : %ld\nLine   : %ld\nFile   : %s\nFunc   : %s\n", data, time, count, line, file, func);
-
     char temp[1000];
-
     printf("Type N : %ld\n", type);
     temp[0] = '\0';
     for (uintmax_t i = 0; i < LOGGER_TYPE_NUM - 1; i++) {
@@ -125,69 +124,70 @@ void yaya_log_test_func_set(void) {
     uintmax_t L_1 = 1;
     uintmax_t L_2 = 2;
 
-    yaya_log_func_test_mini(__LINE__, __COUNTER__, LOGGER_NULL, LOGGER_NULL, LOGGER_NULL, LOGGER_NULL); //0
+    yaya_log_func_test_mini(__LINE__, __COUNTER__, LOGGER_NULL, LOGGER_NULL, LOGGER_NULL,
+                            LOGGER_NULL); // 0
     print_t1("t log_____ \n\n");
 
-    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, LOGGER_NULL, LOGGER_NULL, LOGGER_NULL); //1
+    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, LOGGER_NULL, LOGGER_NULL, LOGGER_NULL); // 1
     print_t1("t log_A___ \n\n");
 
-    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, L_2, LOGGER_NULL, LOGGER_NULL); //2
+    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, L_2, LOGGER_NULL, LOGGER_NULL); // 2
     print_t1("t log_AB__ \n\n");
 
-    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, LOGGER_NULL, "H", LOGGER_NULL); //3
+    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, LOGGER_NULL, "H", LOGGER_NULL); // 3
     print_t1("t log_A_C_ \n\n");
 
-    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, LOGGER_NULL, "%d", 3); //4
+    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, LOGGER_NULL, "%d", 3); // 4
     print_t1("t log_A_CD \n\n");
 
-    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, LOGGER_NULL, "%s", "h"); //5
+    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, LOGGER_NULL, "%s", "h"); // 5
     print_t1("t log_A_CD \n\n");
 
-    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, LOGGER_NULL, "h%s", "w"); //6
+    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, LOGGER_NULL, "h%s", "w"); // 6
     print_t1("t log_A_CD \n\n");
 
-    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, LOGGER_NULL, "%s%s", "h", "w"); //7
+    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, LOGGER_NULL, "%s%s", "h", "w"); // 7
     print_t1("t log_A_CD \n\n");
 
-    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, L_2, "H", LOGGER_NULL); //8
+    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, L_2, "H", LOGGER_NULL); // 8
     print_t1("t log_ABC_ \n\n");
 
-    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, L_2, "H%s", "W"); //9
+    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, L_2, "H%s", "W"); // 9
     print_t1("t log_ABCD \n\n");
 
-    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, L_2, "H%d", 4); //10
+    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, L_2, "H%d", 4); // 10
     print_t1("t log_ABCD \n\n");
 
-    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, L_2, "H %c %s %d", 'W', "!", 666); //10
+    yaya_log_func_test_mini(__LINE__, __COUNTER__, L_1, L_2, "H %c %s %d", 'W', "!", 666); // 10
     print_t1("t log_ABCD \n\n");
 
     //функция с намереной ошибкой
-    yaya_log_func_test_mini(__LINE__, __COUNTER__, LOGGER_NULL, LOGGER_NULL, LOGGER_NULL, 1); //11
+    yaya_log_func_test_mini(__LINE__, __COUNTER__, LOGGER_NULL, LOGGER_NULL, LOGGER_NULL, 1); // 11
     print_t1("t log____E \n\n");
 }
 
-void yaya_log_test_macros_set(void) {
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wint-conversion"
-    log(); //0
+void yaya_log_macr_test_set(void) {
+    //#pragma GCC diagnostic push
+    //#pragma GCC diagnostic ignored "-Wint-conversion"
+    log(); // 0
 
-    log(0); //1
+    log(0); // 1
 
-    log(0, 0);      //2
-    log(0, "test"); //2
+    log(0, 0);      // 2
+    log(0, "test"); // 2
 
-    log(0, 0, "test");    //3
-    log(0, "%s", "test"); //3
+    log(0, 0, "test");    // 3
+    log(0, "%s", "test"); // 3
 
-    log(0, "%c %s", 't', "test"); //3 + 1
+    log(0, "%c %s", 't', "test"); // 3 + 1
 
-    log(0, 0, "H%s", "W");                  //4
-    log(0, 0, "H %c %s", 'W', "!");         //4 + 1
-    log(0, 0, "H %c %s %d", 'W', "!", 666); //4 + 2
+    log(0, 0, "H%s", "W");                  // 4
+    log(0, 0, "H %c %s", 'W', "!");         // 4 + 1
+    log(0, 0, "H %c %s %d", 'W', "!", 666); // 4 + 2
 
-    log(0, 0, NULL, "W");    //4 + E
-    log(0, 0, NULL, "W", 1); //4 + 1 + E
+    log(0, 0, NULL, "W");    // 4 + E
+    log(0, 0, NULL, "W", 1); // 4 + 1 + E
 
-    log(0, 0, NULL, "W", 1); //4N + 1 + E
-#pragma GCC diagnostic pop
+    log(0, 0, NULL, "W", 1); // 4N + 1 + E
+    //#pragma GCC diagnostic pop
 }
