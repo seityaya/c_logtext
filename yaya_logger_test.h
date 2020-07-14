@@ -1,7 +1,6 @@
 #ifndef YAYA_LOGGER_TEST_H_
 #define YAYA_LOGGER_TEST_H_
 
-#include "yaya_defines.h"
 #include "yaya_logger.h"
 
 #include <stdarg.h>

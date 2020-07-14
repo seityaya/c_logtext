@@ -1,7 +1,6 @@
 #ifndef YAYA_LOGGER_H_
 #define YAYA_LOGGER_H_
 
-#include "yaya_defines.h"
 #include <inttypes.h>
 #include <stdarg.h>
 #include <stdint.h>
@@ -10,25 +9,90 @@
 #include <string.h>
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// // BEG // DEFINE OPTION
+#define LOGGER_LOGS LOGGER_TRUE   /*Включить логгер*/
+#define LOGGER_HEAD LOGGER_FALSE  /*Включить заголовки*/
+#define LOGGER_STYLE LOGGER_FALSE /*Включить стили*/
+
+#define LOGGER_AUTO_INIT LOGGER_FALSE /*Автоматическая Инициализация*/
+#define LOGGER_AUTO_HEAD LOGGER_FALSE /*Автоматический вывод заголовка*/
+
+#define HIDEN_STR "..."
+
+#define LOGS_FORMAT "## $absnum%3. | $curnum%3. | $type%.10 | $name%.10 | $count%3. | $file%:.25 | $line%3. | $func%:15. | $mesage"
+#define HEAD_FORMAT "HELLO"
+#define TYPE_FILTER L_ALL ^ L_BEGF ^ L_ENDF
+#define NAME_FILTER LL_ALL ^ LL_DRVR
+
+// // END // DEFINE OPTION
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// // BEG // MACRO FUNCTION
+
+#define LOGGER_FLAG(x) (1 << (x))
+#define LOGGER_FLAG_ALL (2147483647)
+#define LOGGER_FLAG_NUL (0)
+#define LOGGER_BIT_GET(x, n) ((x) & (1 << (n)))
+#define LOGGER_TRUE (1 == 1)
+#define LOGGER_FALSE (!LOGGER_TRUE)
+
+// // END // MACRO FUNCTION
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // BEG // FORMAT
 
-typedef struct
-{                      /*список ключей*/
-    const intmax_t id; /*идентификатор*/
-    const char *name;  /*текстовое представление ключей*/
-} logger_format;
+#define FES_LEF 1
+#define FES_RIG 2
+#define FES_LEFHIDE 3
+#define FES_RIGHIDE 4
+#define FES_NUL 5
 
 typedef struct
-{ /**/
-    uintmax_t beg;
-    uintmax_t end;
-    uintmax_t id;
+{                     /*хранение спецификаторов*/
+    uintmax_t beg;    /*начало токена*/
+    uintmax_t end;    /*конец токена*/
+    uintmax_t lef;    /*смещение с лева*/
+    uintmax_t rig;    /*смещение с права*/
+    uintmax_t fes;    /*сторона скрытия*/
+} logger_format_specifiers;
+
+typedef struct
+{                      /*хранение токенов*/
+    uintmax_t type;    /*тип параметра*/
+    uintmax_t id;      /*тип токена*/
+    uintmax_t beg;     /*начало токена*/
+    uintmax_t end;     /*конец токена*/
+    logger_format_specifiers *spe;
 } logger_format_mas;
 
-typedef enum {
-    LEF_SEPARATOR,
-    LEF_STRING,
-    LEF_TOKEN,
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+typedef struct
+{                         /*список токенов*/
+    const uintmax_t type; /*тип параметра*/
+    const uintmax_t id;   /*идентификатор*/
+    const char *name;     /*текстовое представление ключей*/
+} logger_format;
+
+typedef enum
+{
+    //SYS
+    LEF_TOK,
+    LEF_SPE,
+    LEF_SEP,
+    LEF_HID,
+    LEF_STR,
+
+    //WORK
+    LEF_LINE,
+    LEF_FILENAME,
+    LEF_FUNC,
+    LEF_COUNT,
+    LEF_TYPE,
+    LEF_NAME,
+    LEF_MESAGE,
+    LEF_CURNUM,
+    LEF_ABSNUM,
+
+    //NOT WORK
     LEF_PROG,
     LEF_PROJPATH,
     LEF_PROJ,
@@ -37,9 +101,6 @@ typedef enum {
     LEF_TIME_BUILD,
     LEF_SEED,
     LEF_COMPILER,
-    LEF_CURNUM,
-    LEF_ABSNUM,
-    LEF_COUNT,
     LEF_TIK,
     LEF_TIKSEC,
     LEF_TIK_RTOS,
@@ -48,62 +109,100 @@ typedef enum {
     LEF_NAME_FILTER,
     LEF_TYPE_NUM,
     LEF_NAME_NUM,
-    LEF_TYPE,
-    LEF_NAME,
+    LEF_TYPE_ALL,
+    LEF_NAME_ALL,
     LEF_DATA,
     LEF_TIME,
     LEF_FULLPATH,
     LEF_SHORPATH,
-    LEF_FILENAME,
-    LEF_LINE,
-    LEF_FUNC,
-    LEF_MESAGE,
-    LEF_NEWLINE,
     LEF_ALIGNL,
     LEF_ALIGGT,
+    LEF_NUM_TOKEN_HEAD,
+    LEF_NUM_TOKEN_LOGS,
     LEF_END
 } logger_forma_id;
 
-static logger_format logger_format_list[LEF_END] = {{LEF_SEPARATOR, "$"},          // - токен
-                                                    {LEF_STRING, "_string"},       // - строка,
-                                                    {LEF_TOKEN, "_token"},         // - токен
-                                                    {LEF_PROG, "prog"},            // - название програмы
-                                                    {LEF_PROJPATH, "projpath"},    // - расположение проекта
-                                                    {LEF_PROJ, "proj"},            // - название проекта
-                                                    {LEF_VERSION, "version"},      // - версия верси программы
-                                                    {LEF_DATA_BUILD, "databuild"}, // - дата компиляции
-                                                    {LEF_TIME_BUILD, "timebuild"}, // - время компиляции
-                                                    {LEF_SEED, "seed"},            // - сид запуска ГПСЧ
-                                                    {LEF_COMPILER, "compiler"},    // - версия компилятора
-                                                    {LEF_CURNUM, "curnum"},        // - номер выведеного сообщения
-                                                    {LEF_ABSNUM, "absnum"}, // - номер сообщения без учета фильтрации
-                                                    {LEF_COUNT, "count"},   // - номер сообщения, на основе __COUNTER__
-                                                    {LEF_TIK, "tik"},       // - счетчик тактов процесора
-                                                    {LEF_TIKSEC, "tiksec"}, // - счетчик секунд от старта
-                                                    {LEF_TIK_RTOS, "tikrtos"},    // - счетчик rtos
-                                                    {LEF_TIK_UNIX, "tikunix"},    // - счетчик времени
-                                                    {LEF_TYPE_FILTER, "typenum"}, // - вывод настроек фильтрации типа
-                                                    {LEF_NAME_FILTER, "namenum"}, // - вывод настроек фильтрации имени
-                                                    {LEF_TYPE_NUM, "typenum"},    // - имя типа сообщения, номерами
-                                                    {LEF_NAME_NUM, "namenum"},    // - имя названия сообщения, номерами
-                                                    {LEF_TYPE, "type"},           // - имя типа сообщения
-                                                    {LEF_NAME, "name"},           // - имя названия сообщения
-                                                    {LEF_DATA, "data"},           // - дата сообщения
-                                                    {LEF_TIME, "time"},           // - время сообщения
-                                                    {LEF_FULLPATH, "fullpath"}, // - полный путь к файлу, из которого сообщение
-                                                    {LEF_SHORPATH, "shorpath"}, // - короткий путь к файлу, из которого сообщение
-                                                    {LEF_FILENAME, "filename"}, // - файл
-                                                    {LEF_LINE, "line"},         // - номер строки
-                                                    {LEF_FUNC, "func"},         // - имя функции
-                                                    {LEF_MESAGE, "mesage"},     // - тело сообщения
-                                                    {LEF_NEWLINE, "nl"},        // - перевод строки
-                                                    {LEF_ALIGNL, "alignl"},     // - выравнивание при переносе
-                                                    {LEF_ALIGGT, "aliggt"}};    // - выравнивание принудительное
+#define F_STR 1
+#define F_NUM 2
+#define F_SYS 3
+
+/*
+STR
+  5.   =  |_ _ s t r|. = |s t r i n~g| -> от правого края + выход за пределы
+   .5  = .|s t r _ _|  = |s t r i n~g| -> от левого края  + выход за пределы
+                                    
+   .5: = .|s t r _ _|  = |s t r i :|   -> от правого края + показать начало
+  :.5  =  |s t r _ _|  = |: r i n g|   -> от правого края + показать конец
+ :5.   =  |_ _ s t r|  = |: r i n g|   -> от левого края  + показать начало
+  5.:  =  |_ _ s t r|  = |s t r i :|   -> от левого края  + показать конец
+ :5.:  =  |_ _ s t r|  = |: r i n g|   -> от левого края  + показать конец - второе двоеточие игнорируется
+                                                                          
+not work, 
+  5.2  =  |_ . s t r|. = |s t r i n~g| -> размер          + выход за пределы + смещение от левого края 
+  5.5  =  |_ s t r _|  = |s t r i n~g| -> по центру       + выход за пределы
+                                             
+NUM
+   05  =  0 0 0 x x
+   5.  =  _ _ _ x x
+   .5  =  x x _ _ _
+*/
+
+static logger_format logger_format_list[LEF_END] = {
+    {F_SYS, LEF_TOK, "$"}, // - токен формата строки
+    {F_SYS, LEF_SPE, "%"}, // - токен формата вывода
+    {F_SYS, LEF_SEP, "."}, // - токен формата вывода, разделитель
+    {F_SYS, LEF_HID, ":"}, // - токен формата вывода, скрывать
+    {F_SYS, LEF_STR, "&"}, // - строка, служебное обозначение
+
+    {F_NUM, LEF_LINE, "line"},     // - номер строки
+    {F_STR, LEF_FILENAME, "file"}, // - файл
+    {F_STR, LEF_FUNC, "func"},     // - имя функции
+    {F_NUM, LEF_COUNT, "count"},   // - номер сообщения, на основе __COUNTER__
+    {F_STR, LEF_TYPE, "type"},     // - имя типа сообщения
+    {F_STR, LEF_NAME, "name"},     // - имя названия сообщения
+    {F_STR, LEF_MESAGE, "mesage"}, // - тело сообщения
+    {F_NUM, LEF_CURNUM, "curnum"}, // - номер выведеного сообщения
+    {F_NUM, LEF_ABSNUM, "absnum"}, // - номер сообщения без учета фильтрации
+
+    //    {F_STR, LEF_PROG, "prog"},                // - название програмы
+    //    {F_STR, LEF_PROJ, "proj"},                // - название проекта
+    //    {F_STR, LEF_PROJPATH, "path"},            // - расположение проекта
+    //    {F_STR, LEF_FULLPATH, "fullpath"},        // - полный путь к файлу, из которого сообщение
+    //    {F_STR, LEF_SHORPATH, "shorpath"},        // - короткий путь к файлу, из которого сообщение
+    //    {F_STR, LEF_VERSION, "version"},          // - версия верси программы
+    //    {F_STR, LEF_DATA_BUILD, "databuild"},     // - дата компиляции
+    //    {F_STR, LEF_TIME_BUILD, "timebuild"},     // - время компиляции
+    //    {F_NUM, LEF_SEED, "seed"},                // - сид запуска ГПСЧ
+    //    {F_STR, LEF_COMPILER, "compiler"},        // - версия компилятора
+    //    {F_NUM, LEF_TIK, "tik"},                  // - счетчик тактов процесора
+    //    {F_NUM, LEF_TIKSEC, "tiksec"},            // - счетчик секунд от старта
+    //    {F_NUM, LEF_TIK_RTOS, "tikrtos"},         // - счетчик rtos
+    //    {F_NUM, LEF_TIK_UNIX, "tikunix"},         // - счетчик времени
+    //    {F_STR, LEF_TYPE_FILTER, "typefilter"},   // - вывод настроек фильтрации типа
+    //    {F_STR, LEF_NAME_FILTER, "namefilter"},   // - вывод настроек фильтрации имени
+    //    {F_NUM, LEF_TYPE_NUM, "typenum"},         // - имя типа сообщения, номером
+    //    {F_NUM, LEF_NAME_NUM, "namenum"},         // - имя названия сообщения, номером
+    //    {F_STR, LEF_TYPE_ALL, "typeall"},         // - имена всех типов сообщений
+    //    {F_STR, LEF_NAME_ALL, "nameall"},         // - имена всех названий сообщений
+    //    {F_STR, LEF_DATA, "data"},                // - дата сообщения
+    //    {F_STR, LEF_TIME, "time"},                // - время сообщения
+    //    {F_STR, LEF_ALIGNL, "alignl"},            // - выравнивание при переносе
+    //    {F_STR, LEF_ALIGGT, "aliggt"},            // - выравнивание принудительное
+    //    {F_NUM, LEF_NUM_TOKEN_HEAD, "headtoken"}, // - колличесво токенов в заголовке
+    //    {F_NUM, LEF_NUM_TOKEN_LOGS, "logstoken"}  // - колличесво токенов в логгере
+};
 
 // // END // FORMAT
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // BEG // FORMAT STYLE
-typedef enum { LSM_NONE, LSM_STRAIGHT, LSM_ITALIC, LSM_LIGHT, LSM_BOLD } logger_style_mode;
+typedef enum
+{
+    LSM_NONE,
+    LSM_STRAIGHT,
+    LSM_ITALIC,
+    LSM_LIGHT,
+    LSM_BOLD
+} logger_style_mode;
 
 typedef struct logger_style
 {
@@ -113,13 +212,13 @@ typedef struct logger_style
     const uintmax_t mode;
 } logger_style;
 
-static logger_style logger_style_def[] = {{LEF_SEPARATOR, {0, 0, 0}, {0, 0, 0}, LSM_NONE},
+static logger_style logger_style_def[] = {{LEF_TOK, {0, 0, 0}, {0, 0, 0}, LSM_NONE},
                                           {LEF_PROG, {0, 0, 0}, {0, 0, 0}, LSM_NONE},
                                           {LEF_PROJ, {0, 0, 0}, {0, 0, 0}, LSM_NONE}};
 
 // // END // FORMAT STYLE
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// // BEG // FLAG LIST
+// // BEG // LOGGER_FLAG LIST
 
 typedef struct
 {
@@ -128,27 +227,28 @@ typedef struct
     const char *name;
 } logger_list;
 
-typedef enum {
-    L_NUL = FLAG_NUL,
-    L_VOID = FLAG(0),
-    L_INFO = FLAG(1),
-    L_ERROR = FLAG(2),
-    L_WARNING = FLAG(3),
-    L_TODO = FLAG(4),
-    L_FIXMI = FLAG(5),
-    L_DEBUG = FLAG(6),
-    L_RELISE = FLAG(7),
-    L_TRASE = FLAG(8),
-    L_WARN = FLAG(9),
-    L_FATAL = FLAG(10),
-    L_BEGF = FLAG(11),
-    L_ENDF = FLAG(12),
-    L_FUNC = FLAG(13),
-    L_LOGGER = FLAG(14),
-    L_HEAD = FLAG(15),
-    L_TEST = FLAG(16),
-    L_ALL = FLAG_ALL
-} logger_flag_type;
+typedef enum
+{
+    L_NUL = LOGGER_FLAG_NUL,
+    L_VOID = LOGGER_FLAG(0),
+    L_INFO = LOGGER_FLAG(1),
+    L_ERROR = LOGGER_FLAG(2),
+    L_WARNING = LOGGER_FLAG(3),
+    L_TODO = LOGGER_FLAG(4),
+    L_FIXMI = LOGGER_FLAG(5),
+    L_DEBUG = LOGGER_FLAG(6),
+    L_RELISE = LOGGER_FLAG(7),
+    L_TRASE = LOGGER_FLAG(8),
+    L_WARN = LOGGER_FLAG(9),
+    L_FATAL = LOGGER_FLAG(10),
+    L_BEGF = LOGGER_FLAG(11),
+    L_ENDF = LOGGER_FLAG(12),
+    L_FUNC = LOGGER_FLAG(13),
+    L_LOGGER = LOGGER_FLAG(14),
+    L_HEAD = LOGGER_FLAG(15),
+    L_TEST = LOGGER_FLAG(16),
+    L_ALL = LOGGER_FLAG_ALL
+} logger_LOGGER_FLAG_type;
 
 #define LOGGER_LIST_GENERETE(N, NAME) \
     { N, NAME, #NAME }
@@ -172,40 +272,50 @@ static logger_list logger_type_def[] = {LOGGER_LIST_GENERETE(0, L_NUL),
                                         LOGGER_LIST_GENERETE(16, L_HEAD),
                                         LOGGER_LIST_GENERETE(17, L_TEST),
                                         LOGGER_LIST_GENERETE(18, L_ALL)};
-
-// // END // FLAG LIST
+// // END // LOGGER_FLAG LIST
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // BEG // NAME LIST
-typedef enum { LL_NUL = FLAG_NUL, LL_MAIN = FLAG(0), LL_INIT = FLAG(1), LL_my_F = FLAG(2), LL_ALL = FLAG_ALL } logger_flag_neme;
+
+typedef enum
+{
+    LL_NUL = LOGGER_FLAG_NUL,
+    LL_MAIN = LOGGER_FLAG(0),
+    LL_INIT = LOGGER_FLAG(1),
+    LL_DRVR = LOGGER_FLAG(2),
+    LL_ALL = LOGGER_FLAG_ALL
+} logger_LOGGER_FLAG_neme;
 
 static logger_list logger_name_def[] = {LOGGER_LIST_GENERETE(0, LL_NUL),
                                         LOGGER_LIST_GENERETE(1, LL_MAIN),
                                         LOGGER_LIST_GENERETE(2, LL_INIT),
-                                        LOGGER_LIST_GENERETE(3, LL_my_F),
+                                        LOGGER_LIST_GENERETE(3, LL_DRVR),
                                         LOGGER_LIST_GENERETE(4, LL_ALL)};
 // // END // NAME LIST
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // BEG // SETTING
 
-typedef enum { L_STDOUT, L_STDERR, L_STDFILE, L_STDLOG, L_STDNET, L_STDBUF } logger_streams;
+typedef enum
+{
+    LS_STDOUT,
+    LS_STDERR,
+    LS_STDFILE,
+    LS_STDLOG,
+    LS_STDNET,
+    LS_STDBUF,
+    LS_STDCSV
+} logger_streams;
 
 typedef struct logger_seting
 {
-    const char *format_head;
-    const char *format_logs;
+    const char *head_format;
+    const char *logs_format;
     const uintmax_t type;
     const uintmax_t name;
     const uintmax_t stream;
     const uintmax_t style;
 } logger_setting;
 
-static logger_setting logger_setting_def[1] = {{"HELLO my header: $prog $version$databuild #$timebuild $$ $seed $name-$type \"bay\" "
-                                                "$projpath$line$func",
-                                                "## $prog | $type | $name | $func | $line | $mesage",
-                                                L_ALL,
-                                                LL_ALL,
-                                                L_STDOUT,
-                                                FALSE}};
+static logger_setting logger_setting_def[1] = {{HEAD_FORMAT, LOGS_FORMAT, TYPE_FILTER, NAME_FILTER, LS_STDOUT, LOGGER_FALSE}};
 
 // // END // SETTING
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -213,14 +323,14 @@ static logger_setting logger_setting_def[1] = {{"HELLO my header: $prog $version
 
 typedef struct logger_define
 {
-    const intmax_t seed;
-    const char *prog;
-    const char *proj;
-    const char *version;
-    const char *compiler;
+    uintmax_t seed; // - начальные настройки ГСПЧ
+    char *prog;     // - название программы
+    char *proj;     // - название проекта
+    char *version;  // - версия программы
+                    //   char *compiler; // - версия компилятора
 } logger_define;
 
-static logger_define logger_define_def[] = {{0, "yaya_logger", "yaya_library_collection_for_C", "v0.1", "gcc 7 64-bit"}};
+static logger_define logger_define_def[] = {{0, "yaya_logger", "yaya_library_collection_for_C", "v0.1"}};
 
 // // END // DEFINE
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -228,43 +338,41 @@ static logger_define logger_define_def[] = {{0, "yaya_logger", "yaya_library_col
 
 typedef struct logger_variables
 {
-    //FLAG
-    uintmax_t log_init_flag;
-    uintmax_t log_head_flag;
+    uintmax_t head_flag; // - флаг заголовка
+    uintmax_t init_flag; // - флаг инициализации
 
-    //PTR
-    logger_list *ptype;
-    uintmax_t type_num;
-    logger_list *pname;
-    uintmax_t name_num;
-    logger_setting *psett;
-    logger_style *pstyl;
-    logger_define *pdefn;
-    struct logger_variables *pglob;
+    uintmax_t head_num_token;        // - колличество токенов в форматной строке логгера
+    logger_format_mas *logs_mas_opt; // - указатель на структуру со смещениями токенов логера
 
-    uintmax_t type_num_token;
-    uintmax_t name_num_token;
+    uintmax_t logs_num_token;        // - колличество токенов в форматной строке заголовка
+    logger_format_mas *head_mas_opt; // - указатель на структуру со смещениями токенов заголовка
 
-    logger_format_mas *logger_token_mas_opt;
+    logger_list *ptype;             // - указатель на список типов
+    logger_list *pname;             // - указатель на список имен
+    logger_setting *psett;          // - указатель на настройки логгера
+    logger_style *pstyl;            // - указатель на стили
+    logger_define *pdefn;           // - указатель на переменные среды
+    struct logger_variables *pglob; // указатель структуру с внутренними переменными
 
-    // PARAM
-    char *vfile;
-    uintmax_t vcount;
-    uintmax_t vline;
-    char *vfunc;
-    uintmax_t vtype;
-    uintmax_t vname;
-    char *vmesg;
-    va_list vprm;
+    uintmax_t type_num; // - колличесво типов
+    uintmax_t name_num; // - колличество имен
 
-    char *data_assembly;
-    char *time_assembly;
-    char *projpath;
-    intmax_t curnum;
-    intmax_t absnum;
+    uintmax_t type_max_len; // - максимальная длинна типа | для выравнивания
+    uintmax_t name_max_len; // - максимальная длинна имени | для выравнивания
+
+    char *out_buff;          // - указатель на буфер вывода
+    uintmax_t out_ofset;     // - указатель на конец строки
+    char *data_build;        // - дата сборки
+    char *time_build;        // - время сборки
+    char *proj;              // - имя проекта
+    char *projpath;          // - папка проекта
+    char *compiler;
+    uintmax_t curnum;        // - номер текущего вывода
+    uintmax_t absnum;        // - номер вывода без учета фильтрации
+    uintmax_t tiksec;        // - время от старта программы, в секундах
 } logger_variables;
 
-static logger_variables logger_variables_global[1] = {{FALSE, FALSE}};
+static logger_variables logger_variables_global[1] = {{LOGGER_FALSE, LOGGER_FALSE}};
 
 // // END // VARIABLES
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -369,6 +477,22 @@ void yaya_log_init(logger_list *type, logger_list *name, logger_setting *setting
 void yaya_log_head(uintmax_t count, char *file, uintmax_t line, const char *func, const char *mes, ...);
 void yaya_log_func(uintmax_t count, char *file, uintmax_t line, const char *func, uintmax_t type, uintmax_t name, const char *mes, ...);
 
+logger_format_mas *mas_opt(const char *format, logger_format_mas *mas_opt, uintmax_t *num_token);
+void logger_build(const char *format,
+                  logger_format_mas *mas_opt,
+                  uintmax_t *num_token,
+                  uintmax_t *count,
+                  char *file,
+                  uintmax_t *line,
+                  const char *func,
+                  uintmax_t type,
+                  uintmax_t name,
+                  const char *mesg,
+                  ...);
+void format_build_str(logger_format_mas *mas_opt, const char *buff_orig);
+void format_build_num(logger_format_mas *mas_opt, uintmax_t *buff_orig);
+void style_build(void);
+void logger_out(void);
 // // END // DECLARATION
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

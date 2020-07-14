@@ -1,5 +1,4 @@
 #include "yaya_logger_test.h"
-#include "yaya_defines.h"
 #include "yaya_logger.h"
 
 #include <stdarg.h>
@@ -18,7 +17,7 @@ void yaya_log_func_test_maxi(
     printf("Type N : %ld\n", type);
     temp[0] = '\0';
     for (uintmax_t i = 0; i < LOGGER_TYPE_NUM - 1; i++) {
-        if (BIT_GET(type, i)) {
+        if (LOGGER_BIT_GET(type, i)) {
             strcat(temp, logger_type_def[i + 1].name);
             strcat(temp, " ");
         }
@@ -28,7 +27,7 @@ void yaya_log_func_test_maxi(
     temp[0] = '\0';
     printf("Name N : %ld\n", name);
     for (uintmax_t i = 0; i < LOGGER_TYPE_NUM - 1; i++) {
-        if (BIT_GET(name, i)) {
+        if (LOGGER_BIT_GET(name, i)) {
             strcat(temp, logger_type_def[i + 1].name);
             strcat(temp, " ");
         }
