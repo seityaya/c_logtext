@@ -6,6 +6,7 @@ set(SRC_LIST
     yaya_logger_main.c
     yaya_logger.h
     yaya_logger_func.c
+    yaya_logger_func.h
     yaya_logger_test.h
     yaya_logger_test.c)
 

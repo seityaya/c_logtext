@@ -173,80 +173,80 @@ void logger_build(const char *format,
                 break;
             }
 
-            case LEF_PROG: {
-                format_build_str(&mas_opt[i], lvg->pdefn->prog);
-                break;
-            }
-            case LEF_PROJPATH: {
-                format_build_str(&mas_opt[i], lvg->pglob->projpath);
-                break;
-            }
-            case LEF_PROJ: {
-                format_build_str(&mas_opt[i], lvg->pglob->proj);
-                break;
-            }
-            case LEF_VERSION: {
-                format_build_str(&mas_opt[i], lvg->pdefn->version);
-                break;
-            }
-            case LEF_DATA_BUILD: {
-                format_build_str(&mas_opt[i], lvg->pglob->data_build);
-                break;
-            }
-            case LEF_TIME_BUILD: {
-                format_build_str(&mas_opt[i], lvg->pglob->time_build);
-                break;
-            }
-            case LEF_SEED: {
-                format_build_num(&mas_opt[i], &lvg->pdefn->seed);
-                break;
-            }
-            case LEF_COMPILER: {
-                format_build_str(&mas_opt[i], lvg->pglob->compiler);
-                break;
-            }
-            case LEF_TIKSEC: {
-                break;
-            }
-            case LEF_DATA: {
-                sprintf(buff, "%d", 0);
-                strcat(lvg->out_buff, buff);
-                break;
-            }
-            case LEF_TIME: {
-                sprintf(buff, "%d", 0);
-                strcat(lvg->out_buff, buff);
-                break;
-            }
-            case LEF_FULLPATH: {
-                break;
-            }
-            case LEF_SHORPATH: {
-                break;
-            }
-            case LEF_ALIGNL: {
-                break;
-            }
-            case LEF_ALIGGT: {
-                break;
-            }
-            case LEF_NAME_ALL: {
-                { /*вывод настроек фильтрации*/
-                    for (uintmax_t i = 0; i < lvg->type_num - 1; i++) {
-                        if (lvg->psett->type == L_ALL) {
-                            printf("%s ", lvg->ptype[lvg->type_num].name);
-                            break;
-                        } else if (lvg->psett->type == L_NUL) {
-                            printf("%s ", lvg->ptype[0].name);
-                            break;
-                        } else {
-                            if (LOGGER_BIT_GET(lvg->psett->type, i)) {
-                                printf("%s ", lvg->ptype[i + 1].name);
-                            }
-                        }
-                    }
-                }
-            }
+                //            case LEF_PROG: {
+                //                format_build_str(&mas_opt[i], lvg->pdefn->prog);
+                //                break;
+                //            }
+                //            case LEF_PROJPATH: {
+                //                format_build_str(&mas_opt[i], lvg->pglob->projpath);
+                //                break;
+                //            }
+                //            case LEF_PROJ: {
+                //                format_build_str(&mas_opt[i], lvg->pglob->proj);
+                //                break;
+                //            }
+                //            case LEF_VERSION: {
+                //                format_build_str(&mas_opt[i], lvg->pdefn->version);
+                //                break;
+                //            }
+                //            case LEF_DATA_BUILD: {
+                //                format_build_str(&mas_opt[i], lvg->pglob->data_build);
+                //                break;
+                //            }
+                //            case LEF_TIME_BUILD: {
+                //                format_build_str(&mas_opt[i], lvg->pglob->time_build);
+                //                break;
+                //            }
+                //            case LEF_SEED: {
+                //                format_build_num(&mas_opt[i], &lvg->pdefn->seed);
+                //                break;
+                //            }
+                //            case LEF_COMPILER: {
+                //                format_build_str(&mas_opt[i], lvg->pglob->compiler);
+                //                break;
+                //            }
+                //            case LEF_TIKSEC: {
+                //                break;
+                //            }
+                //            case LEF_DATA: {
+                //                sprintf(buff, "%d", 0);
+                //                strcat(lvg->out_buff, buff);
+                //                break;
+                //            }
+                //            case LEF_TIME: {
+                //                sprintf(buff, "%d", 0);
+                //                strcat(lvg->out_buff, buff);
+                //                break;
+                //            }
+                //            case LEF_FULLPATH: {
+                //                break;
+                //            }
+                //            case LEF_SHORPATH: {
+                //                break;
+                //            }
+                //            case LEF_ALIGNL: {
+                //                break;
+                //            }
+                //            case LEF_ALIGGT: {
+                //                break;
+                //            }
+                //            case LEF_NAME_ALL: {
+                //                { /*вывод настроек фильтрации*/
+                //                    for (uintmax_t i = 0; i < lvg->type_num - 1; i++) {
+                //                        if (lvg->psett->type == L_ALL) {
+                //                            printf("%s ", lvg->ptype[lvg->type_num].name);
+                //                            break;
+                //                        } else if (lvg->psett->type == L_NUL) {
+                //                            printf("%s ", lvg->ptype[0].name);
+                //                            break;
+                //                        } else {
+                //                            if (LOGGER_BIT_GET(lvg->psett->type, i)) {
+                //                                printf("%s ", lvg->ptype[i + 1].name);
+                //                            }
+                //                        }
+                //                    }
+                //                }
+                //            }
             default: {
                 printf("WARNING: NOT FOUND TOKEN = %s \n", logger_format_list[i].name);
                 break;

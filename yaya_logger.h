@@ -310,7 +310,7 @@ typedef struct logger_seting
     const uintmax_t style;
 } logger_setting;
 
-static logger_setting logger_setting_def[1] = {{HEAD_FORMAT, LOGS_FORMAT, TYPE_FILTER, NAME_FILTER, LS_STDOUT, LOGGER_FALSE}};
+static logger_setting logger_setting_def[] = {{HEAD_FORMAT, LOGS_FORMAT, TYPE_FILTER, NAME_FILTER, LS_STDOUT, LOGGER_FALSE}};
 
 // // END // SETTING
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -364,7 +364,8 @@ typedef struct logger_variables
     uintmax_t tiksec;        // - время от старта программы, в секундах
 } logger_variables;
 
-static logger_variables logger_variables_global[1] = {{LOGGER_FALSE, LOGGER_FALSE}};
+static logger_variables logger_variables_global[] = {
+    {LOGGER_FALSE, LOGGER_FALSE, 0, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, 0, NULL, 0, NULL, NULL, NULL, NULL, NULL, 0, 0, 0}};
 
 // // END // VARIABLES
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
