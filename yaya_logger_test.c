@@ -12,9 +12,9 @@ extern logger_list logger_type_def[];
 
 void yaya_log_func_test_maxi(
     char *data, char *time, char *file, uintmax_t line, uintmax_t count, const char *func, uintmax_t type, uintmax_t name, const char *mes, ...) {
-    printf("Data   : %s\nTime   : %s\nCount  : %ld\nLine   : %ld\nFile   : %s\nFunc   : %s\n", data, time, count, line, file, func);
+    printf("Data   : %s\nTime   : %s\nCount  : %"PRIXMAX"\nLine   : %"PRIXMAX"\nFile   : %s\nFunc   : %s\n", data, time, count, line, file, func);
     char temp[1000];
-    printf("Type N : %ld\n", type);
+    printf("Type N : %"PRIXMAX"\n", type);
     temp[0] = '\0';
     for (uintmax_t i = 0; i < LOGGER_TYPE_NUM - 1; i++) {
         if (LOGGER_BIT_GET(type, i)) {
@@ -25,7 +25,7 @@ void yaya_log_func_test_maxi(
     printf("Type L : %s\n", temp);
 
     temp[0] = '\0';
-    printf("Name N : %ld\n", name);
+    printf("Name N : %"PRIXMAX"\n", name);
     for (uintmax_t i = 0; i < LOGGER_TYPE_NUM - 1; i++) {
         if (LOGGER_BIT_GET(name, i)) {
             strcat(temp, logger_type_def[i + 1].name);
@@ -43,8 +43,8 @@ void yaya_log_func_test_maxi(
 }
 
 void yaya_log_func_test_mini(uintmax_t line, uintmax_t coun, uintmax_t L_1, uintmax_t L_2, char *mesg, ...) {
-    print_t0("%03ld : %03ld - log_", coun, line);
-    print_t1("%03ld : %03ld\nf log_", coun, line);
+    print_t0("%03"PRIXMAX" : %03"PRIXMAX" - log_", coun, line);
+    print_t1("%03"PRIXMAX" : %03"PRIXMAX"\nf log_", coun, line);
     print_t2("%03ld : %03ld\n", coun, line);
 
     if (L_1 == LOGGER_NULL) {
@@ -166,8 +166,6 @@ void yaya_log_test_func_set(void) {
 }
 
 void yaya_log_macr_test_set(void) {
-    //#pragma GCC diagnostic push
-    //#pragma GCC diagnostic ignored "-Wint-conversion"
     log(); // 0
 
     log(0); // 1
@@ -188,5 +186,4 @@ void yaya_log_macr_test_set(void) {
     log(0, 0, NULL, "W", 1); // 4 + 1 + E
 
     log(0, 0, NULL, "W", 1); // 4N + 1 + E
-    //#pragma GCC diagnostic pop
 }

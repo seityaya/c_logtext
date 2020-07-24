@@ -8,6 +8,7 @@
 
 void my_very_beautiful_long_functions(void) {
     log(L_BEGF, LL_DRVR, "Старт функции");
+    log(L_INFO, LL_DRVR, "Это очень длинная функция");
 
     log(L_ENDF, LL_DRVR, "Стоп функции");
 }
@@ -18,7 +19,6 @@ int main(int argc, char *argv[]) {
     long double seconds;
 
     start = clock();
-    log_init(logger_type_def, logger_name_def, logger_setting_def, logger_define_def, logger_style_def);
     end = clock();
     seconds = (long double) (end - start) / CLOCKS_PER_SEC;
     printf("init: %Lf seconds\n", seconds);
