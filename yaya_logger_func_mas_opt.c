@@ -9,7 +9,8 @@
 
 extern logger_variables *lvg;
 
-logger_token_mas *mas_opt(const char *format, logger_token_mas *mas_opt, uintmax_t *num_token) {
+void mas_opt(const char *format, logger_token_mas **mas_opt_f, uintmax_t *num_token) {
+    logger_token_mas *mas_opt = malloc(sizeof(logger_token_mas));
     { /*Подсчет количества токенов и спецификаторов, выделение памяти и определение их диапазона и типа*/
         uintmax_t j = 0;
         for (uintmax_t i = 0; i < strlen(format); i++) {
@@ -134,5 +135,5 @@ logger_token_mas *mas_opt(const char *format, logger_token_mas *mas_opt, uintmax
     //            }
     //            printf("\n");
     //        }
-    return mas_opt;
+    *mas_opt_f = mas_opt;
 }

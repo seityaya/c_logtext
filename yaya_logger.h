@@ -485,7 +485,7 @@ static logger_variables logger_variables_global[] = {{LOGGER_FALSE, LOGGER_FALSE
 void yaya_log_init(logger_list *type, logger_list *name, logger_setting *setting, logger_define *define, logger_style *style);
 void yaya_log_head(uintmax_t count, char *file, uintmax_t line, const char *func, const char *mes, ...);
 void yaya_log_func(uintmax_t count, char *file, uintmax_t line, const char *func, uintmax_t type, uintmax_t name, const char *mes, ...);
-logger_token_mas *mas_opt(const char *format, logger_token_mas *mas_opt, uintmax_t *num_token);
+void mas_opt(const char *format, logger_token_mas **mas_opt, uintmax_t *num_token);
 void logger_build(const char *format,
                   logger_token_mas *mas_opt,
                   uintmax_t *num_token,
