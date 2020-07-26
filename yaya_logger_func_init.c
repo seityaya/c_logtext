@@ -54,13 +54,8 @@ void yaya_log_init(logger_list *type, logger_list *name, logger_setting *setting
 
     { /*Парсинг форматированной строки*/
 #if LOGGER_HEAD
-        lvg->head_mas_opt = mas_opt(lvg->psett->head_format, lvg->head_mas_opt, &lvg->head_num_token);
+       lvg->head_mas_opt = mas_opt(lvg->psett->head_format, lvg->head_mas_opt, &lvg->head_num_token);
 #endif
-        lvg->logs_mas_opt = mas_opt(lvg->psett->logs_format, lvg->logs_mas_opt, &lvg->logs_num_token);
-    }
-
-    { /*Создание массива указателей на функции*/
-        //mas_fnk(*lvg->head_func_token, lvg->head_mas_opt, &lvg->head_num_token);
-        //mas_fnk(*lvg->logs_func_token, lvg->logs_mas_opt, &lvg->logs_num_token);
+       lvg->logs_mas_opt = mas_opt(lvg->psett->logs_format, lvg->logs_mas_opt, &lvg->logs_num_token);
     }
 }

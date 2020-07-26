@@ -15,7 +15,6 @@ set(SRC_LIST
     yaya_logger_func_build_num.c
     yaya_logger_func_build_str.c
     yaya_logger_func_mas_opt.c
-    yaya_logger_func_mas_fnk.c
     yaya_logger_func.h
     yaya_logger_test.h
     yaya_logger_test.c)

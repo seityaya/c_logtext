@@ -15,13 +15,13 @@
 #define LOGGER_STYLE LOGGER_TRUE /*Включить стили*/
 #define LOGGER_OUT LOGGER_TRUE   /*Включить вывод*/
 
-#define LOGGER_AUTO_INIT LOGGER_TRUE /*Автоматическая Инициализация*/
-#define LOGGER_AUTO_HEAD LOGGER_TRUE /*Автоматический вывод заголовка*/
+#define LOGGER_AUTO_INIT LOGGER_FALSE /*Автоматическая Инициализация*/
+#define LOGGER_AUTO_HEAD LOGGER_FALSE /*Автоматический вывод заголовка*/
 
 #define HIDDEN_STR "..."
 
-#define LOGS_FORMAT "## $absnum%3. | $curnum%3. | $type%.10 | $name%.10 | $count%3. | $file%:.25 | $line%3. | $func%:15. | $message"
-#define HEAD_FORMAT "HELLO $message"
+#define LOGS_FORMAT "LOGS ## $absnum%3. | $curnum%3. | $type%.10 | $name%.10 | $count%3. | $file%:.25 | $line%3. | $func%:15. | $message"
+#define HEAD_FORMAT "HEAD ## $message"
 #define TYPE_FILTER L_ALL ^ L_BEGF ^ L_ENDF
 #define NAME_FILTER LL_MAIN | LL_DRVR
 
@@ -343,12 +343,10 @@ typedef struct logger_variables
     uintmax_t head_flag;            // - флаг заголовка
     uintmax_t head_num_token;       // - количество токенов в форматной строке логгера
     logger_token_mas *head_mas_opt; // - указатель на структуру со смещениями токенов заголовка
-    uintptr_t **head_func_token;
 
     uintmax_t init_flag;            // - флаг инициализации
     logger_token_mas *logs_mas_opt; // - указатель на структуру со смещениями токенов логгера
     uintmax_t logs_num_token;       // - количество токенов в форматной строке заголовка
-    uintptr_t **logs_func_token;
 
     uintmax_t error; //ошибки логгера
 
@@ -487,10 +485,7 @@ static logger_variables logger_variables_global[] = {{LOGGER_FALSE, LOGGER_FALSE
 void yaya_log_init(logger_list *type, logger_list *name, logger_setting *setting, logger_define *define, logger_style *style);
 void yaya_log_head(uintmax_t count, char *file, uintmax_t line, const char *func, const char *mes, ...);
 void yaya_log_func(uintmax_t count, char *file, uintmax_t line, const char *func, uintmax_t type, uintmax_t name, const char *mes, ...);
-
 logger_token_mas *mas_opt(const char *format, logger_token_mas *mas_opt, uintmax_t *num_token);
-void mas_fnk(uintptr_t *mas_fnk, logger_token_mas *mas_opt, uintmax_t *num_token);
-
 void logger_build(const char *format,
                   logger_token_mas *mas_opt,
                   uintmax_t *num_token,
