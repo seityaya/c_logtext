@@ -6,6 +6,16 @@ set(SRC_LIST
     yaya_logger_main.c
     yaya_logger.h
     yaya_logger_func.c
+    yaya_logger_func_logs.c
+    yaya_logger_func_init.c
+    yaya_logger_func_head.c
+    yaya_logger_func_style.c
+    yaya_logger_func_out.c
+    yaya_logger_func_build.c
+    yaya_logger_func_build_num.c
+    yaya_logger_func_build_str.c
+    yaya_logger_func_mas_opt.c
+    yaya_logger_func_mas_fnk.c
     yaya_logger_func.h
     yaya_logger_test.h
     yaya_logger_test.c)

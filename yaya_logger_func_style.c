@@ -7,4 +7,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-logger_variables *lvg = logger_variables_global;
+extern logger_variables *lvg;
+
+#if LOGGER_STYLE
+void style_build() {
+    if (lvg->psett->style) {
+    }
+}
+#endif

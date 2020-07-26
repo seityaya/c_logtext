@@ -14,14 +14,17 @@ void my_very_beautiful_long_functions(void) {
 }
 
 int main(int argc, char *argv[]) {
+
     clock_t start;
     clock_t end;
     long double seconds;
 
     start = clock();
+
     end = clock();
     seconds = (long double) (end - start) / CLOCKS_PER_SEC;
-    printf("init: %Lf seconds\n", seconds);
+    printf("void: %Lf seconds\n", seconds);
+
 
     start = clock();
     log(L_BEGF, LL_MAIN, "Старт программы");
