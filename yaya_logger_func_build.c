@@ -1,4 +1,5 @@
 #include "yaya_logger.h"
+#include "yaya_logger_func.h"
 
 #include <ctype.h>
 #include <inttypes.h>
@@ -95,19 +96,15 @@ void logger_build(const char *format,
                 format_build_str(&mas_opt[i], lvg->pdefn->proj);
                 break;
             }
-            case LEF_COMPILERVERSION: {
-                format_build_str(&mas_opt[i], lvg->compilerversion);
+            case LEF_VERSION: {
+                format_build_str(&mas_opt[i], lvg->pdefn->version);
                 break;
             }
-
                 //            case LEF_PROJPATH: {
                 //                format_build_str(&mas_opt[i], lvg->pglob->projpath);
                 //                break;
                 //            }
-                //            case LEF_VERSION: {
-                //                format_build_str(&mas_opt[i], lvg->pdefn->version);
-                //                break;
-                //            }
+
                 //            case LEF_DATA_BUILD: {
                 //                format_build_str(&mas_opt[i], lvg->pglob->data_build);
                 //                break;
@@ -159,6 +156,9 @@ void logger_build(const char *format,
                 //                                printf("%s ", lvg->ptype[i + 1].name);
                 //                            }
                 //                        }
+//#define GCC_VERSION (__GNUC__ * 10000 \
+//                     + __GNUC_MINOR__ * 100 \
+//                     + __GNUC_PATCHLEVEL__)
                 //                    }
                 //                }
                 //            }
@@ -172,11 +172,4 @@ void logger_build(const char *format,
             }
         }
     }
-
-#if LOGGER_STYLE
-    /*Стили*/
-    style_build();
-#endif
-    /*Вывод*/
-    logger_out();
 }

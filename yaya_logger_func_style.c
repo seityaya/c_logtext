@@ -1,4 +1,5 @@
 #include "yaya_logger.h"
+#include "yaya_logger_func.h"
 
 #include <ctype.h>
 #include <inttypes.h>

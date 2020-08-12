@@ -10,10 +10,10 @@
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // BEG // DEFINE OPTION
-#define LOGGER_LOGS LOGGER_TRUE  /*Включить логгер*/
-#define LOGGER_HEAD LOGGER_TRUE  /*Включить заголовки*/
-#define LOGGER_STYLE LOGGER_TRUE /*Включить стили*/
-#define LOGGER_OUT LOGGER_TRUE   /*Включить вывод*/
+#define LOGGER_LOGS   LOGGER_TRUE  /*Включить логгер*/
+#define LOGGER_HEAD   LOGGER_TRUE  /*Включить заголовки*/
+#define LOGGER_STYLE  LOGGER_TRUE  /*Включить стили*/
+#define LOGGER_OUT    LOGGER_TRUE   /*Включить вывод*/
 
 #define LOGGER_AUTO_INIT LOGGER_FALSE /*Автоматическая Инициализация*/
 #define LOGGER_AUTO_HEAD LOGGER_FALSE /*Автоматический вывод заголовка*/
@@ -27,6 +27,7 @@
 
 #define LOGGER_OUT_BUFF_SIZE 1000
 #define LOGGER_TMP_BUFF_SIZE 300
+#define LOGGER_NUM_TOKEN_OR_AUTO 0 /*if 0, auto allocation*/
 // // END // DEFINE OPTION
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // BEG // MACRO FUNCTION
@@ -71,6 +72,7 @@ typedef struct
 {                       /*список токенов*/
     const uintmax_t id; /*идентификатор*/
     const char *name;   /*текстовое представление ключей*/
+    void (*func)(void); /*функция токена*/
 } logger_token;
 
 typedef enum
@@ -94,10 +96,11 @@ typedef enum
     LEF_ABSNUM,
     LEF_PROG,
     LEF_PROJ,
+    LEF_PROJ_VERSION,
     LEF_COMPILERVERSION,
 
     //NOT WORK
-    LEF_PROJPATH,
+    LEF_PROJ_PATH,
     LEF_VERSION,
     LEF_DATA_BUILD,
     LEF_TIME_BUILD,
@@ -110,8 +113,8 @@ typedef enum
     LEF_NAME_FILTER,
     LEF_TYPE_NUM,
     LEF_NAME_NUM,
-    LEF_TYPE_ALL,
-    LEF_NAME_ALL,
+    LEF_TYPE_LIST,
+    LEF_NAME_LIST,
     LEF_DATA,
     LEF_TIME,
     LEF_FULLPATH,
@@ -126,11 +129,11 @@ typedef enum
 //#define LOGS_FORMAT "$compilerversion"
 
 static logger_token logger_token_list[LEF_END] = {
-    {LEF_TOK, "$"}, // - токен формата токена
-    {LEF_SPE, "%"}, // - токен формата вывода
-    {LEF_SEP, "."}, // - токен формата вывода, разделитель
-    {LEF_HID, ":"}, // - токен формата вывода, скрыватель
-    {LEF_STR, "&"}, // - токен строки, не используется
+    {LEF_TOK, "$", NULL}, // - токен формата токена
+    {LEF_SPE, "%", NULL}, // - токен формата вывода
+    {LEF_SEP, ".", NULL}, // - токен формата вывода, разделитель
+    {LEF_HID, ":", NULL}, // - токен формата вывода, скрыватель
+    {LEF_STR, "&", NULL}, // - токен строки, не используется
 
     {LEF_LINE, "line"},                       // - номер строки
     {LEF_FILENAME, "file"},                   // - файл
@@ -143,9 +146,11 @@ static logger_token logger_token_list[LEF_END] = {
     {LEF_ABSNUM, "absnum"},                   // - номер сообщения без учета фильтрации
     {LEF_PROG, "prog"},                       // - название программы
     {LEF_PROJ, "proj"},                       // - название проекта
-    {LEF_COMPILERVERSION, "compilerversion"}, // - версия компилятора
+    {LEF_PROJ_VERSION, "version"}, // - версия программы
 
-    {LEF_PROJPATH, "path"},            // - расположение проекта
+    {LEF_DATA, "data"},                // - дата сообщения
+    {LEF_TIME, "time"},                // - время сообщения
+    {LEF_PROJ_PATH, "path"},            // - расположение проекта
     {LEF_FULLPATH, "fullpath"},        // - полный путь к файлу, из которого сообщение
     {LEF_SHORPATH, "shorpath"},        // - короткий путь к файлу, из которого сообщение
     {LEF_VERSION, "version"},          // - версия программы
@@ -160,10 +165,9 @@ static logger_token logger_token_list[LEF_END] = {
     {LEF_NAME_FILTER, "namefilter"},   // - вывод настроек фильтрации имени
     {LEF_TYPE_NUM, "typenum"},         // - имя типа сообщения, номером
     {LEF_NAME_NUM, "namenum"},         // - имя названия сообщения, номером
-    {LEF_TYPE_ALL, "typeall"},         // - имена всех типов сообщений
-    {LEF_NAME_ALL, "nameall"},         // - имена всех названий сообщений
-    {LEF_DATA, "data"},                // - дата сообщения
-    {LEF_TIME, "time"},                // - время сообщения
+    {LEF_TYPE_LIST, "typelist"},         // - имена всех типов сообщений + номер флага
+    {LEF_NAME_LIST, "namelist"},         // - имена всех названий сообщений
+
     {LEF_ALIGNL, "alignl"},            // - выравнивание при переносе
     {LEF_ALIGGT, "aliggt"},            // - выравнивание принудительное
     {LEF_NUM_TOKEN_HEAD, "headtoken"}, // - количество токенов в заголовке
@@ -465,11 +469,6 @@ static logger_variables logger_variables_global[] = {{LOGGER_FALSE, LOGGER_FALSE
 #define log_ABC_(A, B, ...) /*   */ yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, A, INT_OR_0(B), __VA_ARGS__, 0)                // 3
 #define log_A_CD(A, C, ...) /*   */ yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, A, 0, CHARP_OR_NULL(C), __VA_ARGS__)           // 3
 #define log_ABCD(A, B, C, ...) /**/ yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, A, INT_OR_0(B), CHARP_OR_NULL(C), __VA_ARGS__) // 4
-#else
-#define log_init(...)
-#define log_head(...)
-#define log(...)
-#endif
 
 // // END // MACROS OPERATOR OVERLOADING
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -477,8 +476,16 @@ static logger_variables logger_variables_global[] = {{LOGGER_FALSE, LOGGER_FALSE
 
 #define log_init(A, B, C, D, E) yaya_log_init(A, B, C, D, E)
 #define log_head(MESG, ...) yaya_log_head(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, MESG, ##__VA_ARGS__)
-
+#define log_atom(TOKEN, ...) yaya_log_atom(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, TOKEN, ##__VA_ARGS__)
 // // END // MACRO BINDING
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#else
+#define log_init(...)
+#define log_head(...)
+#define log_void(...)
+#define log(...)
+#endif
+
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // BEG // DECLARATION
 

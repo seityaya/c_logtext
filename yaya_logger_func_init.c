@@ -1,4 +1,5 @@
 #include "yaya_logger.h"
+#include "yaya_logger_func.h"
 
 #include <ctype.h>
 #include <inttypes.h>
@@ -26,6 +27,7 @@ void yaya_log_init(logger_list *type, logger_list *name, logger_setting *setting
         lvg->tmp_buff = calloc(LOGGER_TMP_BUFF_SIZE, sizeof(char));
         lvg->out_buff = calloc(LOGGER_OUT_BUFF_SIZE, sizeof(char));
         lvg->out_offset = 0;
+
         lvg->data_build = __DATE__;
         lvg->time_build = __TIME__;
         lvg->projpath = "/../../";

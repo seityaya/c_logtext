@@ -1,4 +1,5 @@
 #include "yaya_logger.h"
+#include "yaya_logger_func.h"
 
 #include <ctype.h>
 #include <inttypes.h>
@@ -33,5 +34,13 @@ void yaya_log_func(uintmax_t count, char *file, uintmax_t line, const char *func
         va_start(mesgptr, mesg);
         logger_build(lvg->psett->logs_format, lvg->logs_mas_opt, &lvg->logs_num_token, &count, file, &line, func, type, name, mesg, mesgptr);
         va_end(mesgptr);
+
+#if LOGGER_STYLE
+        /*Стили*/
+        style_build();
+#endif
+
+        /*Вывод*/
+        logger_out();
     }
 }
