@@ -1,5 +1,4 @@
 #include "yaya_logger.h"
-#include "yaya_logger_func.h"
 
 #include <ctype.h>
 #include <inttypes.h>
@@ -8,10 +7,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern logger_variables *lvg;
-
 #if LOGGER_STYLE
-void style_build() {
+void style_build(logger *lvg)
+{
     if (lvg->psett->style) {
     }
 }

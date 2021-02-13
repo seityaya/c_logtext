@@ -1,23 +1,16 @@
 #include "yaya_logger.h"
-#include "yaya_logger_func.h"
 
-#include <ctype.h>
-#include <inttypes.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
-extern logger_variables *lvg;
 
-void mas_opt(const char *format, logger_token_mas **mas_opt_f, uintmax_t *num_token) {
+uintmax_t mas_opt(logger *lvg, const char *format, logger_token_mas **mas_opt_f, uintmax_t *num_token)
+{
     logger_token_mas *mas_opt = malloc(sizeof(logger_token_mas));
     { /*Подсчет количества токенов и спецификаторов, выделение памяти и определение их диапазона и типа*/
         uintmax_t j = 0;
         for (uintmax_t i = 0; i < strlen(format); i++) {
             mas_opt = realloc(mas_opt, sizeof(logger_token_mas) * (j + 1));
             if (format[i] == logger_token_list[LEF_TOK].name[0] && isalpha(format[i + 1])) {
-                mas_opt[j].id = LEF_TOK;
+                mas_opt[j].id  = LEF_TOK;
                 mas_opt[j].beg = i;
                 do {
                     mas_opt[j].end = i;
@@ -26,21 +19,24 @@ void mas_opt(const char *format, logger_token_mas **mas_opt_f, uintmax_t *num_to
                 if (format[i] == logger_token_list[LEF_SPE].name[0]
                     && (isdigit(format[i + 1]) || format[i + 1] == logger_token_list[LEF_HID].name[0]
                         || format[i + 1] == logger_token_list[LEF_SEP].name[0])) {
-                    mas_opt[j].spe = calloc(1, sizeof(logger_token_specifiers));
+                    mas_opt[j].spe      = calloc(1, sizeof(logger_token_specifiers));
                     mas_opt[j].spe->beg = i;
                     do {
                         mas_opt[j].spe->end = i;
                         i++;
-                    } while (isdigit(format[i]) || format[i] == logger_token_list[LEF_HID].name[0] || format[i] == logger_token_list[LEF_SEP].name[0]);
+                    } while (isdigit(format[i]) || format[i] == logger_token_list[LEF_HID].name[0]
+                             || format[i] == logger_token_list[LEF_SEP].name[0]);
                 }
                 i--;
-            } else {
+            }
+            else {
                 mas_opt[j].beg = i;
-                mas_opt[j].id = LEF_STR;
+                mas_opt[j].id  = LEF_STR;
                 do {
                     mas_opt[j].end = i;
                     i++;
-                } while (!(format[i] == logger_token_list[LEF_TOK].name[0] && isalpha(format[i + 1])) && (format[i] != '\0'));
+                } while (!(format[i] == logger_token_list[LEF_TOK].name[0] && isalpha(format[i + 1]))
+                         && (format[i] != '\0'));
                 i--;
             }
             j++;
@@ -50,7 +46,7 @@ void mas_opt(const char *format, logger_token_mas **mas_opt_f, uintmax_t *num_to
 
     { /*Определение типа токенов*/
         for (uintmax_t i = 0; i < *num_token; i++) {
-            memset(lvg->tmp_buff, 0, LOGGER_TMP_BUFF_SIZE);
+          memset(lvg->tmp_buff, 0, LOGGER_TMP_BUFF_SIZE);
             if (mas_opt[i].id == LEF_TOK) {
                 strncpy(lvg->tmp_buff, &format[mas_opt[i].beg + 1], mas_opt[i].end - mas_opt[i].beg);
                 for (uintmax_t j = 0; j < LEF_END; j++) {
@@ -68,7 +64,7 @@ void mas_opt(const char *format, logger_token_mas **mas_opt_f, uintmax_t *num_to
             if (mas_opt[i].spe != NULL) {
                 memset(lvg->tmp_buff, 0, LOGGER_TMP_BUFF_SIZE);
                 strncpy(lvg->tmp_buff, &format[mas_opt[i].spe->beg], mas_opt[i].spe->end - mas_opt[i].spe->beg + 1);
-                int k = 0;
+                int k   = 0;
                 int beg = mas_opt[i].spe->beg + 1;
                 int end = mas_opt[i].spe->end + 1;
 
@@ -76,7 +72,8 @@ void mas_opt(const char *format, logger_token_mas **mas_opt_f, uintmax_t *num_to
                     beg++;
                     mas_opt[i].spe->lfs = LFS_LEF;
                 }
-                if (format[mas_opt[i].spe->end] == logger_token_list[LEF_HID].name[0] && mas_opt[i].spe->lfs != LFS_LEF) {
+                if (format[mas_opt[i].spe->end] == logger_token_list[LEF_HID].name[0]
+                    && mas_opt[i].spe->lfs != LFS_LEF) {
                     end--;
                     mas_opt[i].spe->lfs = LFS_RIG;
                 }
@@ -95,8 +92,10 @@ void mas_opt(const char *format, logger_token_mas **mas_opt_f, uintmax_t *num_to
                     if (mas_opt[i].spe->lfs != LFS_NUL && mas_opt[i].spe->lfs != LFS_LEF) {
                         mas_opt[i].spe->lfs = LFS_RIG;
                     }
+                    //(char*)logger_token_list[LEF_SEP].name, (char*)logger_token_list[LEF_SPE].name
                     sscanf(lvg->tmp_buff, ".%" PRIXMAX "", &mas_opt[i].spe->rig);
-                } else {
+                }
+                else {
                     if (mas_opt[i].spe->lfs != LFS_NUL && mas_opt[i].spe->lfs != LFS_RIG) {
                         mas_opt[i].spe->lfs = LFS_LEF;
                     }
@@ -105,6 +104,9 @@ void mas_opt(const char *format, logger_token_mas **mas_opt_f, uintmax_t *num_to
             }
         }
     }
+
+    *mas_opt_f = mas_opt;
+    return *num_token;
 
     //        { /*Тестовый вывод*/
     //            printf("FORMAT = %s\n", format);
@@ -136,5 +138,4 @@ void mas_opt(const char *format, logger_token_mas **mas_opt_f, uintmax_t *num_to
     //            }
     //            printf("\n");
     //        }
-    *mas_opt_f = mas_opt;
 }

@@ -1,0 +1,6 @@
+#ifndef YAYA_LOGGER_CONF_H
+#define YAYA_LOGGER_CONF_H
+
+
+
+#endif // YAYA_LOGGER_CONF_H

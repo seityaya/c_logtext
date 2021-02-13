@@ -1,25 +1,27 @@
 #include "yaya_logger.h"
-#include "yaya_logger_func.h"
 
-#include <ctype.h>
-#include <inttypes.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+void filter_num(logger_filter_ *filter) {
+    filter->num = 0;
+    for (uintmax_t i = 0; i < sizeof(uintmax_t) * 8; i++) {
+        if (filter->ptr[i].flag == LOGGER_FLAG_ALL) {
+            filter->num = filter->ptr[i].id;
+            break;
+        }
+    }
+}
 
-extern logger_variables *lvg;
+void yaya_log_init(logger *lvg, logger_filter *type, logger_filter *name, logger_setting *setting, logger_define *define, logger_style *style) {
 
-void yaya_log_init(logger_list *type, logger_list *name, logger_setting *setting, logger_define *define, logger_style *style) {
-    lvg->init_flag = LOGGER_TRUE;
+    lvg->auto_init_flag = LOGGER_TRUE;
 
-    { /*Cвязывание указателей*/
-        //lvg->pglob = logger_variables_global;
-        lvg->ptype = type;
-        lvg->psett = setting;
-        lvg->pdefn = define;
-        lvg->pname = name;
-        lvg->pstyl = style;
+    {
+        /*Cвязывание указателей*/
+        lvg->type.ptr = (type != NULL) ? type : logger_type_def ;
+        lvg->name.ptr = (name != NULL) ? name : logger_name_def;
+
+        lvg->psett = (setting != NULL) ? setting : &logger_setting_def;
+        lvg->pdefn = (define != NULL) ? define : &logger_define_def;
+        lvg->pstyl = (style != NULL) ? style : logger_style_def;
     }
 
     {
@@ -36,28 +38,14 @@ void yaya_log_init(logger_list *type, logger_list *name, logger_setting *setting
         lvg->compilerversion = __VERSION__;
     }
 
-    { /*Подсчет количества флагов типа*/
-        for (uintmax_t i = 0; i < sizeof(uintmax_t) * 8; i++) {
-            if (lvg->ptype[i].flag == LOGGER_FLAG_ALL) {
-                lvg->type_num = lvg->ptype[i].id;
-                break;
-            }
-        }
+    {
+        /*Подсчет количества флагов*/
+        filter_num(&lvg->type);
+        filter_num(&lvg->name);
     }
 
-    { /*Подсчет количества флагов имени*/
-        for (uintmax_t i = 0; i < sizeof(uintmax_t) * 8; i++) {
-            if (lvg->pname[i].flag == LOGGER_FLAG_ALL) {
-                lvg->name_num = lvg->pname[i].id;
-                break;
-            }
-        }
-    }
-
-    { /*Парсинг форматированной строки*/
-#if LOGGER_HEAD
-       mas_opt(lvg->psett->head_format, &lvg->head_mas_opt, &lvg->head_num_token);
-#endif
-       mas_opt(lvg->psett->logs_format, &lvg->logs_mas_opt, &lvg->logs_num_token);
+    {
+        /*Парсинг форматированной строки*/
+        mas_opt(lvg, lvg->psett->logs_format, &lvg->logs_mas_opt, &lvg->logs_num_token);
     }
 }
