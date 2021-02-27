@@ -26,9 +26,11 @@ typedef enum {
     LSM_BOLD,
 } ___logger_style_mode;
 
+
 #define LFS_LEF 1
 #define LFS_RIG 2
 #define LFS_NUL 3
+
 
 typedef struct ___logger_token_specifiers { /*хранение спецификаторов*/
   uintmax_t beg; /*начало спецификатора*/
@@ -37,6 +39,7 @@ typedef struct ___logger_token_specifiers { /*хранение специфик�
   uintmax_t rig; /*смещение справа*/
   uintmax_t lfs; /*сторона скрытия*/
 } ___logger_token_specifiers;
+
 
 typedef struct ___logger_token_mas {    /*хранение токенов*/
   uintmax_t id;     /*тип токена*/

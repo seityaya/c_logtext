@@ -65,33 +65,28 @@ void format_build_str(___logger *lvg, ___logger_token_mas *mas_opt, const char *
     mas_opt->endlog = lvg->out_offset;
 }
 
-
-LOGGER_FUNC_GENERATE(void){
-    LOGGER_FUNC_UNUSED;
-}
-
-LOGGER_FUNC_GENERATE(str){
+LOGGER_TOKEN_GENERATE_FUNC(str){
     LOGGER_FUNC_UNUSED;
     strncpy(lvg->tmp_buff, &format[mas_opt->beg], mas_opt->end - mas_opt->beg + 1);
     format_build_str(lvg, mas_opt, lvg->tmp_buff);
 }
 
-LOGGER_FUNC_GENERATE(line){
+LOGGER_TOKEN_GENERATE_FUNC(line){
     LOGGER_FUNC_UNUSED;
     format_build_num(lvg, mas_opt, line);
 }
 
-LOGGER_FUNC_GENERATE(file){
+LOGGER_TOKEN_GENERATE_FUNC(file){
     LOGGER_FUNC_UNUSED;
     format_build_str(lvg, mas_opt, file);
 }
 
-LOGGER_FUNC_GENERATE(func){
+LOGGER_TOKEN_GENERATE_FUNC(func){
     LOGGER_FUNC_UNUSED;
     format_build_str(lvg, mas_opt, func);
 }
 
-LOGGER_FUNC_GENERATE(type){
+LOGGER_TOKEN_GENERATE_FUNC(type){
     LOGGER_FUNC_UNUSED;
     for (uintmax_t j = 0; j < lvg->type.num - 1; j++) {
         if (type == L_ALL) {
@@ -110,7 +105,7 @@ LOGGER_FUNC_GENERATE(type){
 }
 
 
-LOGGER_FUNC_GENERATE(name){
+LOGGER_TOKEN_GENERATE_FUNC(name){
     LOGGER_FUNC_UNUSED;
 
     for (uintmax_t j = 0; j < lvg->name.num - 1; j++) {
@@ -129,10 +124,159 @@ LOGGER_FUNC_GENERATE(name){
     format_build_str(lvg, mas_opt, lvg->tmp_buff);
 }
 
-LOGGER_FUNC_GENERATE(mess){
+LOGGER_TOKEN_GENERATE_FUNC(mesg){
     LOGGER_FUNC_UNUSED;
     vsprintf(lvg->tmp_buff, mes, mes_list);
     format_build_str(lvg, mas_opt, lvg->tmp_buff);
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(debug){
+    LOGGER_FUNC_UNUSED;
+    format_build_str(lvg, mas_opt, debug);
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(count){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(curnum){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(absnum){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(short_path){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(full_path){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(data_build){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(time_build){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(data_curent){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(time_curent){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(prog){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(prog_v){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(prog_p){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(proj){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(compiler){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(compiler_v){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+
+LOGGER_TOKEN_GENERATE_FUNC(tik_core){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(tik_sec){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(tic_rtos){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(tik_unix){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+
+LOGGER_TOKEN_GENERATE_FUNC(type_filter){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(name_filter){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(type_mask){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(name_mask){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(type_list){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(name_list){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+
+LOGGER_TOKEN_GENERATE_FUNC(seed){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+
+LOGGER_TOKEN_GENERATE_FUNC(alignl){
+    LOGGER_FUNC_UNUSED;
+
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(aliggt){
+    LOGGER_FUNC_UNUSED;
+
 }
 
 //            case LEF_COUNT: {

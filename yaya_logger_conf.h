@@ -92,9 +92,9 @@ static ___logger_filter ___logger_name_def[] = { LOGGER_FILTER_GENERATE(LN_COUNT
                                                };
 
 
-static ___logger_style ___logger_style_def[] = { {LEF_TOK,  {0, 0, 0}, {0, 0, 0}, LSM_NONE},
-                                                 {LEF_PROG, {0, 0, 0}, {0, 0, 0}, LSM_NONE},
-                                                 {LEF_PROJ, {0, 0, 0}, {0, 0, 0}, LSM_NONE}
+static ___logger_style ___logger_style_def[] = { {LEF_mesg, {0, 0, 0}, {0, 0, 0}, LSM_NONE},
+                                                 {LEF_file, {0, 0, 0}, {0, 0, 0}, LSM_NONE},
+                                                 {LEF_line, {0, 0, 0}, {0, 0, 0}, LSM_NONE}
                                                };
 
 
@@ -107,7 +107,7 @@ static ___logger_define ___logger_define_def[] = { {.seed = 0,
 
 
 static ___logger_setting ___logger_setting_def[] = { {.head_format = "HEAD ## $line%3. $mess",
-                                                      .logs_format = "LOGS ## $line%03. -- | $type%.08 $name%.08 $mess",
+                                                      .logs_format = "LOGS ## $line%03. -- | $type%.08 $name%.08 $mesg",
                                                       .atom_format = " ",
                                                       .type = L_ALL,
                                                       .name = LL_ALL,

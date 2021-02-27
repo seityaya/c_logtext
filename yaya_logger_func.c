@@ -1,12 +1,6 @@
 #include "yaya_logger.h"
 
-uintmax_t yaya_log_func(uintmax_t count, char *file, uintmax_t line, const char *func, const char* debug,
-
-                        ___logger *lvg, ___l1_type type_one, ___l2_type type_two, const char *mesg, ...) {
-
-    if(lvg == NULL){
-        loggerf_init(&lvg);
-    }
+uintmax_t yaya_log_func(uintmax_t count, char *file, uintmax_t line, const char *func, const char* debug, ___logger *lvg, ___l1_type type_one, ___l2_type type_two, const char *mesg, ...) {
 
     char* new_format = malloc(300);
     new_format = NULL;
@@ -59,7 +53,9 @@ uintmax_t yaya_log_func(uintmax_t count, char *file, uintmax_t line, const char 
     for (uintmax_t i = 0; i < temp_num_token; i++) {
         memset(lvg->tmp_buff, 0, LOGGER_TMP_BUFF_SIZE);
         ___logger_token_list[temp_mas_opt[i].id].func(lvg, new_format, &temp_mas_opt[i],
-                                                   &temp_num_token, count, file, line, func, type_one, type_two, new_mesg, va_mesgptr);
+                                                      count, file, line, func, debug,
+                                                      type_one, type_two,
+                                                      new_mesg, va_mesgptr);
     }
 
     ___logger_styles(lvg);

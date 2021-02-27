@@ -8,13 +8,13 @@ void ___logger_pars(___logger *lvg, const char *format, ___logger_token_mas **ma
         uintmax_t j = 0;
         for (uintmax_t i = 0; i < strlen(format); i++) {
             mas_opt = realloc(mas_opt, sizeof(___logger_token_mas) * (j + 1));
-            if (format[i] == ___logger_token_list[LEF_TOK].name[0] && isalpha(format[i + 1])) {
+            if (format[i] == ___logger_token_list[LEF_TOK].name[0] && (isalpha(format[i + 1]) || (format[i + 1] == ___logger_token_list[LEF_CAT].name[0]))) {
                 mas_opt[j].id  = LEF_TOK;
                 mas_opt[j].beg = i;
                 do {
                     mas_opt[j].end = i;
                     i++;
-                } while (isalpha(format[i]));
+                } while ((isalpha(format[i]) || (format[i] == ___logger_token_list[LEF_CAT].name[0])));
                 if (format[i] == ___logger_token_list[LEF_SPE].name[0]
                     && (isdigit(format[i + 1]) || format[i + 1] == ___logger_token_list[LEF_HID].name[0]
                         || format[i + 1] == ___logger_token_list[LEF_SEP].name[0])) {
@@ -48,8 +48,8 @@ void ___logger_pars(___logger *lvg, const char *format, ___logger_token_mas **ma
             memset(lvg->tmp_buff, 0, LOGGER_TMP_BUFF_SIZE);
             if (mas_opt[i].id == LEF_TOK) {
                 strncpy(lvg->tmp_buff, &format[mas_opt[i].beg + 1], mas_opt[i].end - mas_opt[i].beg);
-                for (uintmax_t j = 0; j < LEF_END; j++) {
-                    if (strstr(lvg->tmp_buff, ___logger_token_list[j].name) != NULL) {
+                for (uintmax_t j = LEF_BEG + 1; j < LEF_END; j++) {
+                    if (strcmp(lvg->tmp_buff, ___logger_token_list[j].name) == 0) {  //поиск максимальной подстроки
                         mas_opt[i].id = j;
                         break;
                     }
