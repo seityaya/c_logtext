@@ -1,19 +1,16 @@
 #ifndef YAYA_LOGGER_H_
 #define YAYA_LOGGER_H_
 
+#include <inttypes.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <ctype.h>
+
 #include "yaya_logger_struct.h"
 #include "yaya_logger_macro.h"
 #include "yaya_logger_conf.h"
-
-#include "yaya/yaya_defines/yaya_defines.h"
-
-#include <ctype.h>
-#include <inttypes.h>
-#include <stdarg.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 // clang-format off
 
@@ -79,6 +76,7 @@
 #define ___LOGGER_FUNC_Y(A, B, C, D, ...) ___logger_func_5(A, B, C, D, __VA_ARGS__)
 #define ___LOGGER_FUNC_Z(A, B, C, D, ...) ___logger_func_5(A, B, C, D, __VA_ARGS__)
 
+
 /*
 A - struct [logger*]
 B - int    [l1]
@@ -128,13 +126,13 @@ DEEEE  ->  DE
 */
 
 
-#define ___logger_func_0( )   \
+#define ___logger_func_0( ) \
                   ___logger_func_______("log_0______")
 
 
 #define ___logger_func_1(a) \
-    _Generic((a),                              \
-    logger*     : ___logger_func_A_____("log_1_A____", a), \
+    _Generic((a),                                          \
+    ___logger*  : ___logger_func_A_____("log_1_A____", a), \
     ___l1_type  : ___logger_func__B____("log_1__B___", a), \
     ___l2_type  : ___logger_func___C___("log_1___C__", a), \
     char*       : ___logger_func____D__("log_1____D_", a), \
@@ -142,186 +140,186 @@ DEEEE  ->  DE
 
 
 #define ___logger_func_2(a, ...) \
-    _Generic((a),                                                                    \
-    logger*     : _Generic((__VA_ARGS__),                                            \
+    _Generic((a),                                                                                \
+    ___logger*  : _Generic((__VA_ARGS__),                                                        \
                   ___l1_type            : ___logger_func_AB____("log_2_AB___", a, __VA_ARGS__),  \
                   ___l2_type            : ___logger_func_A_C___("log_2_A_C__", a, __VA_ARGS__),  \
                   char*                 : ___logger_func_A__D__("log_2_A__D_", a, __VA_ARGS__),  \
                   default               : ___logger_func______V("log_2___V_1")),                 \
-    ___l1_type  : _Generic((__VA_ARGS__),                                            \
+    ___l1_type  : _Generic((__VA_ARGS__),                                                        \
                   ___l2_type            : ___logger_func__BC___("log_2__BC__", a, __VA_ARGS__),  \
                   char*                 : ___logger_func__B_D__("log_2__B_D_", a, __VA_ARGS__),  \
                   default               : ___logger_func______V("log_2___V_2")),                 \
-    ___l2_type     : _Generic((__VA_ARGS__),                                            \
+    ___l2_type     : _Generic((__VA_ARGS__),                                                     \
                   char*                 : ___logger_func___CD__("log_2___CD_", a, __VA_ARGS__),  \
                   default               : ___logger_func______V("log_2___V_3")),                 \
-    char*       : _Generic((__VA_ARGS__),                                            \
+    char*       : _Generic((__VA_ARGS__),                                                        \
                   default               : ___logger_func____DE_("log_2____DE", a, __VA_ARGS__)), \
     default                             : ___logger_func______V("log_2___V_4"))
 
 
 #define ___logger_func_3(a, b, ...) \
-    _Generic((a),                                                                                      \
-    logger*     : _Generic((b),                                                                        \
-                  ___l1_type  : _Generic((__VA_ARGS__),                                                \
+    _Generic((a),                                                                                                  \
+    ___logger*  : _Generic((b),                                                                                    \
+                  ___l1_type  : _Generic((__VA_ARGS__),                                                            \
                                 ___l2_type            : ___logger_func_ABC___("log_3_ABC__", a, b, __VA_ARGS__),   \
                                 char*                 : ___logger_func_AB_D__("log_3_AB_D_", a, b, __VA_ARGS__),   \
                                 default               : ___logger_func______V("log_3___V_1")),                     \
-                  ___l2_type  : _Generic((__VA_ARGS__),                                                \
+                  ___l2_type  : _Generic((__VA_ARGS__),                                                            \
                                 char*                 : ___logger_func_A_CD__("log_3_A_CD_", a, b, __VA_ARGS__),   \
                                 default               : ___logger_func______V("log_3___V_2")),                     \
-                  char*       : _Generic((__VA_ARGS__),                                                \
+                  char*       : _Generic((__VA_ARGS__),                                                            \
                                 default               : ___logger_func_A__DE_("log_3_A__DE", a, b, __VA_ARGS__)),  \
                   default                             : ___logger_func______V("log_3___V_3")),                     \
-    ___l1_type  : _Generic((b),                                                                        \
-                  ___l2_type  : _Generic((__VA_ARGS__),                                                \
+    ___l1_type  : _Generic((b),                                                                                    \
+                  ___l2_type  : _Generic((__VA_ARGS__),                                                            \
                                 char*                 : ___logger_func__BCD__("log_3__BCD_", a, b, __VA_ARGS__),   \
                                 default               : ___logger_func______V("log_3___V_4")),                     \
-                  char*       : _Generic((__VA_ARGS__),                                                \
+                  char*       : _Generic((__VA_ARGS__),                                                            \
                                 default               : ___logger_func__B_DE_("log_3__B_DE", a, b, __VA_ARGS__)),  \
                   default                             : ___logger_func______V("log_3___V_5")),                     \
-    ___l2_type  : _Generic((b),                                                                        \
-                  char*       : _Generic((__VA_ARGS__),                                                \
+    ___l2_type  : _Generic((b),                                                                                    \
+                  char*       : _Generic((__VA_ARGS__),                                                            \
                                 default               : ___logger_func___CDE_("log_3___CDE", a, b, __VA_ARGS__)),  \
                   default                             : ___logger_func______V("log_3___V_6")),                     \
-    char*       : _Generic((b),                                                                        \
-                  default     : _Generic((__VA_ARGS__),                                                \
+    char*       : _Generic((b),                                                                                    \
+                  default     : _Generic((__VA_ARGS__),                                                            \
                                 default               : ___logger_func____DE_("log_3____DE", a, b, __VA_ARGS__))), \
     default                                           : ___logger_func______V("log_3___V_7"))
 
 
 #define ___logger_func_4(a, b, c, ...) \
-    _Generic((a),                                                                                                        \
-    logger*     : _Generic((b),                                                                                          \
-                  ___l1_type  : _Generic((c),                                                                            \
-                                ___l2_type  : _Generic((__VA_ARGS__),                                                    \
+    _Generic((a),                                                                                                                    \
+    ___logger*  : _Generic((b),                                                                                                      \
+                  ___l1_type  : _Generic((c),                                                                                        \
+                                ___l2_type  : _Generic((__VA_ARGS__),                                                                \
                                               char*                 : ___logger_func_ABCD__("log_4_ABCD_", a, b, c, __VA_ARGS__),    \
                                               default               : ___logger_func______V("log_4___V_1")),                         \
-                                char*       : _Generic((__VA_ARGS__),                                                    \
+                                char*       : _Generic((__VA_ARGS__),                                                                \
                                               default               : ___logger_func_AB_DE_("log_4_AB_DE", a, b, c, __VA_ARGS__)),   \
                                 default                             : ___logger_func______V("log_4___V_2")),                         \
-                  ___l2_type  : _Generic((c),                                                                            \
-                                char*       : _Generic((__VA_ARGS__),                                                    \
+                  ___l2_type  : _Generic((c),                                                                                        \
+                                char*       : _Generic((__VA_ARGS__),                                                                \
                                               default               : ___logger_func_A_CDE_("log_4_A_CDE", a, b, c, __VA_ARGS__)),   \
                                 default                             : ___logger_func______V("log_4___V_3")),                         \
-                  char*       : _Generic((c),                                                                            \
-                                default     : _Generic((__VA_ARGS__),                                                    \
+                  char*       : _Generic((c),                                                                                        \
+                                default     : _Generic((__VA_ARGS__),                                                                \
                                               default               : ___logger_func_A__DE_("log_4_A__DE", a, b, c, __VA_ARGS__))),  \
                   default                                           : ___logger_func______V("log_4___V_4")),                         \
-    ___l1_type  : _Generic((b),                                                                                          \
-                  ___l2_type  : _Generic((c),                                                                            \
-                                char*       : _Generic((__VA_ARGS__),                                                    \
+    ___l1_type  : _Generic((b),                                                                                                      \
+                  ___l2_type  : _Generic((c),                                                                                        \
+                                char*       : _Generic((__VA_ARGS__),                                                                \
                                               default               : ___logger_func__BCDE_("log_4__BCDE", a, b, c, __VA_ARGS__)),   \
                                 default                             : ___logger_func______V("log_4___V_5")),                         \
-                  char*       : _Generic((c),                                                                            \
-                                default     : _Generic((__VA_ARGS__),                                                    \
+                  char*       : _Generic((c),                                                                                        \
+                                default     : _Generic((__VA_ARGS__),                                                                \
                                               default               : ___logger_func__B_DE_("log_4__B_DE", a, b, c, __VA_ARGS__))),  \
                   default                                           : ___logger_func______V("log_4___V_6")),                         \
-    ___l2_type  : _Generic((b),                                                                                          \
-                  char*       : _Generic((c),                                                                            \
-                                default     : _Generic((__VA_ARGS__),                                                    \
+    ___l2_type  : _Generic((b),                                                                                                      \
+                  char*       : _Generic((c),                                                                                        \
+                                default     : _Generic((__VA_ARGS__),                                                                \
                                               default               : ___logger_func___CDE_("log_4___CDE", a, b, c, __VA_ARGS__))),  \
                   default                                           : ___logger_func______V("log_4___V_7")),                         \
-    char*       : _Generic((b),                                                                                          \
-                  default     : _Generic((c),                                                                            \
-                                default     : _Generic((__VA_ARGS__),                                                    \
+    char*       : _Generic((b),                                                                                                      \
+                  default     : _Generic((c),                                                                                        \
+                                default     : _Generic((__VA_ARGS__),                                                                \
                                               default               : ___logger_func____DE_("log_4____DE", a, b, c, __VA_ARGS__)))), \
     default                                                         : ___logger_func______V("log_4___V_8"))
 
 
 #define ___logger_func_5(a, b, c, d, ...) \
-    _Generic((a),                                                                                                                           \
-    logger*     : _Generic((b),                                                                                                             \
-                  ___l1_type  : _Generic((c),                                                                                               \
-                                ___l2_type  : _Generic((d),                                                                                 \
-                                              char*       :  _Generic((__VA_ARGS__),                                                        \
+    _Generic((a),                                                                                                                                       \
+    ___logger*  : _Generic((b),                                                                                                                         \
+                  ___l1_type  : _Generic((c),                                                                                                           \
+                                ___l2_type  : _Generic((d),                                                                                             \
+                                              char*       :  _Generic((__VA_ARGS__),                                                                    \
                                                              default               : ___logger_func_ABCDE_("log_5_ABCDE", a, b, c, d, __VA_ARGS__)),    \
                                               default                              : ___logger_func______V("log_5___V_1")),                             \
-                                char*       : _Generic((d),                                                                                 \
-                                              default     :  _Generic((__VA_ARGS__),                                                        \
+                                char*       : _Generic((d),                                                                                             \
+                                              default     :  _Generic((__VA_ARGS__),                                                                    \
                                                              default               : ___logger_func_AB_DE_("log_5_AB_DE", a, b, c, d, __VA_ARGS__))),   \
                                 default                                            : ___logger_func______V("log_5___V_2")),                             \
-                  ___l2_type  : _Generic((c),                                                                                               \
-                                char*       : _Generic((d),                                                                                 \
-                                              default     :  _Generic((__VA_ARGS__),                                                        \
+                  ___l2_type  : _Generic((c),                                                                                                           \
+                                char*       : _Generic((d),                                                                                             \
+                                              default     :  _Generic((__VA_ARGS__),                                                                    \
                                                              default               : ___logger_func_A_CDE_("log_5_A_CDE", a, b, c, d, __VA_ARGS__))),   \
                                 default                                            : ___logger_func______V("log_5___V_3")),                             \
-                  char*       : _Generic((c),                                                                                               \
-                                default      : _Generic((d),                                                                                \
-                                               default     : _Generic((__VA_ARGS__),                                                        \
+                  char*       : _Generic((c),                                                                                                           \
+                                default      : _Generic((d),                                                                                            \
+                                               default     : _Generic((__VA_ARGS__),                                                                    \
                                                              default               : ___logger_func_A__DE_("log_5_A__DE", a, b, c, d, __VA_ARGS__)))),  \
                   default                                                          : ___logger_func______V("log_5___V_4")),                             \
-    ___l1_type  : _Generic((b),                                                                                                             \
-                  ___l2_type  : _Generic((c),                                                                                               \
-                                char*       :  _Generic((d),                                                                                \
-                                               default     : _Generic((__VA_ARGS__),                                                        \
+    ___l1_type  : _Generic((b),                                                                                                                         \
+                  ___l2_type  : _Generic((c),                                                                                                           \
+                                char*       :  _Generic((d),                                                                                            \
+                                               default     : _Generic((__VA_ARGS__),                                                                    \
                                                              default               : ___logger_func__BCDE_("log_5__BCDE", a, b, c, d, __VA_ARGS__))),   \
-                                default                                            : ___logger_func______V("log_5___V_5")),                            \
-                  char*       : _Generic((c),                                                                                               \
-                                default     :  _Generic((d),                                                                                \
-                                               default     : _Generic((__VA_ARGS__),                                                        \
+                                default                                            : ___logger_func______V("log_5___V_5")),                             \
+                  char*       : _Generic((c),                                                                                                           \
+                                default     :  _Generic((d),                                                                                            \
+                                               default     : _Generic((__VA_ARGS__),                                                                    \
                                                              default               : ___logger_func__B_DE_("log_5__B_DE", a, b, c, d, __VA_ARGS__)))),  \
                   default                                                          : ___logger_func______V("log_5___V_6")),                             \
-    ___l2_type  : _Generic((b),                                                                                                             \
-                  char*       : _Generic((c),                                                                                               \
-                                default     :  _Generic((d),                                                                                \
-                                               default     : _Generic((__VA_ARGS__),                                                        \
+    ___l2_type  : _Generic((b),                                                                                                                         \
+                  char*       : _Generic((c),                                                                                                           \
+                                default     :  _Generic((d),                                                                                            \
+                                               default     : _Generic((__VA_ARGS__),                                                                    \
                                                              default               : ___logger_func___CDE_("log_5___CDE", a, b, c, d, __VA_ARGS__)))),  \
                   default                                                          : ___logger_func______V("log_5___V_7")),                             \
-    char*       : _Generic((b),                                                                                                             \
-                  default     : _Generic((c),                                                                                               \
-                                default     :  _Generic((d),                                                                                \
-                                               default     : _Generic((__VA_ARGS__),                                                        \
+    char*       : _Generic((b),                                                                                                                         \
+                  default     : _Generic((c),                                                                                                           \
+                                default     :  _Generic((d),                                                                                            \
+                                               default     : _Generic((__VA_ARGS__),                                                                    \
                                                              default               : ___logger_func____DE_("log_5____DE", a, b, c, d, __VA_ARGS__))))), \
     default                                                                        : ___logger_func______V("log_5___V_8"))
 
 
 
-#if LOGGER_AUTO_INIT == LOGGER_TRUE
-#define LOGGER_LVG &logger_main_def
+#if LOGGER_DEF == LOGGER_TRUE
+#define ___LOGGER_LVG ___logger_main_def
 #endif
 
 
-#define ___LOGGER_LP_OR_DEF(A) _Generic((A), logger*    : (A), default : (LOGGER_LVG) )
+#define ___LOGGER_LP_OR_DEF(A) _Generic((A), ___logger* : (A), default : (___LOGGER_LVG) )
 #define ___LOGGER_L1_OR_DEF(A) _Generic((A), ___l1_type : (A), default : (L_VOID)     )
 #define ___LOGGER_L2_OR_DEF(A) _Generic((A), ___l2_type : (A), default : (LL_VOID)    )
 #define ___LOGGER_CP_OR_DEF(A) _Generic((A), char*      : (A), default : (NULL)       )
 
-#define ___logger_func______V(N)                  yaya_log_defl(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, LOGGER_LVG)
+#define ___logger_func______V(N)                  yaya_log_defl(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LVG)
 
-#define ___logger_func_______(N)                  yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, LOGGER_LVG            , L_VOID                , LL_VOID               , NULL                  , NULL       )
+#define ___logger_func_______(N)                  yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LVG         , L_VOID                , LL_VOID               , NULL                  , NULL       )
 
 #define ___logger_func_A_____(N, A)               yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LP_OR_DEF(A), L_VOID                , LL_VOID               , NULL                  , NULL       )
-#define ___logger_func__B____(N, B)               yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, LOGGER_LVG            , ___LOGGER_L1_OR_DEF(B), LL_VOID               , NULL                  , NULL       )
-#define ___logger_func___C___(N, C)               yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, LOGGER_LVG            , LL_VOID               , ___LOGGER_L2_OR_DEF(C), NULL                  , NULL       )
-#define ___logger_func____D__(N, D)               yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, LOGGER_LVG            , L_VOID                , LL_VOID               , ___LOGGER_CP_OR_DEF(D), NULL       )
+#define ___logger_func__B____(N, B)               yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LVG         , ___LOGGER_L1_OR_DEF(B), LL_VOID               , NULL                  , NULL       )
+#define ___logger_func___C___(N, C)               yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LVG         , LL_VOID               , ___LOGGER_L2_OR_DEF(C), NULL                  , NULL       )
+#define ___logger_func____D__(N, D)               yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LVG         , L_VOID                , LL_VOID               , ___LOGGER_CP_OR_DEF(D), NULL       )
 
 #define ___logger_func_AB____(N, A, B)            yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LP_OR_DEF(A), ___LOGGER_L1_OR_DEF(B), LL_VOID               , NULL                  , NULL       )
 #define ___logger_func_A_C___(N, A, C)            yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LP_OR_DEF(A), L_VOID                , ___LOGGER_L2_OR_DEF(C), NULL                  , NULL       )
 #define ___logger_func_A__D__(N, A, D)            yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LP_OR_DEF(A), L_VOID                , LL_VOID               , ___LOGGER_CP_OR_DEF(D), NULL       )
-#define ___logger_func__BC___(N, B, C)            yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, LOGGER_LVG            , ___LOGGER_L1_OR_DEF(B), ___LOGGER_L2_OR_DEF(C), NULL                  , NULL       )
-#define ___logger_func__B_D__(N, B, D)            yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, LOGGER_LVG            , ___LOGGER_L1_OR_DEF(B), LL_VOID               , ___LOGGER_CP_OR_DEF(D), NULL       )
-#define ___logger_func___CD__(N, C, D)            yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, LOGGER_LVG            , L_VOID                , ___LOGGER_L2_OR_DEF(C), ___LOGGER_CP_OR_DEF(D), NULL       )
-#define ___logger_func____DE_(N, D, ...)          yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, LOGGER_LVG            , L_VOID                , LL_VOID               , ___LOGGER_CP_OR_DEF(D), __VA_ARGS__)
+#define ___logger_func__BC___(N, B, C)            yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LVG         , ___LOGGER_L1_OR_DEF(B), ___LOGGER_L2_OR_DEF(C), NULL                  , NULL       )
+#define ___logger_func__B_D__(N, B, D)            yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LVG         , ___LOGGER_L1_OR_DEF(B), LL_VOID               , ___LOGGER_CP_OR_DEF(D), NULL       )
+#define ___logger_func___CD__(N, C, D)            yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LVG         , L_VOID                , ___LOGGER_L2_OR_DEF(C), ___LOGGER_CP_OR_DEF(D), NULL       )
+#define ___logger_func____DE_(N, D, ...)          yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LVG         , L_VOID                , LL_VOID               , ___LOGGER_CP_OR_DEF(D), __VA_ARGS__)
 
 #define ___logger_func_ABC___(N, A, B, C)         yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LP_OR_DEF(A), ___LOGGER_L1_OR_DEF(B), ___LOGGER_L2_OR_DEF(C), NULL                  , NULL       )
 #define ___logger_func_AB_D__(N, A, B, D)         yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LP_OR_DEF(A), ___LOGGER_L1_OR_DEF(B), LL_VOID               , ___LOGGER_CP_OR_DEF(D), NULL       )
 #define ___logger_func_A_CD__(N, A, C, D)         yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LP_OR_DEF(A), L_VOID                , ___LOGGER_L2_OR_DEF(C), ___LOGGER_CP_OR_DEF(D), NULL       )
 #define ___logger_func_A__DE_(N, A, D, ...)       yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LP_OR_DEF(A), L_VOID                , LL_VOID               , ___LOGGER_CP_OR_DEF(D), __VA_ARGS__)
-#define ___logger_func__BCD__(N, B, C, D)         yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, LOGGER_LVG            , ___LOGGER_L1_OR_DEF(B), ___LOGGER_L2_OR_DEF(C), ___LOGGER_CP_OR_DEF(D), NULL       )
-#define ___logger_func__B_DE_(N, B, D, ...)       yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, LOGGER_LVG            , ___LOGGER_L1_OR_DEF(B), LL_VOID               , ___LOGGER_CP_OR_DEF(D), __VA_ARGS__)
-#define ___logger_func___CDE_(N, C, D, ...)       yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, LOGGER_LVG            , L_VOID                , ___LOGGER_L2_OR_DEF(C), ___LOGGER_CP_OR_DEF(D), __VA_ARGS__)
+#define ___logger_func__BCD__(N, B, C, D)         yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LVG         , ___LOGGER_L1_OR_DEF(B), ___LOGGER_L2_OR_DEF(C), ___LOGGER_CP_OR_DEF(D), NULL       )
+#define ___logger_func__B_DE_(N, B, D, ...)       yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LVG         , ___LOGGER_L1_OR_DEF(B), LL_VOID               , ___LOGGER_CP_OR_DEF(D), __VA_ARGS__)
+#define ___logger_func___CDE_(N, C, D, ...)       yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LVG         , L_VOID                , ___LOGGER_L2_OR_DEF(C), ___LOGGER_CP_OR_DEF(D), __VA_ARGS__)
 
 #define ___logger_func_ABCD__(N, A, B, C, D)      yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LP_OR_DEF(A), ___LOGGER_L1_OR_DEF(B), ___LOGGER_L2_OR_DEF(C), ___LOGGER_CP_OR_DEF(D), NULL       )
 #define ___logger_func_AB_DE_(N, A, B, D, ...)    yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LP_OR_DEF(A), ___LOGGER_L1_OR_DEF(B), LL_VOID               , ___LOGGER_CP_OR_DEF(D), __VA_ARGS__)
 #define ___logger_func_A_CDE_(N, A, C, D, ...)    yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LP_OR_DEF(A), L_VOID                , ___LOGGER_L2_OR_DEF(C), ___LOGGER_CP_OR_DEF(D), __VA_ARGS__)
-#define ___logger_func__BCDE_(N, B, C, D, ...)    yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, LOGGER_LVG            , ___LOGGER_L1_OR_DEF(B), ___LOGGER_L2_OR_DEF(C), ___LOGGER_CP_OR_DEF(D), __VA_ARGS__)
+#define ___logger_func__BCDE_(N, B, C, D, ...)    yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LVG         , ___LOGGER_L1_OR_DEF(B), ___LOGGER_L2_OR_DEF(C), ___LOGGER_CP_OR_DEF(D), __VA_ARGS__)
 
 #define ___logger_func_ABCDE_(N, A, B, C, D, ...) yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LP_OR_DEF(A), ___LOGGER_L1_OR_DEF(B), ___LOGGER_L2_OR_DEF(C), ___LOGGER_CP_OR_DEF(D), __VA_ARGS__)
 
 
 
-#define logger_init(...) \
+#define loggerf_init(...) \
         ___LOGGER_INIT_x( ,            \
         ##__VA_ARGS__ ,                \
         ___LOGGER_INIT_F(__VA_ARGS__), \
@@ -334,88 +332,28 @@ DEEEE  ->  DE
 
 #define ___LOGGER_INIT_x(x, A, B, C, D, E, F, FUNC, ...) FUNC
 
-#define ___LOGGER_INIT_0()                 yaya_log_init(LOGGER_LVG, NULL, NULL, NULL, NULL, NULL)
-#define ___LOGGER_INIT_A(A)                yaya_log_init(A         , NULL, NULL, NULL, NULL, NULL)
-#define ___LOGGER_INIT_B(A, B)             yaya_log_init(A         , B   , NULL, NULL, NULL, NULL)
-#define ___LOGGER_INIT_C(A, B, C)          yaya_log_init(A         , B   , C   , NULL, NULL, NULL)
-#define ___LOGGER_INIT_D(A, B, C, D)       yaya_log_init(A         , B   , C   , D   , NULL, NULL)
-#define ___LOGGER_INIT_E(A, B, C, D, E)    yaya_log_init(A         , B   , C   , D   , E   , NULL)
-#define ___LOGGER_INIT_F(A, B, C, D, E, F) yaya_log_init(A         , B   , C   , D   , E   , F   )
-
-
-
-#define logger_head(...) \
-        ___LOGGER_HEAD_x( ,            \
-        ##__VA_ARGS__ ,                \
-        ___LOGGER_HEAD_C(__VA_ARGS__), \
-        ___LOGGER_HEAD_B(__VA_ARGS__), \
-        ___LOGGER_HEAD_A(__VA_ARGS__), \
-        ___LOGGER_HEAD_0(__VA_ARGS__))
-
-#define ___LOGGER_HEAD_x(x, A, B, C, FUNC, ...) FUNC
-
-#define ___LOGGER_HEAD_0()                 yaya_log_head(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, LOGGER_LVG, NULL, NULL       )
-#define ___LOGGER_HEAD_A(A)                yaya_log_head(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, A         , NULL, NULL       )
-#define ___LOGGER_HEAD_B(A, B)             yaya_log_head(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, A         , B   , NULL       )
-#define ___LOGGER_HEAD_C(A, B, ...)        yaya_log_head(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, A         , B   , __VA_ARGS__)
-
-
-#define logger_atom(...) \
-        ___LOGGER_ATOM_x( ,            \
-        ##__VA_ARGS__ ,                \
-        ___LOGGER_ATOM_C(__VA_ARGS__), \
-        ___LOGGER_ATOM_B(__VA_ARGS__), \
-        ___LOGGER_ATOM_A(__VA_ARGS__), \
-        ___LOGGER_ATOM_0(__VA_ARGS__))
-
-#define ___LOGGER_ATOM_x(x, A, B, C, FUNC, ...) FUNC
-
-#define ___LOGGER_ATOM_0()                 yaya_log_atom(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, LOGGER_LVG, "", NULL       )
-#define ___LOGGER_ATOM_A(A)                yaya_log_atom(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, A         , "", NULL       )
-#define ___LOGGER_ATOM_B(A, B)             yaya_log_atom(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, A         , B , NULL       )
-#define ___LOGGER_ATOM_C(A, B, ...)        yaya_log_atom(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, A         , B , __VA_ARGS__)
-
-#define logger_test()                      yaya_log_test();
+#define ___LOGGER_INIT_0()                 yaya_log_init(&___LOGGER_LVG, NULL, NULL, NULL, NULL, NULL)
+#define ___LOGGER_INIT_A(A)                yaya_log_init(A             , NULL, NULL, NULL, NULL, NULL)
+#define ___LOGGER_INIT_B(A, B)             yaya_log_init(A             , B   , NULL, NULL, NULL, NULL)
+#define ___LOGGER_INIT_C(A, B, C)          yaya_log_init(A             , B   , C   , NULL, NULL, NULL)
+#define ___LOGGER_INIT_D(A, B, C, D)       yaya_log_init(A             , B   , C   , D   , NULL, NULL)
+#define ___LOGGER_INIT_E(A, B, C, D, E)    yaya_log_init(A             , B   , C   , D   , E   , NULL)
+#define ___LOGGER_INIT_F(A, B, C, D, E, F) yaya_log_init(A             , B   , C   , D   , E   , F   )
 
 #else
 
-#define logger(...)      //логгер
-#define logger_init(...) //инициализация
-#define logger_head(...) //заголовок
-#define logeer_atom(...) //вывод на основе форматной строки переданой в качествe параметра
-logger_test()            //тест всех вариантов
+#define loggerf(...)      //логгер
+#define loggerf_init(...) //инициализация
 
 #endif
 
+uintmax_t yaya_log_init(___logger** lvg, ___logger_filter *type, ___logger_filter *name, ___logger_setting *setting, ___logger_define *define, ___logger_style *style);
+uintmax_t yaya_log_func(uintmax_t count, char *file, uintmax_t line, const char *func, const char* debug, ___logger *lvg, ___l1_type type_one, ___l2_type type_two, const char *mes, ...);
+uintmax_t yaya_log_defl(uintmax_t count, char *file, uintmax_t line, const char *func, const char* debug, ___logger *lvg);
+
+void loggerf_test_param();
+void loggerf_test_format();
+
 // clang-format on
-
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// // BEG // DECLARATION
-
-uintmax_t yaya_log_init(logger *lvg, logger_filter *type, logger_filter *name, logger_setting *setting, logger_define *define, logger_style *style);
-uintmax_t yaya_log_func(uintmax_t count, char *file, uintmax_t line, const char *func, const char* debug, logger *lvg, ___l1_type type_one, ___l2_type type_two, const char *mes, ...);
-uintmax_t yaya_log_defl(uintmax_t count, char *file, uintmax_t line, const char *func, const char* debug, logger *lvg);
-uintmax_t yaya_log_head(uintmax_t count, char *file, uintmax_t line, const char *func                   , logger *lvg, const char *form, ...);
-uintmax_t yaya_log_atom(uintmax_t count, char *file, uintmax_t line, const char *func                   , logger *lvg, const char *form, ...);
-uintmax_t yaya_log_test();
-
-// // END // DECLARATION
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// // BEG // LOGGER FUNC
-
-void ___logger_pars  (logger *lvg, const char *format, logger_token_mas **mas_opt, uintmax_t *num_token);
-void ___logger_format(logger *lvg, const char *format, logger_token_mas *mas_opt,
-                      uintmax_t *num_token, uintmax_t count, char *file,
-                      uintmax_t line, const char *func, ___l1_type type,
-                      ___l2_type name, const char *mesg, va_list mes_list);
-
-void ___logger_format_str(logger *lvg, logger_token_mas *mas_opt, const char *buff_orig);
-void ___logger_format_num(logger *lvg, logger_token_mas *mas_opt, uintmax_t buff_orig);
-void ___logger_style(logger *lvg);
-void ___logger_out(logger *lvg);
-
-// // END // LOGGER FUNC
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 #endif /*YAYA_LOGGER_H_*/

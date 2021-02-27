@@ -1,12 +1,8 @@
 #ifndef YAYA_LOGGER_STRUCT_H_
 #define YAYA_LOGGER_STRUCT_H_
 
-#include <inttypes.h>
-#include <stdarg.h>
 #include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
 #include "yaya_logger_macro.h"
 
 typedef intmax_t  ___l1_type;
@@ -20,7 +16,7 @@ typedef enum {
     LS_STDNET,
     LS_STDBUF,
     LS_STDCSV
-} logger_streams;
+} ___logger_streams;
 
 typedef enum {
     LSM_NONE,
@@ -28,88 +24,80 @@ typedef enum {
     LSM_ITALIC,
     LSM_LIGHT,
     LSM_BOLD,
-} logger_style_mode;
+} ___logger_style_mode;
 
 #define LFS_LEF 1
 #define LFS_RIG 2
 #define LFS_NUL 3
 
-typedef struct logger_token_specifiers { /*хранение спецификаторов*/
+typedef struct ___logger_token_specifiers { /*хранение спецификаторов*/
   uintmax_t beg; /*начало спецификатора*/
   uintmax_t end; /*конец спецификатора*/
   uintmax_t lef; /*смещение слева*/
   uintmax_t rig; /*смещение справа*/
   uintmax_t lfs; /*сторона скрытия*/
-} logger_token_specifiers;
+} ___logger_token_specifiers;
 
-typedef struct logger_token_mas {    /*хранение токенов*/
+typedef struct ___logger_token_mas {    /*хранение токенов*/
   uintmax_t id;     /*тип токена*/
   uintmax_t beg;    /*начало токена*/
   uintmax_t end;    /*конец токена*/
   uintmax_t beglog; /*начало токена вывода*/
   uintmax_t endlog; /*конец токена вывода*/
-  logger_token_specifiers *spe;
-} logger_token_mas;
+  ___logger_token_specifiers *spe;
+} ___logger_token_mas;
 
 
-typedef struct logger_style {
+typedef struct ___logger_style {
   const uintmax_t token;
   const uintmax_t font[3];
   const uintmax_t back[3];
   const uintmax_t mode;
-} logger_style;
+} ___logger_style;
 
 
-typedef struct logger_filter {
+typedef struct ___logger_filter {
   const uintmax_t id;
   const uintmax_t flag;
   const char *name;
-} logger_filter;
+} ___logger_filter;
 
 
-typedef struct logger_seting {
+typedef struct ___logger_seting {
   const char *head_format;
   const char *logs_format;
+  const char *atom_format;
+
   const uintmax_t type;
   const intmax_t  name;
   const uintmax_t stream;
   const uintmax_t style;
-} logger_setting;
+} ___logger_setting;
 
 
-typedef struct logger_define {
+typedef struct ___logger_define {
   uintmax_t seed; // - начальные настройки ГСПЧ
   char *prog;     // - название программы
   char *proj;     // - название проекта
   char *version;  // - версия программы
   char *compiler; // - версия компилятора
-} logger_define;
+} ___logger_define;
 
-typedef struct logger_filter_ {
-  logger_filter *ptr; // - указатель на список типов
+typedef struct ___logger_filter_ {
+  ___logger_filter *ptr; // - указатель на список типов
   uintmax_t num;      // - количество типов
-} logger_filter_;
+} ___logger_filter_;
 
-typedef struct logger {
-    uintmax_t auto_head_flag; // - флаг заголовка
-    uintmax_t auto_init_flag; // - флаг инициализации
-
-    logger_filter_ type; // - список типов
-    logger_filter_ name; // - список имен
-
-    uintmax_t error; //ошибки логгера
-
-
-
-    uintmax_t temp_num_token;       // - количество токенов в форматной строке логгера
-    logger_token_mas *temp_mas_opt; // - указатель на структуру со смещениями токенов заголовка
+typedef struct ___logger {
+    ___logger_filter_ type; // - список типов
+    ___logger_filter_ name; // - список имен
 
     uintmax_t logs_num_token;       // - количество токенов в форматной строке заголовка
-    logger_token_mas *logs_mas_opt; // - указатель на структуру со смещениями токенов логгера
+    ___logger_token_mas *logs_mas_opt; // - указатель на структуру со смещениями токенов логгера
 
-    logger_setting *psett; // - указатель на настройки логгера
-    logger_style *pstyl;   // - указатель на стили
-    logger_define *pdefn;  // - указатель на переменные среды
+    ___logger_setting *psett; // - указатель на настройки логгера
+    ___logger_style *pstyl;   // - указатель на стили
+    ___logger_define *pdefn;  // - указатель на переменные среды
 
     char *tmp_buff; // - указатель на времменый буфер
     char *out_buff; // - указатель на буфер вывода
@@ -121,14 +109,31 @@ typedef struct logger {
     uintmax_t curnum; // - номер текущего вывода
     uintmax_t absnum; // - номер вывода без учета фильтрации
     uintmax_t tiksec; // - время от старта программы, в секундах
-} logger;
+} ___logger;
 
-typedef struct logger_token {      /*список токенов*/
+typedef struct ___logger_token {      /*список токенов*/
         const uintmax_t id;        /*идентификатор*/
         const char *name;          /*текстовое представление ключей*/
         void (*func)(LOGGER_FUNC_PARAM); /*функция токена*/
-} logger_token;
+} ___logger_token;
 
-#define LOGGER_TOKEN_GENERATE_ENUM(TOKEN) LEF_##TOKEN
+
+
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// // BEG // LOGGER FUNC
+
+void ___logger_pars  (___logger *lvg, const char *format, ___logger_token_mas **mas_opt, uintmax_t *num_token);
+void ___logger_format(___logger *lvg, const char *format, ___logger_token_mas *mas_opt,
+                      uintmax_t *num_token, uintmax_t count, char *file,
+                      uintmax_t line, const char *func, ___l1_type type,
+                      ___l2_type name, const char *mesg, va_list mes_list);
+
+void ___logger_format_str(___logger *lvg, ___logger_token_mas *mas_opt, const char *buff_orig);
+void ___logger_format_num(___logger *lvg, ___logger_token_mas *mas_opt, uintmax_t buff_orig);
+void ___logger_styles(___logger *lvg);
+void ___logger_out(___logger *lvg);
+
+// // END // LOGGER FUNC
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif /*YAYA_LOGGER_STRUCT_H_*/

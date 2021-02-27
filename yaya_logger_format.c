@@ -1,13 +1,6 @@
 #include "yaya_logger.h"
 
-#include <ctype.h>
-#include <inttypes.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-void format_build_num(logger *lvg, logger_token_mas *mas_opt, uintmax_t buff_orig)
+void format_build_num(___logger *lvg, ___logger_token_mas *mas_opt, uintmax_t buff_orig)
 {
   mas_opt->beglog = lvg->out_offset;
   if (mas_opt->spe != NULL) {
@@ -32,7 +25,7 @@ void format_build_num(logger *lvg, logger_token_mas *mas_opt, uintmax_t buff_ori
 }
 
 
-void format_build_str(logger *lvg, logger_token_mas *mas_opt, const char *buff_orig)
+void format_build_str(___logger *lvg, ___logger_token_mas *mas_opt, const char *buff_orig)
 {
     char buff[LOGGER_TMP_BUFF_SIZE] = {0};
     mas_opt->beglog                 = lvg->out_offset;

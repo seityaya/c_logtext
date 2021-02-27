@@ -1,15 +1,17 @@
-#ifndef LOGGER_MACRO_H
-#define LOGGER_MACRO_H
+#ifndef YAYA_LOGGER_MACRO_H
+#define YAYA_LOGGER_MACRO_H
+
+#include <stdarg.h>
 
 #define LOGGER_BIT_GET(x, n) ((x) & (1 << (n)))
 #define LOGGER_TRUE          (1 == 1)
 #define LOGGER_FALSE         (!LOGGER_TRUE)
 
 #define LOGGER_FLAG(x,  sign)       (sign)(1 << ((uintmax_t)(x)))
-#define LOGGER_FLAG_ALL(sign)       (sign)(0b1111111111111111111111111111111111111111111111111111111111111111)
+#define LOGGER_FLAG_ALL(sign)       (sign)((uintmax_t)(0) - 1)
 #define LOGGER_FLAG_NUL(sign)       (sign)(0)
 
-#define LOGGER_NEW_COUNTER(COUNTER_NAME) enum {COUNTER_NAME = __COUNTER__};
+#define LOGGER_NEW_COUNTER(COUNTER_NAME) enum {___##COUNTER_NAME = __COUNTER__};
 
 #define LOGGER_FLAG_T_GENERATE(num)  LOGGER_FLAG(num, ___l1_type)
 #define LOGGER_FLAG_T_GENERATE(num)  LOGGER_FLAG(num, ___l1_type)
@@ -22,13 +24,16 @@
 #define LOGGER_FLAG_N_NUL            LOGGER_FLAG_NUL (___l2_type)
 
 
-#define LOGGER_FILTER_GENERATE(COUNTER_NAME, type, NAME)  {__COUNTER__ - COUNTER_NAME, type##_##NAME, #type "_" #NAME }
+#define LOGGER_FILTER_GENERATE(COUNTER_NAME, type, NAME)  {__COUNTER__ - ___##COUNTER_NAME, type##_##NAME, #type "_" #NAME }
 
+#define LOGGER_FUNC_GENERATE(TOKEN)  void ___logger_func_##TOKEN(LOGGER_FUNC_PARAM)
+
+#define LOGGER_TOKEN_GENERATE_ENUM(TOKEN) LEF_##TOKEN
 
 #define LOGGER_FUNC_PARAM \
-    logger *lvg, \
+    ___logger *lvg, \
     const char *format, \
-    logger_token_mas *mas_opt, \
+    ___logger_token_mas *mas_opt, \
     uintmax_t *num_token, \
     uintmax_t count, \
     char *file, \
@@ -53,8 +58,4 @@
     (void*)mes, \
     (void*)mes_list
 
-
-#define LOGGER_FUNC_GENERATE(TOKEN)  void logger_func_##TOKEN(LOGGER_FUNC_PARAM)
-
-
-#endif // LOGGER_MACRO_H
+#endif /*YAYA_LOGGER_MACRO_H*/

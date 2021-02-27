@@ -1,15 +1,6 @@
 #include "yaya_logger.h"
 
-#include <ctype.h>
-#include <inttypes.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-//extern logger_variables *lvg;
-
-void ___logger_out(logger *lvg)
+void ___logger_out(___logger *lvg)
 {
     switch (lvg->psett->stream) {
         case LS_STDOUT: {

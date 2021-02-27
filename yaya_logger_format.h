@@ -1,5 +1,7 @@
-#ifndef YAYA_LOGGER_FUNC_BUILD_FNC_H_
-#define YAYA_LOGGER_FUNC_BUILD_FNC_H_
+#ifndef YAYA_LOGGER_FORMAT_H_
+#define YAYA_LOGGER_FORMAT_H_
+
+#include <string.h>
 
 #include "yaya_logger_macro.h"
 #include "yaya_logger_struct.h"
@@ -64,11 +66,11 @@ typedef enum {
     LEF_NUM_TOKEN_LOGS,
     LEF_void,
     LEF_END
-} logger_token_id;
+} ___logger_token_id;
 
-#define LOGGER_TOKEN_GENERATE_ST(TOKEN)  { LEF_##TOKEN, #TOKEN, logger_func_##TOKEN }
+#define LOGGER_TOKEN_GENERATE_ST(TOKEN)  { LEF_##TOKEN, #TOKEN, ___logger_func_##TOKEN }
 
-static logger_token logger_token_list[LEF_END] = {
+static ___logger_token ___logger_token_list[LEF_END] = {
     {LEF_TOK, "$", NULL}, // - токен формата токена
     {LEF_SPE, "%", NULL}, // - токен формата вывода
     {LEF_SEP, ".", NULL}, // - токен формата вывода, разделитель
@@ -122,7 +124,4 @@ static logger_token logger_token_list[LEF_END] = {
     // время = часы, минуты, секунды, милисекунды, и т.д
 };
 
-
-
-
-#endif /*YAYA_LOGGER_FUNC_BUILD_FNC_H_*/
+#endif /*YAYA_LOGGER_FORMAT_H_*/

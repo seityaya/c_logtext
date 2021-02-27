@@ -13,8 +13,6 @@ set(MAIN_LIST
 set(SRC_LIST
     yaya_logger_func.c
     yaya_logger_init.c
-    yaya_logger_atom.c
-    yaya_logger_head.c
     yaya_logger_style.c
     yaya_logger_out.c
     yaya_logger_format.c
@@ -33,5 +31,4 @@ set(INC_LIST
 #add_library(${PROJECT_NAME} STATIC ${SRC_LIST} ${INC_LIST})
 add_executable(${PROJECT_NAME} ${MAIN_LIST} ${SRC_LIST} ${INC_LIST})
 
-add_definitions(-DYAYA_LOGGER)
 add_definitions(-std=gnu11)
