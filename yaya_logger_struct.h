@@ -7,7 +7,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "yaya_logger_macro.h"
 
+typedef intmax_t  ___l1_type;
+typedef uintmax_t ___l2_type;
+
+typedef enum {
+    LS_STDOUT,
+    LS_STDERR,
+    LS_STDFILE,
+    LS_STDLOG,
+    LS_STDNET,
+    LS_STDBUF,
+    LS_STDCSV
+} logger_streams;
+
+typedef enum {
+    LSM_NONE,
+    LSM_STRAIGHT,
+    LSM_ITALIC,
+    LSM_LIGHT,
+    LSM_BOLD,
+} logger_style_mode;
+
+#define LFS_LEF 1
+#define LFS_RIG 2
+#define LFS_NUL 3
 
 typedef struct logger_token_specifiers { /*хранение спецификаторов*/
   uintmax_t beg; /*начало спецификатора*/
@@ -46,7 +71,7 @@ typedef struct logger_seting {
   const char *head_format;
   const char *logs_format;
   const uintmax_t type;
-  const uintmax_t name;
+  const intmax_t  name;
   const uintmax_t stream;
   const uintmax_t style;
 } logger_setting;
@@ -97,5 +122,13 @@ typedef struct logger {
     uintmax_t absnum; // - номер вывода без учета фильтрации
     uintmax_t tiksec; // - время от старта программы, в секундах
 } logger;
+
+typedef struct logger_token {      /*список токенов*/
+        const uintmax_t id;        /*идентификатор*/
+        const char *name;          /*текстовое представление ключей*/
+        void (*func)(LOGGER_FUNC_PARAM); /*функция токена*/
+} logger_token;
+
+#define LOGGER_TOKEN_GENERATE_ENUM(TOKEN) LEF_##TOKEN
 
 #endif /*YAYA_LOGGER_STRUCT_H_*/

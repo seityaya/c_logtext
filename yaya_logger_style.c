@@ -8,7 +8,7 @@
 #include <string.h>
 
 #if LOGGER_STYLE
-void style_build(logger *lvg)
+void ___logger_style(logger *lvg)
 {
     if (lvg->psett->style) {
     }

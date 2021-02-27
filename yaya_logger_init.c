@@ -3,14 +3,14 @@
 void filter_num(logger_filter_ *filter) {
     filter->num = 0;
     for (uintmax_t i = 0; i < sizeof(uintmax_t) * 8; i++) {
-        if (filter->ptr[i].flag == LOGGER_FLAG_ALL) {
+        if (filter->ptr[i].flag == LOGGER_FLAG_ALL(umax)) {
             filter->num = filter->ptr[i].id;
             break;
         }
     }
 }
 
-void yaya_log_init(logger *lvg, logger_filter *type, logger_filter *name, logger_setting *setting, logger_define *define, logger_style *style) {
+uintmax_t yaya_log_init(logger *lvg, logger_filter *type, logger_filter *name, logger_setting *setting, logger_define *define, logger_style *style) {
 
     lvg->auto_init_flag = LOGGER_TRUE;
 
@@ -19,8 +19,8 @@ void yaya_log_init(logger *lvg, logger_filter *type, logger_filter *name, logger
         lvg->type.ptr = (type != NULL) ? type : logger_type_def ;
         lvg->name.ptr = (name != NULL) ? name : logger_name_def;
 
-        lvg->psett = (setting != NULL) ? setting : &logger_setting_def;
-        lvg->pdefn = (define != NULL) ? define : &logger_define_def;
+        lvg->psett = (setting != NULL) ? setting : logger_setting_def;
+        lvg->pdefn = (define != NULL) ? define : logger_define_def;
         lvg->pstyl = (style != NULL) ? style : logger_style_def;
     }
 
@@ -46,6 +46,7 @@ void yaya_log_init(logger *lvg, logger_filter *type, logger_filter *name, logger
 
     {
         /*Парсинг форматированной строки*/
-        mas_opt(lvg, lvg->psett->logs_format, &lvg->logs_mas_opt, &lvg->logs_num_token);
+        ___logger_pars(lvg, lvg->psett->logs_format, &lvg->logs_mas_opt, &lvg->logs_num_token);
     }
+    return LOGGER_TRUE;
 }

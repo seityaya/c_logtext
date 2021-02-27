@@ -9,7 +9,7 @@
 
 //extern logger_variables *lvg;
 
-void logger_out(logger *lvg)
+void ___logger_out(logger *lvg)
 {
     switch (lvg->psett->stream) {
         case LS_STDOUT: {

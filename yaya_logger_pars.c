@@ -2,7 +2,7 @@
 
 
 
-uintmax_t mas_opt(logger *lvg, const char *format, logger_token_mas **mas_opt_f, uintmax_t *num_token)
+void ___logger_pars(logger *lvg, const char *format, logger_token_mas **mas_opt_f, uintmax_t *num_token)
 {
     logger_token_mas *mas_opt = malloc(sizeof(logger_token_mas));
     { /*Подсчет количества токенов и спецификаторов, выделение памяти и определение их диапазона и типа*/
@@ -31,7 +31,7 @@ uintmax_t mas_opt(logger *lvg, const char *format, logger_token_mas **mas_opt_f,
             }
             else {
                 mas_opt[j].beg = i;
-                mas_opt[j].id  = LEF_STR;
+                mas_opt[j].id  = LEF_str;
                 do {
                     mas_opt[j].end = i;
                     i++;
@@ -46,7 +46,7 @@ uintmax_t mas_opt(logger *lvg, const char *format, logger_token_mas **mas_opt_f,
 
     { /*Определение типа токенов*/
         for (uintmax_t i = 0; i < *num_token; i++) {
-          memset(lvg->tmp_buff, 0, LOGGER_TMP_BUFF_SIZE);
+            memset(lvg->tmp_buff, 0, LOGGER_TMP_BUFF_SIZE);
             if (mas_opt[i].id == LEF_TOK) {
                 strncpy(lvg->tmp_buff, &format[mas_opt[i].beg + 1], mas_opt[i].end - mas_opt[i].beg);
                 for (uintmax_t j = 0; j < LEF_END; j++) {
@@ -106,36 +106,37 @@ uintmax_t mas_opt(logger *lvg, const char *format, logger_token_mas **mas_opt_f,
     }
 
     *mas_opt_f = mas_opt;
-    return *num_token;
 
-    //        { /*Тестовый вывод*/
-    //            printf("FORMAT = %s\n", format);
-    //            for (uintmax_t i = 0; i < *num_token; i++) {
-    //                int k1 = 0;
-    //                int f1 = 80;
-    //                memset(lvg->tmp_buff, 0, LOGGER_TMP_BUFF_SIZE);
-    //                strncpy(lvg->tmp_buff, &format[mas_opt[i].beg], mas_opt[i].end - mas_opt[i].beg + 1);
-    //                char buffmod[300] = {0};
-    //                if (mas_opt[i].spe != NULL) {
-    //                    strncpy(buffmod, &format[mas_opt[i].spe->beg], mas_opt[i].spe->end - mas_opt[i].spe->beg + 1);
-    //                }
-    //                printf("%3ld | %10s = %02ld | %3ld <%3ld> %3ld | -%s- %n",
-    //                       i,
-    //                       logger_token_list[mas_opt[i].id].name,
-    //                       mas_opt[i].id,
-    //                       mas_opt[i].beg,
-    //                       mas_opt[i].end - mas_opt[i].beg + 1,
-    //                       mas_opt[i].end,
-    //                       lvg->tmp_buff,
-    //                       &k1);
-    //                printf("%*s %ld [(%2ld) (%2ld)] -%s-    \n",
-    //                       f1 - k1,
-    //                       "",
-    //                       mas_opt[i].spe != NULL ? mas_opt[i].spe->lfs : 0,
-    //                       mas_opt[i].spe != NULL ? mas_opt[i].spe->lef : 0,
-    //                       mas_opt[i].spe != NULL ? mas_opt[i].spe->rig : 0,
-    //                       buffmod);
-    //            }
-    //            printf("\n");
-    //        }
+#ifdef LOGGER_DEBUG
+    { /*Тестовый вывод*/
+        printf("FORMAT = %s\n", format);
+        for (uintmax_t i = 0; i < *num_token; i++) {
+            int k1 = 0;
+            int f1 = 80;
+            memset(lvg->tmp_buff, 0, LOGGER_TMP_BUFF_SIZE);
+            strncpy(lvg->tmp_buff, &format[mas_opt[i].beg], mas_opt[i].end - mas_opt[i].beg + 1);
+            char buffmod[300] = {0};
+            if (mas_opt[i].spe != NULL) {
+                strncpy(buffmod, &format[mas_opt[i].spe->beg], mas_opt[i].spe->end - mas_opt[i].spe->beg + 1);
+            }
+            printf("%3ld | %10s = %02ld | %3ld <%3ld> %3ld | -%s- %n",
+                   i,
+                   logger_token_list[mas_opt[i].id].name,
+                    mas_opt[i].id,
+                    mas_opt[i].beg,
+                    mas_opt[i].end - mas_opt[i].beg + 1,
+                    mas_opt[i].end,
+                    lvg->tmp_buff,
+                    &k1);
+            printf("%*s %ld [(%2ld) (%2ld)] -%s-    \n",
+                   f1 - k1,
+                   "",
+                   mas_opt[i].spe != NULL ? mas_opt[i].spe->lfs : 0,
+                   mas_opt[i].spe != NULL ? mas_opt[i].spe->lef : 0,
+                   mas_opt[i].spe != NULL ? mas_opt[i].spe->rig : 0,
+                   buffmod);
+        }
+        printf("\n");
+    }
+#endif
 }
