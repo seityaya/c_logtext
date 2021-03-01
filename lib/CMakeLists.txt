@@ -6,10 +6,6 @@ set(PROJECT_NAME yaya_logger)
 
 project(${PROJECT_NAME})
 
-set(MAIN_LIST
-    yaya_logger_main.c
-    )
-
 set(SRC_LIST
     yaya_logger_func.c
     yaya_logger_init.c
@@ -17,7 +13,6 @@ set(SRC_LIST
     yaya_logger_out.c
     yaya_logger_format.c
     yaya_logger_pars.c
-    yaya_logger_test.c
     )
 
 set(INC_LIST
@@ -28,7 +23,7 @@ set(INC_LIST
     yaya_logger_format.h
     )
 
-#add_library(${PROJECT_NAME} STATIC ${SRC_LIST} ${INC_LIST})
-add_executable(${PROJECT_NAME} ${MAIN_LIST} ${SRC_LIST} ${INC_LIST})
+add_library(${PROJECT_NAME} STATIC ${SRC_LIST} ${INC_LIST})
+#add_executable(${PROJECT_NAME} ${SRC_LIST} ${INC_LIST})
 
 add_definitions(-std=gnu11)

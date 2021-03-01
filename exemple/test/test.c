@@ -1,9 +1,10 @@
+#include <stdio.h>
 #include "yaya_logger.h"
 
 void loggerf_test_param(){
     ___logger *logger_instance = NULL;
 
-    printf("/* I */\n");
+//    printf("/* I */\n");
     loggerf_init();
     loggerf_init(&logger_instance);
     loggerf_init(&logger_instance, ___logger_type_def);
@@ -12,7 +13,7 @@ void loggerf_test_param(){
     loggerf_init(&logger_instance, ___logger_type_def, ___logger_name_def, ___logger_setting_def, ___logger_define_def);
     loggerf_init(&logger_instance, ___logger_type_def, ___logger_name_def, ___logger_setting_def, ___logger_define_def, ___logger_style_def);
 
-    printf("/* H */\n");
+//    printf("/* H */\n");
     loggerf(L_HEAD);
     loggerf(logger_instance, L_HEAD);
     loggerf(logger_instance, L_HEAD, "HEAD == $line%3. $mess");
@@ -132,5 +133,4 @@ void loggerf_test_format(){
     loggerf(L_ATOM, "## $line%03.  >> $aliggt");
 
     loggerf(L_ATOM, "## $line%03.  >> $debug");
-
 }

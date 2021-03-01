@@ -12,6 +12,7 @@
 #define LOGGER_STYLE  LOGGER_TRUE        /*Включить стили*/
 #define LOGGER_OUT    LOGGER_TRUE        /*Включить вывод*/
 #define LOGGER_DEF    LOGGER_TRUE        /*Включить структуру*/
+#define LOGGER_TEST   LOGGER_FALSE        /*Включить отладку*/
 
 #define LOGGER_HIDDEN_STR        "..."
 #define LOGGER_OUT_BUFF_SIZE     1000
@@ -46,6 +47,7 @@ static ___logger* ___logger_main_def = NULL;
 #define    L_FUNC     LOGGER_FLAG_T_GENERATE(16)
 #define    L_LOGGER   LOGGER_FLAG_T_GENERATE(17)
 #define    L_TEST     LOGGER_FLAG_T_GENERATE(18)
+#define    L_MESG     LOGGER_FLAG_T_GENERATE(19)
 #define    L_ALL      LOGGER_FLAG_T_ALL          /*<<<*/
 
 LOGGER_NEW_COUNTER(LT_COUNTER)

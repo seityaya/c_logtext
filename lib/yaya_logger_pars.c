@@ -55,6 +55,9 @@ void ___logger_pars(___logger *lvg, const char *format, ___logger_token_mas **ma
                     }
                 }
             }
+            if(mas_opt[i].id == LEF_TOK){
+                mas_opt[i].id = LEF_str;
+            }
         }
     }
 

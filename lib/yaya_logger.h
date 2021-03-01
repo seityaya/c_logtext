@@ -351,9 +351,6 @@ uintmax_t yaya_log_init(___logger** lvg, ___logger_filter *type, ___logger_filte
 uintmax_t yaya_log_func(uintmax_t count, char *file, uintmax_t line, const char *func, const char* debug, ___logger *lvg, ___l1_type type_one, ___l2_type type_two, const char *mes, ...);
 uintmax_t yaya_log_defl(uintmax_t count, char *file, uintmax_t line, const char *func, const char* debug, ___logger *lvg);
 
-void loggerf_test_param();
-void loggerf_test_format();
-
 // clang-format on
 
 #endif /*YAYA_LOGGER_H_*/

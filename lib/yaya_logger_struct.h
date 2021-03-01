@@ -66,7 +66,7 @@ typedef struct ___logger_filter {
 } ___logger_filter;
 
 
-typedef struct ___logger_seting {
+typedef struct ___logger_setting {
   const char *head_format;
   const char *logs_format;
   const char *atom_format;
