@@ -7,7 +7,6 @@ set(CMAKE_C_STANDARD 11)
 
 add_executable(${PROJECT_NAME}
     main.c
-    yaya_logger_conf.h
     test.c
     test.h
     )

@@ -11,19 +11,15 @@
 #define LOGGER_FLAG_ALL(sign)       (sign)((uintmax_t)(0) - 1)
 #define LOGGER_FLAG_NUL(sign)       (sign)(0)
 
-#define LOGGER_NEW_COUNTER(COUNTER_NAME) enum {___##COUNTER_NAME = __COUNTER__};
-
-#define LOGGER_FLAG_T_GENERATE(num)  LOGGER_FLAG(num, ___l1_type)
 #define LOGGER_FLAG_T_GENERATE(num)  LOGGER_FLAG(num, ___l1_type)
 #define LOGGER_FLAG_T_ALL            LOGGER_FLAG_ALL (___l1_type)
 #define LOGGER_FLAG_T_NUL            LOGGER_FLAG_NUL (___l1_type)
 
 #define LOGGER_FLAG_N_GENERATE(num)  LOGGER_FLAG(num, ___l2_type)
-#define LOGGER_FLAG_N_GENERATE(num)  LOGGER_FLAG(num, ___l2_type)
 #define LOGGER_FLAG_N_ALL            LOGGER_FLAG_ALL (___l2_type)
 #define LOGGER_FLAG_N_NUL            LOGGER_FLAG_NUL (___l2_type)
 
-#define LOGGER_FILTER_GENERATE(COUNTER, type, NAME)  {__COUNTER__ - ___##COUNTER, type##_##NAME, #type "_" #NAME }
+#define LOGGER_FILTER_GENERATE(NAME)  {NAME, #NAME }
 
 #define LOGGER_TOKEN_GENERATE_FUNC(TOKEN)  void ___logger_func_##TOKEN(LOGGER_FUNC_PARAM)
 #define LOGGER_TOKEN_GENERATE_ENUM(TOKEN)  LEF_##TOKEN
@@ -31,11 +27,11 @@
 
 
 #define LOGGER_FUNC_PARAM \
-    ___logger *lvg, \
+    logger *lvg, \
     const char *format, \
     ___logger_token_mas *mas_opt, \
     uintmax_t count, \
-    char *file, \
+    const char *file, \
     uintmax_t line, \
     const char *func, \
     const char* debug, \

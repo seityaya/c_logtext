@@ -132,7 +132,7 @@ DEEEE  ->  DE
 
 #define ___logger_func_1(a) \
     _Generic((a),                                          \
-    ___logger*  : ___logger_func_A_____("log_1_A____", a), \
+    logger*     : ___logger_func_A_____("log_1_A____", a), \
     ___l1_type  : ___logger_func__B____("log_1__B___", a), \
     ___l2_type  : ___logger_func___C___("log_1___C__", a), \
     char*       : ___logger_func____D__("log_1____D_", a), \
@@ -141,7 +141,7 @@ DEEEE  ->  DE
 
 #define ___logger_func_2(a, ...) \
     _Generic((a),                                                                                \
-    ___logger*  : _Generic((__VA_ARGS__),                                                        \
+    logger*     : _Generic((__VA_ARGS__),                                                        \
                   ___l1_type            : ___logger_func_AB____("log_2_AB___", a, __VA_ARGS__),  \
                   ___l2_type            : ___logger_func_A_C___("log_2_A_C__", a, __VA_ARGS__),  \
                   char*                 : ___logger_func_A__D__("log_2_A__D_", a, __VA_ARGS__),  \
@@ -160,7 +160,7 @@ DEEEE  ->  DE
 
 #define ___logger_func_3(a, b, ...) \
     _Generic((a),                                                                                                  \
-    ___logger*  : _Generic((b),                                                                                    \
+    logger*     : _Generic((b),                                                                                    \
                   ___l1_type  : _Generic((__VA_ARGS__),                                                            \
                                 ___l2_type            : ___logger_func_ABC___("log_3_ABC__", a, b, __VA_ARGS__),   \
                                 char*                 : ___logger_func_AB_D__("log_3_AB_D_", a, b, __VA_ARGS__),   \
@@ -190,7 +190,7 @@ DEEEE  ->  DE
 
 #define ___logger_func_4(a, b, c, ...) \
     _Generic((a),                                                                                                                    \
-    ___logger*  : _Generic((b),                                                                                                      \
+    logger*     : _Generic((b),                                                                                                      \
                   ___l1_type  : _Generic((c),                                                                                        \
                                 ___l2_type  : _Generic((__VA_ARGS__),                                                                \
                                               char*                 : ___logger_func_ABCD__("log_4_ABCD_", a, b, c, __VA_ARGS__),    \
@@ -229,7 +229,7 @@ DEEEE  ->  DE
 
 #define ___logger_func_5(a, b, c, d, ...) \
     _Generic((a),                                                                                                                                       \
-    ___logger*  : _Generic((b),                                                                                                                         \
+    logger*     : _Generic((b),                                                                                                                         \
                   ___l1_type  : _Generic((c),                                                                                                           \
                                 ___l2_type  : _Generic((d),                                                                                             \
                                               char*       :  _Generic((__VA_ARGS__),                                                                    \
@@ -276,16 +276,16 @@ DEEEE  ->  DE
 
 
 #if LOGGER_DEF == LOGGER_TRUE
-#define ___LOGGER_LVG ___logger_main_def
+#define ___LOGGER_LVG logger_main_def
 #endif
 
+#define ___LOGGER_LP_OR_DEF(A) _Generic((A), logger*    : (A), default : (___LOGGER_LVG) )
 
-#define ___LOGGER_LP_OR_DEF(A) _Generic((A), ___logger* : (A), default : (___LOGGER_LVG) )
 #define ___LOGGER_L1_OR_DEF(A) _Generic((A), ___l1_type : (A), default : (L_VOID)     )
 #define ___LOGGER_L2_OR_DEF(A) _Generic((A), ___l2_type : (A), default : (LL_VOID)    )
-#define ___LOGGER_CP_OR_DEF(A) _Generic((A), char*      : (A), default : (NULL)       )
+#define ___LOGGER_CP_OR_DEF(A) _Generic((A), char*      : (A), const char*      : (A), default : (NULL)       )
 
-#define ___logger_func______V(N)                  yaya_log_defl(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LVG)
+#define ___logger_func______V(N)                  yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LVG         , L_GNERR               , LL_VOID               , NULL                  , NULL       )
 
 #define ___logger_func_______(N)                  yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LVG         , L_VOID                , LL_VOID               , NULL                  , NULL       )
 
@@ -340,16 +340,29 @@ DEEEE  ->  DE
 #define ___LOGGER_INIT_E(A, B, C, D, E)    yaya_log_init(A             , B   , C   , D   , E   , NULL)
 #define ___LOGGER_INIT_F(A, B, C, D, E, F) yaya_log_init(A             , B   , C   , D   , E   , F   )
 
+
+
+#define loggerf_free(...) \
+        ___LOGGER_FREE_x( ,            \
+        ##__VA_ARGS__ ,                \
+        ___LOGGER_FREE_A(__VA_ARGS__), \
+        ___LOGGER_FREE_0(__VA_ARGS__))
+
+#define ___LOGGER_FREE_x(x, A, FUNC, ...) FUNC
+
+#define ___LOGGER_FREE_0()                 yaya_log_free(___LOGGER_LVG)
+#define ___LOGGER_FREE_A(A)                yaya_log_free(A             )
+
 #else
 
 #define loggerf(...)      //логгер
 #define loggerf_init(...) //инициализация
-
+#define loggerf_free(...) //освобождение
 #endif
 
-uintmax_t yaya_log_init(___logger** lvg, ___logger_filter *type, ___logger_filter *name, ___logger_setting *setting, ___logger_define *define, ___logger_style *style);
-uintmax_t yaya_log_func(uintmax_t count, char *file, uintmax_t line, const char *func, const char* debug, ___logger *lvg, ___l1_type type_one, ___l2_type type_two, const char *mes, ...);
-uintmax_t yaya_log_defl(uintmax_t count, char *file, uintmax_t line, const char *func, const char* debug, ___logger *lvg);
+void yaya_log_init(logger** lvg, logger_filter *type, logger_filter *name, logger_setting *setting, logger_define *define, logger_style *style);
+void yaya_log_free(logger* lvg);
+uintmax_t yaya_log_func(uintmax_t count, const char *file, uintmax_t line, const char *func, const char* debug, logger *lvg, ___l1_type type_one, ___l2_type type_two, const char *mes, ...);
 
 // clang-format on
 

@@ -110,7 +110,7 @@ typedef enum {
     LOGGER_TOKEN_GENERATE_ENUM(END)          /* замыкающий токен */
 } ___logger_token_id;
 
-static ___logger_token ___logger_token_list[LEF_END] = {
+static ___logger_token_func ___logger_token_list[LEF_END + 1] = {
     {LEF_TOK, "$", NULL},
     {LEF_SPE, "%", NULL},
     {LEF_SEP, ".", NULL},

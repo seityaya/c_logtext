@@ -1,6 +1,6 @@
 #include "yaya_logger.h"
 
-void format_build_num(___logger *lvg, ___logger_token_mas *mas_opt, uintmax_t buff_orig)
+static void format_build_num(logger* lvg, ___logger_token_mas* mas_opt, uintmax_t buff_orig)
 {
   mas_opt->beglog = lvg->out_offset;
   if (mas_opt->spe != NULL) {
@@ -25,7 +25,7 @@ void format_build_num(___logger *lvg, ___logger_token_mas *mas_opt, uintmax_t bu
 }
 
 
-void format_build_str(___logger *lvg, ___logger_token_mas *mas_opt, const char *buff_orig)
+void format_build_str(logger *lvg, ___logger_token_mas *mas_opt, const char *buff_orig)
 {
     char buff[LOGGER_TMP_BUFF_SIZE] = {0};
     mas_opt->beglog                 = lvg->out_offset;
@@ -90,7 +90,7 @@ LOGGER_TOKEN_GENERATE_FUNC(type){
     LOGGER_FUNC_UNUSED;
     for (uintmax_t j = 0; j < lvg->type.num - 1; j++) {
         if (type == L_ALL) {
-            strcpy(lvg->tmp_buff, lvg->type.ptr[lvg->type.num - 1].name);
+            strcpy(lvg->tmp_buff, lvg->type.ptr[lvg->type.num].name);
             break;
         } else if (type == L_NUL) {
             strcpy(lvg->tmp_buff, lvg->type.ptr[0].name);
@@ -98,8 +98,10 @@ LOGGER_TOKEN_GENERATE_FUNC(type){
         } else {
             if (LOGGER_BIT_GET(type, j)) {
                 strcat(lvg->tmp_buff, lvg->type.ptr[j + 1].name);
+                strcat(lvg->tmp_buff, " ");
             }
         }
+
     }
     format_build_str(lvg, mas_opt, lvg->tmp_buff);
 }
@@ -110,7 +112,7 @@ LOGGER_TOKEN_GENERATE_FUNC(name){
 
     for (uintmax_t j = 0; j < lvg->name.num - 1; j++) {
         if (name == LL_ALL) {
-            strcpy(lvg->tmp_buff, lvg->name.ptr[lvg->name.num - 1].name);
+            strcpy(lvg->tmp_buff, lvg->name.ptr[lvg->name.num].name);
             break;
         } else if (name == LL_NUL) {
             strcpy(lvg->tmp_buff, lvg->name.ptr[0].name);
@@ -283,7 +285,7 @@ LOGGER_TOKEN_GENERATE_FUNC(aliggt){
 //                format_build_num(&mas_opt[i], count);
 //                break;
 //            }
-//            case LEF_MESSAGE: {
+//            case LEF_MESGAGE: {
 //                vsprintf(lvg->tmp_buff, mes, mes_list);
 //                format_build_str(&mas_opt[i], lvg->tmp_buff);
 //                break;

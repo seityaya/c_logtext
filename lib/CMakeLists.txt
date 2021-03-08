@@ -16,14 +16,17 @@ set(SRC_LIST
     )
 
 set(INC_LIST
-    yaya_logger.h
-    yaya_logger_conf.h
     yaya_logger_macro.h
     yaya_logger_struct.h
     yaya_logger_format.h
     )
 
-add_library(${PROJECT_NAME} STATIC ${SRC_LIST} ${INC_LIST})
+set(INC_PUB
+    yaya_logger_conf.h
+    yaya_logger.h
+    )
+
+add_library(${PROJECT_NAME} STATIC  ${SRC_LIST} ${INC_LIST} ${INC_PUB})
 #add_executable(${PROJECT_NAME} ${SRC_LIST} ${INC_LIST})
 
-add_definitions(-std=gnu11)
+add_definitions(-std=c11)

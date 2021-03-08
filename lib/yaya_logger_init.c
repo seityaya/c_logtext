@@ -1,49 +1,86 @@
 #include "yaya_logger.h"
 
-void count_num(___logger_filter_ *filter) {
+void ___count_num(___logger_filters *filter) {
     filter->num = 0;
-    for (uintmax_t i = 0; i < sizeof(uintmax_t) * __CHAR_BIT__; i++) {
+    for (uintmax_t i = 0; i < sizeof(uintmax_t) * __CHAR_BIT__; i++)
+    {
+        if(((i == 0) ? (0) : (filter->ptr[i].flag & (1ULL << (i)))) && !(filter->ptr[i].flag == LOGGER_FLAG_ALL(uintmax_t)))
+        {
+            exit(1);
+        }
+
         if (filter->ptr[i].flag == LOGGER_FLAG_ALL(uintmax_t)) {
-            filter->num = filter->ptr[i].id;
+            filter->num = i;
             break;
         }
     }
 }
 
-uintmax_t yaya_log_init(___logger **lvg,
-                        ___logger_filter *type,
-                        ___logger_filter *name,
-                        ___logger_setting *setting,
-                        ___logger_define *define,
-                        ___logger_style *style)
+void yaya_log_init(logger**        lvg,
+                   logger_filter*  type,
+                   logger_filter*  name,
+                   logger_setting* setting,
+                   logger_define*  define,
+                   logger_style*   style)
 {
     /*Выделение памяти для главной структуры*/
-    *lvg = calloc(1, sizeof(___logger));
+    *lvg = calloc(1, sizeof(logger));
 
     /*Cвязывание указателей*/
-    (*lvg)->type.ptr = (type != NULL) ? type : ___logger_type_def ;
-    (*lvg)->name.ptr = (name != NULL) ? name : ___logger_name_def;
-    (*lvg)->psett = (setting != NULL) ? setting : ___logger_setting_def;
-    (*lvg)->pdefn = (define != NULL) ? define : ___logger_define_def;
-    (*lvg)->pstyl = (style != NULL) ? style : ___logger_style_def;
+    (*lvg)->type.ptr = (type    != NULL) ? type    : logger_type_def;
+    (*lvg)->name.ptr = (name    != NULL) ? name    : logger_name_def;
+    (*lvg)->psett    = (setting != NULL) ? setting : logger_setting_def;
+    (*lvg)->pdefn    = (define  != NULL) ? define  : logger_define_def;
+    (*lvg)->pstyl    = (style   != NULL) ? style   : logger_style_def;
+
+    /*Подсчет количества флагов*/
+    ___count_num(&(*lvg)->type);
+    ___count_num(&(*lvg)->name);
 
     /*Инициализация переменных*/
     (*lvg)->tmp_buff = calloc(LOGGER_TMP_BUFF_SIZE, sizeof(char));
     (*lvg)->out_buff = calloc(LOGGER_OUT_BUFF_SIZE, sizeof(char));
     (*lvg)->out_offset = 0;
-    (*lvg)->data_build = __DATE__;
-    (*lvg)->time_build = __TIME__;
-    (*lvg)->projpath = "/../../";
     (*lvg)->absnum = 0;
     (*lvg)->curnum = 0;
-    (*lvg)->compilerversion = __VERSION__;
-
-    /*Подсчет количества флагов*/
-    count_num(&(*lvg)->type);
-    count_num(&(*lvg)->name);
 
     /*Парсинг форматированной строки*/
-    ___logger_pars((*lvg), (*lvg)->psett->logs_format, &(*lvg)->logs_mas_opt, &(*lvg)->logs_num_token);
-
-    return LOGGER_TRUE;
+    ___logger_pars((*lvg)->psett->logs_format, &(*lvg)->logs);
+    ___logger_pars((*lvg)->psett->atom_format, &(*lvg)->atom);
+    ___logger_pars((*lvg)->psett->head_format, &(*lvg)->head);
+    ___logger_pars((*lvg)->psett->gerr_format, &(*lvg)->gerr);
 }
+
+void ___free_tokens(___logger_tokens* tokens){
+    for(uintmax_t i = 0; i < tokens->num_token; i++)
+    {
+        if(tokens->mas_opt[i].spe != NULL)
+        {
+            free(tokens->mas_opt[i].spe);
+            tokens->mas_opt[i].spe = NULL;
+        }
+    }
+    free(tokens->mas_opt);
+    tokens->mas_opt = NULL;
+
+    free(tokens);
+    tokens = NULL;
+}
+
+void yaya_log_free(logger* lvg)
+{
+    ___free_tokens(lvg->logs);
+    ___free_tokens(lvg->head);
+    ___free_tokens(lvg->atom);
+    ___free_tokens(lvg->gerr);
+
+    free(lvg->out_buff);
+    lvg->out_buff = NULL;
+
+    free(lvg->tmp_buff);
+    lvg->tmp_buff = NULL;
+
+    free(lvg);
+    lvg = NULL;
+}
+
