@@ -4,7 +4,7 @@ uintmax_t yaya_log_func(uintmax_t count, const char* file, uintmax_t line, const
 {
     lvg->absnum++;
 
-    if ((lvg->psett->type & type_one) && (lvg->psett->name & type_two))
+    if (((uintmax_t)(lvg->psett->type) & (uintmax_t)(type_one)) && ((uintmax_t)(lvg->psett->name) & (uintmax_t)(type_two)))
     {
         char* new_format             = NULL;
         char* new_mesg               = NULL;

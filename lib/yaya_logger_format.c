@@ -2,27 +2,27 @@
 
 static void format_build_num(logger* lvg, ___logger_token_mas* mas_opt, uintmax_t buff_orig)
 {
-  mas_opt->beglog = lvg->out_offset;
-  if (mas_opt->spe != NULL)
-  {
-    if (mas_opt->spe->lfs == LFS_NUL)
+    mas_opt->beglog = lvg->out_offset;
+    if (mas_opt->spe != NULL)
     {
-      lvg->out_offset += sprintf(&lvg->out_buff[lvg->out_offset], "%0*" PRIuMAX "", (int)mas_opt->spe->lef, (uintmax_t)buff_orig);
+        if (mas_opt->spe->lfs == LFS_NUL)
+        {
+            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%0*" PRIuMAX "", (int)mas_opt->spe->lef, buff_orig);
+        }
+        else if (mas_opt->spe->lfs == LFS_LEF)
+        {
+            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%*" PRIuMAX "", (int)mas_opt->spe->lef, buff_orig);
+        }
+        else if (mas_opt->spe->lfs == LFS_RIG)
+        {
+            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%-*" PRIuMAX "", (int)mas_opt->spe->rig, buff_orig);
+        }
     }
-    else if (mas_opt->spe->lfs == LFS_LEF)
+    else
     {
-      lvg->out_offset += sprintf(&lvg->out_buff[lvg->out_offset], "%*" PRIuMAX "", (int)mas_opt->spe->lef, (uintmax_t)buff_orig);
+        lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%" PRIuMAX "", buff_orig);
     }
-    else if (mas_opt->spe->lfs == LFS_RIG)
-    {
-      lvg->out_offset += sprintf(&lvg->out_buff[lvg->out_offset], "%-*" PRIuMAX "", (int)mas_opt->spe->rig, (uintmax_t)buff_orig);
-    }
-  }
-  else
-  {
-    lvg->out_offset += sprintf(&lvg->out_buff[lvg->out_offset], "%" PRIuMAX "", (uintmax_t)buff_orig);
-  }
-  mas_opt->endlog = lvg->out_offset;
+    mas_opt->endlog = lvg->out_offset;
 }
 
 
@@ -42,24 +42,24 @@ void format_build_str(logger *lvg, ___logger_token_mas *mas_opt, const char *buf
         if (mas_opt->spe->lfs == LFS_LEF) {
             strncpy(buff, &buff_orig[len - max], max);
             strncpy(buff, LOGGER_HIDDEN_STR, strlen(LOGGER_HIDDEN_STR));
-            lvg->out_offset += sprintf(&lvg->out_buff[lvg->out_offset], "%s", buff);
+            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%s", buff);
         }
         else if (mas_opt->spe->lfs == LFS_RIG)
         {
             strncpy(buff, &buff_orig[0], max);
             strncpy(&buff[max - strlen(LOGGER_HIDDEN_STR)], LOGGER_HIDDEN_STR, strlen(LOGGER_HIDDEN_STR));
-            lvg->out_offset += sprintf(&lvg->out_buff[lvg->out_offset], "%s", buff);
+            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%s", buff);
         }
         else
         {
         jmp_else_null:
             if (mas_opt->spe->lef != 0)
             {
-                lvg->out_offset += sprintf(&lvg->out_buff[lvg->out_offset], "%*s", (int)max, buff_orig);
+                lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%*s", (int)max, buff_orig);
             }
             else if (mas_opt->spe->rig != 0)
             {
-                lvg->out_offset += sprintf(&lvg->out_buff[lvg->out_offset], "%-*s", (int)max, buff_orig);
+                lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%-*s", (int)max, buff_orig);
             }
             else
             {
@@ -70,7 +70,7 @@ void format_build_str(logger *lvg, ___logger_token_mas *mas_opt, const char *buf
     else
     {
     jmp_else_main:
-        lvg->out_offset += sprintf(&lvg->out_buff[lvg->out_offset], "%s", buff_orig);
+        lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%s", buff_orig);
     }
     mas_opt->endlog = lvg->out_offset;
 }
@@ -102,23 +102,19 @@ LOGGER_TOKEN_GENERATE_FUNC(type){
     {
         if (type == L_ALL)
         {
-            strcpy(lvg->tmp_buff, lvg->type.ptr[lvg->type.num].name);
+            strncpy(lvg->tmp_buff, lvg->type.ptr[lvg->type.num].name, lvg->tmp_buff_size);
             break;
         }
-        else if (type == L_NUL)
+        if (type == L_NUL)
         {
-            strcpy(lvg->tmp_buff, lvg->type.ptr[0].name);
+            strncpy(lvg->tmp_buff, lvg->type.ptr[0].name, lvg->tmp_buff_size);
             break;
         }
-        else
+        if (LOGGER_BIT_GET(type, j))
         {
-            if (LOGGER_BIT_GET(type, j))
-            {
-                strcat(lvg->tmp_buff, lvg->type.ptr[j + 1].name);
-                strcat(lvg->tmp_buff, " ");
-            }
+            strncat(lvg->tmp_buff, lvg->type.ptr[j + 1].name, lvg->tmp_buff_size);
+            strncat(lvg->tmp_buff, " ", lvg->tmp_buff_size);
         }
-
     }
     format_build_str(lvg, mas_opt, lvg->tmp_buff);
 }
@@ -131,20 +127,17 @@ LOGGER_TOKEN_GENERATE_FUNC(name){
     {
         if (name == LL_ALL)
         {
-            strcpy(lvg->tmp_buff, lvg->name.ptr[lvg->name.num].name);
+            strncpy(lvg->tmp_buff, lvg->name.ptr[lvg->name.num].name, lvg->tmp_buff_size);
             break;
         }
-        else if (name == LL_NUL)
+        if (name == LL_NUL)
         {
-            strcpy(lvg->tmp_buff, lvg->name.ptr[0].name);
+            strncpy(lvg->tmp_buff, lvg->name.ptr[0].name, lvg->tmp_buff_size);
             break;
         }
-        else
+        if (LOGGER_BIT_GET(name, j))
         {
-            if (LOGGER_BIT_GET(name, j))
-            {
-                strcat(lvg->tmp_buff, lvg->name.ptr[j + 1].name);
-            }
+            strncat(lvg->tmp_buff, lvg->name.ptr[j + 1].name, lvg->tmp_buff_size);
         }
     }
     format_build_str(lvg, mas_opt, lvg->tmp_buff);
@@ -152,7 +145,7 @@ LOGGER_TOKEN_GENERATE_FUNC(name){
 
 LOGGER_TOKEN_GENERATE_FUNC(mesg){
     LOGGER_FUNC_UNUSED;
-    vsprintf(lvg->tmp_buff, mes, mes_list);
+    vsnprintf(lvg->tmp_buff, lvg->tmp_buff_size, mes, mes_list);
     format_build_str(lvg, mas_opt, lvg->tmp_buff);
 }
 
@@ -436,7 +429,7 @@ LOGGER_TOKEN_GENERATE_FUNC(aliggt){
 //            default: {
 //                lvg->error = LOGGER_TRUE;
 //                strncpy(lvg->tmp_buff, &format[mas_opt[i].beg], mas_opt[i].end - mas_opt[i].beg + 1);
-//                // sprintf(&lvg->out_buff[lvg->out_offset], "WARNING: NOT FOUND TOKEN
+//                // snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "WARNING: NOT FOUND TOKEN
 //                // = %s", buff);
 //                printf("LOGGER WARNING: NOT FOUND TOKEN: %s\n", lvg->tmp_buff);
 //                return;

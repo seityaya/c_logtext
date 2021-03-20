@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.5)
 
 set(VERSION 0.1)
 set(CMAKE_C_STANDARD 11)
+add_definitions(-std=c11)
+
 set(PROJECT_NAME yaya_logger)
 
 project(${PROJECT_NAME})
@@ -28,5 +30,3 @@ set(INC_PUB
 
 add_library(${PROJECT_NAME} STATIC  ${SRC_LIST} ${INC_LIST} ${INC_PUB})
 #add_executable(${PROJECT_NAME} ${SRC_LIST} ${INC_LIST})
-
-add_definitions(-std=c11)

@@ -3,13 +3,13 @@
 
 #include <stdarg.h>
 
-#define LOGGER_BIT_GET(x, n)        ((x) & (1 << (n)))
+#define LOGGER_BIT_GET(x, n)        ((uintmax_t)(x) & (UINTMAX_C(1) << (uintmax_t)(n)))
 #define LOGGER_TRUE                 (1 == 1)
 #define LOGGER_FALSE                (!LOGGER_TRUE)
 
-#define LOGGER_FLAG(x,  sign)       (sign)(1 << ((uintmax_t)(x)))
-#define LOGGER_FLAG_ALL(sign)       (sign)((uintmax_t)(0) - 1)
-#define LOGGER_FLAG_NUL(sign)       (sign)(0)
+#define LOGGER_FLAG(x,  sign)       (sign)(UINTMAX_C(1) << ((uintmax_t)(x)))
+#define LOGGER_FLAG_ALL(sign)       (sign)(UINTMAX_C(0) - UINTMAX_C(1))
+#define LOGGER_FLAG_NUL(sign)       (sign)(UINTMAX_C(0))
 
 #define LOGGER_FLAG_T_GENERATE(num)  LOGGER_FLAG(num, ___l1_type)
 #define LOGGER_FLAG_T_ALL            LOGGER_FLAG_ALL (___l1_type)

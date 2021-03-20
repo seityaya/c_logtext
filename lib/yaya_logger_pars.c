@@ -87,9 +87,9 @@ void ___logger_pars(logger *lvg, const char *format, ___logger_tokens** tokens)
                 memset(lvg->tmp_buff, 0, lvg->tmp_buff_size);
                 strncpy(lvg->tmp_buff, &format[((*tokens)->mas_opt)[i].spe->beg ] , (((*tokens)->mas_opt)[i].spe->end - ((*tokens)->mas_opt)[i].spe->beg + 1) );
 
-                int k   = 0;
-                int beg = ((*tokens)->mas_opt)[i].spe->beg + 1;
-                int end = ((*tokens)->mas_opt)[i].spe->end + 1;
+                uintmax_t k   = 0;
+                uintmax_t beg = ((*tokens)->mas_opt)[i].spe->beg + 1;
+                uintmax_t end = ((*tokens)->mas_opt)[i].spe->end + 1;
 
                 if (format[((*tokens)->mas_opt)[i].spe->beg + 1] == ___logger_token_list[LEF_HID].name[0])
                 {
@@ -135,37 +135,39 @@ void ___logger_pars(logger *lvg, const char *format, ___logger_tokens** tokens)
         }
     }
 
-    if(LOGGER_DEBUG == 1)
-    {
-        printf("FORMAT = %s\n", format);
-        for (uintmax_t i = 0; i < (*tokens)->num_token; i++)
+    { /*Тестовый вывод*/
+        if(LOGGER_DEBUG == 1)
         {
-            int k1 = 0;
-            int f1 = 80;
-            memset(lvg->tmp_buff, 0, lvg->tmp_buff_size);
-            strncpy(lvg->tmp_buff, &format[(*tokens)->mas_opt[i].beg], (*tokens)->mas_opt[i].end - (*tokens)->mas_opt[i].beg + 1);
-            char buffmod[300] = {0};
-            if ((*tokens)->mas_opt[i].spe != NULL)
+            printf("FORMAT = %s\n", format);
+            for (uintmax_t i = 0; i < (*tokens)->num_token; i++)
             {
-                strncpy(buffmod, &format[(*tokens)->mas_opt[i].spe->beg], (*tokens)->mas_opt[i].spe->end - (*tokens)->mas_opt[i].spe->beg + 1);
+                int k1 = 0;
+                int f1 = 80;
+                memset(lvg->tmp_buff, 0, lvg->tmp_buff_size);
+                strncpy(lvg->tmp_buff, &format[(*tokens)->mas_opt[i].beg], (*tokens)->mas_opt[i].end - (*tokens)->mas_opt[i].beg + 1);
+                char buffmod[300] = {0}; //FIXME
+                if ((*tokens)->mas_opt[i].spe != NULL)
+                {
+                    strncpy(buffmod, &format[(*tokens)->mas_opt[i].spe->beg], (*tokens)->mas_opt[i].spe->end - (*tokens)->mas_opt[i].spe->beg + 1);
+                }
+                printf("%3" PRIXMAX " | %10s = %02" PRIXMAX " | %3" PRIXMAX " <%3" PRIXMAX "> %3" PRIXMAX " | -%s- %n",
+                       i,
+                       ___logger_token_list[(*tokens)->mas_opt[i].id].name,
+                        (*tokens)->mas_opt[i].id,
+                        (*tokens)->mas_opt[i].beg,
+                        (*tokens)->mas_opt[i].end - (*tokens)->mas_opt[i].beg + 1,
+                        (*tokens)->mas_opt[i].end,
+                        lvg->tmp_buff,
+                        &k1);
+                printf("%*s %" PRIXMAX " [(%2" PRIXMAX ") (%2" PRIXMAX ")] -%s- \n",
+                       f1 - k1,
+                       "",
+                       (*tokens)->mas_opt[i].spe != NULL ? (*tokens)->mas_opt[i].spe->lfs : 0,
+                       (*tokens)->mas_opt[i].spe != NULL ? (*tokens)->mas_opt[i].spe->lef : 0,
+                       (*tokens)->mas_opt[i].spe != NULL ? (*tokens)->mas_opt[i].spe->rig : 0,
+                       buffmod);
             }
-            printf("%3ld | %10s = %02ld | %3ld <%3ld> %3ld | -%s- %n",
-                   i,
-                   ___logger_token_list[(*tokens)->mas_opt[i].id].name,
-                    (*tokens)->mas_opt[i].id,
-                    (*tokens)->mas_opt[i].beg,
-                    (*tokens)->mas_opt[i].end - (*tokens)->mas_opt[i].beg + 1,
-                    (*tokens)->mas_opt[i].end,
-                    lvg->tmp_buff,
-                    &k1);
-            printf("%*s %ld [(%2ld) (%2ld)] -%s-    \n",
-                   f1 - k1,
-                   "",
-                   (*tokens)->mas_opt[i].spe != NULL ? (*tokens)->mas_opt[i].spe->lfs : 0,
-                   (*tokens)->mas_opt[i].spe != NULL ? (*tokens)->mas_opt[i].spe->lef : 0,
-                   (*tokens)->mas_opt[i].spe != NULL ? (*tokens)->mas_opt[i].spe->rig : 0,
-                   buffmod);
+            printf("\n");
         }
-        printf("\n");
     }
 }
