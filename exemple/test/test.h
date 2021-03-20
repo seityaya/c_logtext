@@ -3,12 +3,16 @@
 
 #include "yaya_logger.h"
 
-void loggerf_test_param();
+#define NUM_RUN_CYCLES 10000000
 
-void loggerf_test_format();
-
-void loggerf_test_free_tokens();
+void loggerf_test_free_token();
 
 void loggerf_test_free();
+
+void loggerf_test_param();
+
+void loggerf_test_token();
+
+void loggerf_test_format();
 
 #endif /* LOGGER_TEST_H */

@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include "test.h"
 
-void loggerf_test_free_tokens(){
+void loggerf_test_free_token(){
     printf("^^ BEG %s \n", __func__);
 
     logger *logger_instance = NULL;
     loggerf_init(&logger_instance);
 
     int i = 0;
-    for(i = 0;  i < 10000000; i++){
+    for(i = 0;  i < NUM_RUN_CYCLES; i++){
         loggerf(logger_instance, L_ATOM, "$## $line%03.  >> $str");
     }
 
@@ -23,7 +23,7 @@ void loggerf_test_free(){
     logger *logger_instance = NULL;
 
     int i = 0;
-    for(i = 0;  i < 10000000; i++){
+    for(i = 0;  i < NUM_RUN_CYCLES; i++){
         loggerf_init(&logger_instance);
         loggerf(logger_instance);
         loggerf_free(logger_instance);
@@ -52,7 +52,11 @@ void loggerf_test_param(){
     loggerf(L_HEAD, "HEAD == $line%3. $mesg ", "HEAD str %s  ", "par");
     loggerf(L_HEAD, "HEAD");
 
+    printf("/* A */\n");
+    loggerf(L_ATOM);
+
     printf("/* E */\n");
+    loggerf(L_GNERR);
     loggerf(1);
 
     printf("/* 0 */\n");
@@ -119,7 +123,7 @@ void loggerf_test_param(){
     loggerf_free(logger_instance);
 }
 
-void loggerf_test_format(){
+void loggerf_test_token(){
 
     loggerf_init();
 
@@ -169,4 +173,25 @@ void loggerf_test_format(){
     loggerf_free();
 }
 
+void loggerf_test_format(){
+    loggerf_init();
+
+    loggerf(L_ATOM, "$** $line%03.  >> $num      |$line|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%5    |$line%5|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%.5   |$line%.5|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%5.   |$line%5.|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%05.  |$line%05.|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%5.0  |$line%5.0|");
+
+    loggerf(L_ATOM);
+
+    loggerf(L_ATOM, "$** $line%03.  >> $str");
+    loggerf(L_ATOM, "$** $line%03.  >> $str");
+    loggerf(L_ATOM, "$** $line%03.  >> $str");
+    loggerf(L_ATOM, "$** $line%03.  >> $str");
+    loggerf(L_ATOM, "$** $line%03.  >> $str");
+    loggerf(L_ATOM, "$** $line%03.  >> $str");
+
+    loggerf_free();
+}
 
