@@ -17,7 +17,13 @@ uintmax_t yaya_log_func(uintmax_t count, const char* file, uintmax_t line, const
         if(type_one == L_HEAD || type_one == L_ATOM || type_one == L_GNERR)
         {
             if(type_one == L_ATOM){
-                if(mesg[0] != ___logger_token_list[LEF_TOK].name[0])
+                if(mesg == NULL)
+                {
+                    new_mesg   = (char*)(mesg);
+                    new_format = (char*)(lvg->psett->atom_format);
+                    new_tokens = lvg->atom;
+                }
+                else if(mesg[0] != ___logger_token_list[LEF_TOK].name[0] )
                 {
                     new_mesg   = (char*)(mesg);
                     new_format = (char*)(lvg->psett->atom_format);

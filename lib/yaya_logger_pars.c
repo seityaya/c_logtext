@@ -14,45 +14,55 @@ void ___logger_pars(logger *lvg, const char *format, ___logger_tokens** tokens)
             (*tokens)->mas_opt = (___logger_token_mas*)realloc((*tokens)->mas_opt, sizeof(___logger_token_mas) * (j + 1));
             memset(&(*tokens)->mas_opt[j], 0, sizeof(___logger_token_mas));
 
-            if ((format[i] == ___logger_token_list[LEF_TOK].name[0]) &&
-                (isalpha(format[i + 1]) ||
-                 (format[i + 1] == ___logger_token_list[LEF_CAT].name[0])))
+            if ((format[i] == ___logger_token_list[LEF_TOK].name[0])
+                && (isalpha(format[i + 1])
+                    || (format[i + 1] == ___logger_token_list[LEF_CAT].name[0])))
             {
                 ((*tokens)->mas_opt)[j].id  = LEF_TOK;
                 ((*tokens)->mas_opt)[j].beg = i;
-                do {
+                do
+                {
                     ((*tokens)->mas_opt)[j].end = i;
                     i++;
-                } while ((isalpha(format[i]) || (format[i] == ___logger_token_list[LEF_CAT].name[0])));
+                }
+                while ((isalpha(format[i]) || (format[i] == ___logger_token_list[LEF_CAT].name[0])));
 
-                if ((format[i] == ___logger_token_list[LEF_SPE].name[0]) &&
-                    (isdigit(format[i + 1]) ||
-                     (format[i + 1] == ___logger_token_list[LEF_HID].name[0])   ||
-                     (format[i + 1] == ___logger_token_list[LEF_SEP].name[0])))
+                if ((format[i] == ___logger_token_list[LEF_SPE].name[0])
+                    && (isdigit(format[i + 1])
+                        || (format[i + 1] == ___logger_token_list[LEF_HID].name[0])
+                        || (format[i + 1] == ___logger_token_list[LEF_SEP].name[0])))
                 {
-                    ((*tokens)->mas_opt)[j].spe      = (___logger_token_specifiers*) malloc(sizeof(___logger_token_specifiers));
+                    ((*tokens)->mas_opt)[j].spe = (___logger_token_specifiers*) malloc(sizeof(___logger_token_specifiers));
                     memset(((*tokens)->mas_opt)[j].spe, 0, sizeof(___logger_token_specifiers));
 
                     ((*tokens)->mas_opt)[j].spe->beg = i;
-                    do {
+                    do
+                    {
                         ((*tokens)->mas_opt)[j].spe->end = i;
                         i++;
-                    } while (isdigit(format[i]) || format[i] == ___logger_token_list[LEF_HID].name[0]
-                             || format[i] == ___logger_token_list[LEF_SEP].name[0]);
+                    }
+                    while (isdigit(format[i])
+                           || format[i] == ___logger_token_list[LEF_HID].name[0]
+                           || format[i] == ___logger_token_list[LEF_SEP].name[0]);
                 }
                 i--;
             }
             else
             {
-                if(format[i] == ___logger_token_list[LEF_TOK].name[0]){
+                if(format[i] == ___logger_token_list[LEF_TOK].name[0])
+                {
                     i++;
                 }
                 ((*tokens)->mas_opt)[j].beg = i;
                 ((*tokens)->mas_opt)[j].id  = LEF_str;
-                do {
+                do
+                {
                     ((*tokens)->mas_opt)[j].end = i;
                     i++;
-                } while (!(format[i] == ___logger_token_list[LEF_TOK].name[0] && isalpha(format[i + 1])) && (format[i] != '\0'));
+                }
+                while (!(format[i] == ___logger_token_list[LEF_TOK].name[0]
+                         && isalpha(format[i + 1]))
+                       && (format[i] != '\0'));
                 i--;
             }
 
@@ -75,6 +85,14 @@ void ___logger_pars(logger *lvg, const char *format, ___logger_tokens** tokens)
             }
             if(((*tokens)->mas_opt)[i].id == LEF_TOK){
                 ((*tokens)->mas_opt)[i].id = LEF_str;
+
+                if(((*tokens)->mas_opt)[i].spe != NULL)
+                {
+                    ((*tokens)->mas_opt)[i].end = ((*tokens)->mas_opt)[i].spe->end;
+                    free(((*tokens)->mas_opt)[i].spe);
+                    ((*tokens)->mas_opt)[i].spe = NULL;
+                }
+
             }
         }
     }
