@@ -1,5 +1,7 @@
 #include "yaya_logger.h"
 
+#if (LOGGER_OUT != 0)
+
 void ___logger_out(logger *lvg)
 {
     switch (lvg->psett->stream) {
@@ -24,3 +26,5 @@ void ___logger_out(logger *lvg)
     lvg->out_buff[0] = '\0';
     lvg->out_offset  = 0;
 }
+
+#endif

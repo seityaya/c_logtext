@@ -26,18 +26,14 @@
 #endif
 
 #ifndef LOGGER_DEBUG
-#define LOGGER_DEBUG         0           /*Включить отладку, 0 - выключить*/
+#define LOGGER_DEBUG         0 /*Включить отладку, 0 - выключить*/
 #endif
 
 #ifndef LOGGER_HIDDEN_STR
 #define LOGGER_HIDDEN_STR   "..."
 #endif
 
-#if !defined LOGGER_DYNAMIC \
-    && \
-    !defined LOGGER_STATIC
-
-    //#error LOGGER ALLOCATION TYPE NOT DEFINED
+#ifndef LOGGER_STATIC
     #define LOGGER_DYNAMIC
 #else
     #ifndef LOGGER_NUM_TOKEN
@@ -45,8 +41,13 @@
     #endif
 #endif
 
+#ifndef LOGGER_OUT_BUFF_SIZE
 #define LOGGER_OUT_BUFF_SIZE 1000
+#endif
+
+#ifndef LOGGER_TMP_BUFF_SIZE
 #define LOGGER_TMP_BUFF_SIZE 1000
+#endif
 
 // // END // OPTION
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////

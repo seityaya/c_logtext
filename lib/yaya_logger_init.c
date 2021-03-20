@@ -38,17 +38,21 @@ void yaya_log_init(logger**        lvg,
     ___count_num(&(*lvg)->name);
 
     /*Инициализация переменных*/
-    (*lvg)->tmp_buff = calloc(LOGGER_TMP_BUFF_SIZE, sizeof(char));
-    (*lvg)->out_buff = calloc(LOGGER_OUT_BUFF_SIZE, sizeof(char));
+
+    (*lvg)->tmp_buff_size = LOGGER_TMP_BUFF_SIZE;
+    (*lvg)->tmp_buff = calloc((*lvg)->tmp_buff_size, sizeof(char));
+
+    (*lvg)->out_buff_size = LOGGER_OUT_BUFF_SIZE;
+    (*lvg)->out_buff = calloc((*lvg)->tmp_buff_size, sizeof(char));
     (*lvg)->out_offset = 0;
     (*lvg)->absnum = 0;
     (*lvg)->curnum = 0;
 
     /*Парсинг форматированной строки*/
-    ___logger_pars((*lvg)->psett->logs_format, &(*lvg)->logs);
-    ___logger_pars((*lvg)->psett->atom_format, &(*lvg)->atom);
-    ___logger_pars((*lvg)->psett->head_format, &(*lvg)->head);
-    ___logger_pars((*lvg)->psett->gerr_format, &(*lvg)->gerr);
+    ___logger_pars((*lvg), (*lvg)->psett->logs_format, &(*lvg)->logs);
+    ___logger_pars((*lvg), (*lvg)->psett->atom_format, &(*lvg)->atom);
+    ___logger_pars((*lvg), (*lvg)->psett->head_format, &(*lvg)->head);
+    ___logger_pars((*lvg), (*lvg)->psett->gerr_format, &(*lvg)->gerr);
 }
 
 void ___free_tokens(___logger_tokens* tokens){

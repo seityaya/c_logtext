@@ -119,7 +119,9 @@ typedef struct logger {
         ___logger_tokens *atom;
         ___logger_tokens *gerr;
 
+        uintmax_t tmp_buff_size;
         char      *tmp_buff;  // - указатель на времменый буфер
+        uintmax_t out_buff_size;
         char      *out_buff;  // - указатель на буфер вывода
         intmax_t  out_offset; // - указатель на конец строки
 
@@ -135,7 +137,7 @@ typedef struct ___logger_token_func {      /*список токенов*/
 } ___logger_token_func;
 
 
-void ___logger_pars  (const char *format, ___logger_tokens** tokens);
+void ___logger_pars (logger *lvg, const char *format, ___logger_tokens** tokens);
 void ___logger_format_str(logger *lvg, ___logger_token_mas *mas_opt, const char *buff_orig);
 void ___logger_format_num(logger *lvg, ___logger_token_mas *mas_opt, uintmax_t buff_orig);
 

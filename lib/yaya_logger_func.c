@@ -27,7 +27,7 @@ uintmax_t yaya_log_func(uintmax_t count, const char* file, uintmax_t line, const
                 {
                     new_mesg   = va_arg(va_mesgptr, char *);
                     new_format = (char*)(mesg);
-                    ___logger_pars(new_format, &new_tokens);
+                    ___logger_pars(lvg, new_format, &new_tokens);
                     flag_free = 1;
                 }
             }
@@ -54,14 +54,19 @@ uintmax_t yaya_log_func(uintmax_t count, const char* file, uintmax_t line, const
         lvg->curnum++;
 
         for (uintmax_t i = 0; i < new_tokens->num_token; i++) {
-            memset(lvg->tmp_buff, 0, LOGGER_TMP_BUFF_SIZE);
+            memset(lvg->tmp_buff, 0, lvg->tmp_buff_size);
             ___logger_token_list[new_tokens->mas_opt[i].id].func(lvg, new_format, &new_tokens->mas_opt[i],
                                                                  count, file, line, func, debug,
                                                                  type_one, type_two,
                                                                  new_mesg, va_mesgptr);
         }
+#if (LOGGER_STYLE != 0)
         ___logger_styles(lvg);
+#endif
+
+#if (LOGGER_OUT != 0)
         ___logger_out(lvg);
+#endif
 
         if(flag_free == 1)
         {
