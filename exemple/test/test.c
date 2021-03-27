@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include "test.h"
 
+#define IF_TYPE_TEST(test) ((TYPE_TEST) & (test))
+
 void loggerf_test_free_token(){
+#if IF_TYPE_TEST(FREE_TOKEN)
+
     printf("^^ BEG %s \n", __func__);
 
     logger *logger_instance = NULL;
@@ -15,9 +19,13 @@ void loggerf_test_free_token(){
     loggerf_free(logger_instance);
 
     printf("^^ END %s \n", __func__);
+
+#endif
 }
 
 void loggerf_test_free(){
+#if IF_TYPE_TEST(FREE_LOGGER)
+
     printf("^^ BEG %s \n", __func__);
 
     logger *logger_instance = NULL;
@@ -30,9 +38,13 @@ void loggerf_test_free(){
     }
 
     printf("^^ END %s \n", __func__);
+
+#endif
 }
 
 void loggerf_test_param(){
+#if IF_TYPE_TEST(PARAM)
+
     logger *logger_instance = NULL;
 
     printf("/* I */\n");
@@ -121,9 +133,12 @@ void loggerf_test_param(){
 
     loggerf_free();
     loggerf_free(logger_instance);
+
+#endif
 }
 
 void loggerf_test_token(){
+#if IF_TYPE_TEST(TOKEN)
 
     loggerf_init();
 
@@ -170,28 +185,68 @@ void loggerf_test_token(){
 
     loggerf(L_ATOM, "$## $line%03.  >> $debug");
 
+    loggerf(L_ATOM);
+    loggerf(L_ATOM);
+    loggerf(L_ATOM);
+
     loggerf_free();
+
+#endif
 }
 
 void loggerf_test_format(){
+#if IF_TYPE_TEST(FORMAT)
+
     loggerf_init();
 
-    loggerf(L_ATOM, "$** $line%03.  >> $num      |$line|");
-    loggerf(L_ATOM, "$** $line%03.  >> $num%5    |$line%5|");
-    loggerf(L_ATOM, "$** $line%03.  >> $num%.5   |$line%.5|");
-    loggerf(L_ATOM, "$** $line%03.  >> $num%5.   |$line%5.|");
-    loggerf(L_ATOM, "$** $line%03.  >> $num%05.  |$line%05.|");
-    loggerf(L_ATOM, "$** $line%03.  >> $num%5.0  |$line%5.0|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num         |$line|");
 
     loggerf(L_ATOM);
 
-    loggerf(L_ATOM, "$** $line%03.  >> $str");
-    loggerf(L_ATOM, "$** $line%03.  >> $str");
-    loggerf(L_ATOM, "$** $line%03.  >> $str");
-    loggerf(L_ATOM, "$** $line%03.  >> $str");
-    loggerf(L_ATOM, "$** $line%03.  >> $str");
-    loggerf(L_ATOM, "$** $line%03.  >> $str");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%5       |$line%5|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%.5      |$line%.5|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%5.      |$line%5.|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%05.     |$line%05.|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%5.0     |$line%5.0|");
+
+    loggerf(L_ATOM);
+
+    loggerf(L_ATOM, "$** $line%03.  >> $num%2       |$line%2|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%.2      |$line%.2|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%2.      |$line%2.|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%02.     |$line%02.|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%2.0     |$line%2.0|");
+
+    loggerf(L_ATOM);
+    loggerf(L_ATOM, "$mesg", "======================================================");
+
+    loggerf(L_ATOM, "$** $line%03.  >> $str         |$mesg|", "str");
+
+    loggerf(L_ATOM);
+
+    loggerf(L_ATOM, "$** $line%03.  >> $str%9       |$mesg%9|"    , "string");
+    loggerf(L_ATOM, "$** $line%03.  >> $str%.9      |$mesg%.9|"   , "string");
+    loggerf(L_ATOM, "$** $line%03.  >> $str%9.      |$mesg%9.|"   , "string");
+    loggerf(L_ATOM, "$** $line%03.  >> $str%09.     |$mesg%09.|"  , "string");
+    loggerf(L_ATOM, "$** $line%03.  >> $str%9.0     |$mesg%9.0|"  , "string");
+
+    loggerf(L_ATOM);
+
+    loggerf(L_ATOM, "$** $line%03.  >> $str%5       |$mesg%5|"    , "string");
+    loggerf(L_ATOM, "$** $line%03.  >> $str%.5      |$mesg%.5|"   , "string");
+    loggerf(L_ATOM, "$** $line%03.  >> $str%5.      |$mesg%5.|"   , "string");
+    loggerf(L_ATOM, "$** $line%03.  >> $str%05.     |$mesg%05.|"  , "string");
+    loggerf(L_ATOM, "$** $line%03.  >> $str%5.0     |$mesg%5.0|"  , "string");
+
+    loggerf(L_ATOM);
+
+    loggerf(L_ATOM, "$** $line%03.  >> $str%:5       |$mesg%5|"    , "string");
+    loggerf(L_ATOM, "$** $line%03.  >> $str%:.5      |$mesg%.5|"   , "string");
+    loggerf(L_ATOM, "$** $line%03.  >> $str%:5.      |$mesg%5.|"   , "string");
+    loggerf(L_ATOM, "$** $line%03.  >> $str%:05.     |$mesg%05.|"  , "string");
+    loggerf(L_ATOM, "$** $line%03.  >> $str%:5.0     |$mesg%5.0|"  , "string");
 
     loggerf_free();
-}
 
+#endif
+}
