@@ -1,8 +1,11 @@
 #include "yaya_logger.h"
+#include "yaya_logger_private.h"
+
+#include <stdio.h>
 
 #if (LOGGER_OUT != 0)
 
-void ___logger_out(logger *lvg)
+logger_error ___logger_out(logger *lvg)
 {
     switch (lvg->psett->stream) {
         case LS_STDOUT: {
@@ -25,6 +28,8 @@ void ___logger_out(logger *lvg)
 
     lvg->out_buff[0] = '\0';
     lvg->out_offset  = 0;
+
+    return LE_OK;
 }
 
 #endif

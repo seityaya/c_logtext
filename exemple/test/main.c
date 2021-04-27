@@ -5,6 +5,8 @@ int main(int argc, char *argv[]) {
     (void)argc;
     (void)argv;
 
+    test_printf();
+
     loggerf_test_free_token();
 
     loggerf_test_free();

@@ -1,24 +1,37 @@
 #include <stdio.h>
 #include "test.h"
+#include <inttypes.h>
 
 #define IF_TYPE_TEST(test) ((TYPE_TEST) & (test))
+
+void test_printf(){
+#if IF_TYPE_TEST(FREE_TOKEN)
+
+    printf("^^ BEG %s \n", __func__);
+
+    for(intmax_t i = 0;  i < NUM_RUN_CYCLES; i++){
+        printf("## %03d  >> %s %" PRIiMAX " \n" , __LINE__, __func__, i);
+    }
+
+    printf("^^ END %s \n\n\n\n", __func__);
+#endif
+}
 
 void loggerf_test_free_token(){
 #if IF_TYPE_TEST(FREE_TOKEN)
 
     printf("^^ BEG %s \n", __func__);
 
-    logger *logger_instance = NULL;
+    void *logger_instance = NULL;
     loggerf_init(&logger_instance);
 
-    int i = 0;
-    for(i = 0;  i < NUM_RUN_CYCLES; i++){
-        loggerf(logger_instance, L_ATOM, "$## $line%03.  >> $str");
+    for(intmax_t i = 0;  i < NUM_RUN_CYCLES; i++){
+        loggerf(logger_instance, L_ATOM, "$## $line%03.  >> $func $mesg" , "%" PRIuMAX "", i);
     }
 
     loggerf_free(logger_instance);
 
-    printf("^^ END %s \n", __func__);
+    printf("^^ END %s \n\n\n\n", __func__);
 
 #endif
 }
@@ -28,16 +41,25 @@ void loggerf_test_free(){
 
     printf("^^ BEG %s \n", __func__);
 
-    logger *logger_instance = NULL;
+    void *logger_instance = NULL;
 
-    int i = 0;
-    for(i = 0;  i < NUM_RUN_CYCLES; i++){
-        loggerf_init(&logger_instance);
-        loggerf(logger_instance);
+    logger_setting my_logger_setting[] = { { .head_format = "HEAD ## $line%3. >> $mesg",
+                                             .logs_format = "$## $line%03.  >> $func $mesg",
+                                             .atom_format = "$## line",
+                                             .gerr_format = ">>ERROR<<",
+                                             .type = L_ALL,
+                                             .name = LL_ALL,
+                                             .stream = LS_STDOUT,
+                                             .style = LOGGER_FALSE
+                                           } };
+
+    for(intmax_t i = 0;  i < NUM_RUN_CYCLES; i++){
+        loggerf_init(&logger_instance, NULL, NULL, my_logger_setting);
+        loggerf(logger_instance, L_VOID, "%" PRIuMAX "", i);
         loggerf_free(logger_instance);
     }
 
-    printf("^^ END %s \n", __func__);
+    printf("^^ END %s \n\n\n\n", __func__);
 
 #endif
 }
@@ -45,7 +67,9 @@ void loggerf_test_free(){
 void loggerf_test_param(){
 #if IF_TYPE_TEST(PARAM)
 
-    logger *logger_instance = NULL;
+    printf("^^ BEG %s \n", __func__);
+
+    void *logger_instance = NULL;
 
     printf("/* I */\n");
     loggerf_init();
@@ -134,11 +158,15 @@ void loggerf_test_param(){
     loggerf_free();
     loggerf_free(logger_instance);
 
+    printf("^^ END %s \n\n\n\n", __func__);
+
 #endif
 }
 
 void loggerf_test_token(){
 #if IF_TYPE_TEST(TOKEN)
+
+    printf("^^ BEG %s \n", __func__);
 
     loggerf_init();
 
@@ -185,17 +213,17 @@ void loggerf_test_token(){
 
     loggerf(L_ATOM, "$## $line%03.  >> $debug");
 
-    loggerf(L_ATOM);
-    loggerf(L_ATOM);
-    loggerf(L_ATOM);
-
     loggerf_free();
+
+    printf("^^ END %s \n\n\n\n", __func__);
 
 #endif
 }
 
 void loggerf_test_format(){
 #if IF_TYPE_TEST(FORMAT)
+
+    printf("^^ BEG %s \n", __func__);
 
     loggerf_init();
 
@@ -248,5 +276,6 @@ void loggerf_test_format(){
 
     loggerf_free();
 
+    printf("^^ END %s \n\n\n\n", __func__);
 #endif
 }

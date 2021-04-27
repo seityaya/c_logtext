@@ -1,67 +1,77 @@
 #ifndef YAYA_LOGGER_CONF_H
 #define YAYA_LOGGER_CONF_H
 
-#include "yaya_logger_macro.h"
-#include "yaya_logger_struct.h"
-#include "yaya_logger_format.h"
+#include <stdlib.h>
+
+#include "yaya_logger_public.h"
 
 // clang-format off
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // BEG // OPTION
 
 #ifndef LOGGER_LOGS
-#define LOGGER_LOGS          1 /*Включить логгер*/
+#define LOGGER_LOGS          1     /*Включить логгер*/
+#endif
+
+#ifndef LOGGER_TYPE_AUTO
+#define LOGGER_TYPE_AUTO     1     /*Тип логера обобщеный*/
+#endif
+
+#ifndef LOGGER_TYPE_INIT
+#define LOGGER_TYPE_INIT     1     /*Тип логера узкий*/
 #endif
 
 #ifndef LOGGER_STYLE
-#define LOGGER_STYLE         1 /*Включить стили*/
+#define LOGGER_STYLE         1     /*Включить стили*/
 #endif
 
 #ifndef LOGGER_OUT
-#define LOGGER_OUT           1 /*Включить вывод*/
-#endif
-
-#ifndef LOGGER_DEF
-#define LOGGER_DEF           1 /*Включить обобщеный логгер*/
+#define LOGGER_OUT           1     /*Включить вывод*/
 #endif
 
 #ifndef LOGGER_DEBUG
-#define LOGGER_DEBUG         0 /*Включить отладку, 0 - выключить*/
+#define LOGGER_DEBUG         0     /*Включить отладку*/
+#endif
+
+#ifndef LOGGER_UNDEF
+#define LOGGER_UNDEF         0     /*Включить отмену*/
 #endif
 
 #ifndef LOGGER_HIDDEN_STR
-#define LOGGER_HIDDEN_STR   "..."
+#define LOGGER_HIDDEN_STR    "..." /*Строка скрыватель*/
 #endif
 
-#ifndef LOGGER_STATIC
-    #define LOGGER_DYNAMIC
+#ifndef LOGGER_STATIC              /*Метод  выделения памяти*/
+#define LOGGER_DYNAMIC   1
 #else
-    #ifndef LOGGER_NUM_TOKEN
-    #define LOGGER_NUM_TOKEN 20
-    #endif
+#define LOGGER_STATIC    1
+
+#ifndef LOGGER_NUM_TOKEN
+#define LOGGER_NUM_TOKEN 20    /*Максимальное колличество токенов в строке*/
+#endif
 #endif
 
 #ifndef LOGGER_OUT_BUFF_SIZE
-#define LOGGER_OUT_BUFF_SIZE 1000
+#define LOGGER_OUT_BUFF_SIZE 1000  /*Размер буфера для вывода*/
 #endif
 
 #ifndef LOGGER_TMP_BUFF_SIZE
-#define LOGGER_TMP_BUFF_SIZE 1000
+#define LOGGER_TMP_BUFF_SIZE 1000  /*Размер буфера для нужд логерра*/
 #endif
 
 // // END // OPTION
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // BEG // DEFAULT
 
-#if LOGGER_DEF == LOGGER_TRUE
-static logger* logger_main_def = NULL;
+#if LOGGER_TYPE_AUTO == LOGGER_TRUE
+static void* logger_main_def = NULL;
 #endif
 
 
-#define    L_NUL      LOGGER_FLAG_T_NUL          /*<<< BEG*/
-#define    L_VOID     LOGGER_FLAG_T_GENERATE( 0) /*<<< VOID FORMAT TYPE*/
-#define    L_HEAD     LOGGER_FLAG_T_GENERATE( 1) /*<<< HEAD FORMAT TYPE*/
-#define    L_ATOM     LOGGER_FLAG_T_GENERATE( 2) /*<<< ATOM FORMAT TYPE*/
+#define    L_NUL      LOGGER_FLAG_T_NUL          /*<<< BEG <<<*/
+#define    L_VOID     LOGGER_FLAG_T_GENERATE( 0) /*<<< VOID   FORMAT TYPE*/
+#define    L_HEAD     LOGGER_FLAG_T_GENERATE( 1) /*<<< HEAD   FORMAT TYPE*/
+#define    L_ATOM     LOGGER_FLAG_T_GENERATE( 2) /*<<< ATOM   FORMAT TYPE*/
 #define    L_GNERR    LOGGER_FLAG_T_GENERATE( 3) /*<<< GENERIC ERROR TYPE*/
 #define    L_INFO     LOGGER_FLAG_T_GENERATE( 4)
 #define    L_ERROR    LOGGER_FLAG_T_GENERATE( 5)
@@ -79,7 +89,8 @@ static logger* logger_main_def = NULL;
 #define    L_LOGGER   LOGGER_FLAG_T_GENERATE(17)
 #define    L_TEST     LOGGER_FLAG_T_GENERATE(18)
 #define    L_MESG     LOGGER_FLAG_T_GENERATE(19)
-#define    L_ALL      LOGGER_FLAG_T_ALL          /*<<< END*/
+#define    L_ALL      LOGGER_FLAG_T_ALL          /*<<< END <<<*/
+
 
 static logger_filter logger_type_def[] = { LOGGER_FILTER_GENERATE(L_NUL),
                                            LOGGER_FILTER_GENERATE(L_VOID),
@@ -106,13 +117,13 @@ static logger_filter logger_type_def[] = { LOGGER_FILTER_GENERATE(L_NUL),
                                          };
 
 
-#define    LL_NUL   LOGGER_FLAG_N_NUL         /*<<<*/
-#define    LL_VOID  LOGGER_FLAG_N_GENERATE(0) /*<<<*/
+#define    LL_NUL   LOGGER_FLAG_N_NUL         /*<<< BEG <<<*/
+#define    LL_VOID  LOGGER_FLAG_N_GENERATE(0) /*<<< VOID   FORMAT NAME*/
 #define    LL_DEFI  LOGGER_FLAG_N_GENERATE(1)
 #define    LL_INIT  LOGGER_FLAG_N_GENERATE(2)
 #define    LL_MAIN  LOGGER_FLAG_N_GENERATE(3)
 #define    LL_DRVR  LOGGER_FLAG_N_GENERATE(4)
-#define    LL_ALL   LOGGER_FLAG_N_ALL         /*<<<*/
+#define    LL_ALL   LOGGER_FLAG_N_ALL         /*<<< END <<<*/
 
 static logger_filter logger_name_def[] = { LOGGER_FILTER_GENERATE(LL_NUL),
                                            LOGGER_FILTER_GENERATE(LL_VOID),
@@ -130,22 +141,24 @@ static logger_style logger_style_def[] = { {LEF_mesg, {0, 0, 0}, {0, 0, 0}, LSM_
                                          };
 
 
-static logger_define logger_define_def[] = { {.seed = 0,
-                                              .prog = "yaya_logger",
-                                              .proj = "yaya_library_collection_for_C",
-                                              .version = "v0.1",
-                                              .compiler = "gcc 7 x64"}
+static logger_define logger_define_def[] = { { .prog = "yaya_logger",
+                                               .proj = "yaya_library_collection_for_C",
+                                               .version = "v0.1",
+                                               .compiler = "gcc 7 x64"
+                                             }
                                            };
 
 
-static logger_setting logger_setting_def[] = { {.head_format = "HEAD ## $line%3. $mesg",
-                                                .logs_format = "LOGS ## $line%03. -- | $type%.08 $name%.08 $mesg",
-                                                .atom_format = "",
-                                                .gerr_format = "ERROR Generic  $debug  $line $file $func",
-                                                .type = L_ALL,
-                                                .name = LL_ALL,
-                                                .stream = LS_STDOUT,
-                                                .style = LOGGER_FALSE}
+static logger_setting logger_setting_def[] = { { .head_format = "HEAD ## $line%3. $mesg",
+                                                 .logs_format = "LOGS ## $line%03. -- | $type%.08 $name%.08 $mesg",
+                                                 .atom_format = "",
+                                                 .gerr_format = "ERROR Generic  $debug  $line $file $func",
+                                                 .type = L_ALL,
+                                                 .name = LL_ALL,
+                                                 .style = LOGGER_FALSE,
+                                                 .stream = LS_STDOUT,
+                                                 .out_buff = NULL,
+                                               }
                                              };
 
 // // END // DEFAULT
@@ -154,8 +167,8 @@ static logger_setting logger_setting_def[] = { {.head_format = "HEAD ## $line%3.
 /* format:
 
 STR
-  5.   =  |_ _ s t r|. = |s t r i n~g| -> от правого края + выход за пределы
-   .5  = .|s t r _ _|  = |s t r i n~g| -> от левого края  + выход за пределы
+  5.   =  |_ _ s t r|. = |s t r i n~g| -> от правого края + выход за пределы  T1
+   .5  = .|s t r _ _|  = |s t r i n~g| -> от левого края  + выход за пределы  T2
 
    .5: = .|s t r _ _|  = |s t r i :|   -> от правого края + показать начало
   :.5  =  |s t r _ _|  = |: r i n g|   -> от правого края + показать конец

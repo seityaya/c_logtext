@@ -12,6 +12,5 @@ add_executable(${PROJECT_NAME}
     )
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/../../lib/ yaya_logger)
-
 target_include_directories(${PROJECT_NAME} PUBLIC ../../lib/)
 target_link_libraries(${PROJECT_NAME} yaya_logger)

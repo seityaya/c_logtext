@@ -2,13 +2,13 @@
 #include <stdio.h>
 
 void foo(){
-    loggerf(L_BEGF, FOO, "im a sub");
+    loggerf(L_BEGF, FOO, "im a foo");
 
     loggerf(L_DEBUG, FOO, "im a debug");
 
-    loggerf(L_TODO, FOO, "im a void");
+    loggerf(L_TODO, FOO, "im a todo");
 
-    loggerf(L_ENDF, FOO, "return");
+    loggerf(L_ENDF, FOO, "return to foo");
 }
 
 int main(int argc, char *argv[]) {
@@ -19,7 +19,8 @@ int main(int argc, char *argv[]) {
 
     loggerf(L_BEGF,  "Start");
 
-    loggerf(L_DEBUG, "Foo fnk");
+    loggerf(L_DEBUG, "Foo fnk start");
+
     foo();
 
     loggerf(L_ENDF, "end");

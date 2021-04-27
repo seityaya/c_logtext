@@ -1,6 +1,14 @@
 #include "yaya_logger.h"
+#include "yaya_logger_private.h"
 
-void ___logger_pars(logger *lvg, const char *format, ___logger_tokens** tokens)
+#include <ctype.h>
+#include <string.h>
+#include <inttypes.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+logger_error ___logger_pars(logger *lvg, const char *format, ___logger_tokens** tokens)
 {
     (*tokens) = (___logger_tokens*)malloc(sizeof(___logger_tokens));
     memset((*tokens), 0, sizeof(___logger_tokens));
@@ -54,7 +62,7 @@ void ___logger_pars(logger *lvg, const char *format, ___logger_tokens** tokens)
                     i++;
                 }
                 ((*tokens)->mas_opt)[j].beg = i;
-                ((*tokens)->mas_opt)[j].id  = LEF_str;
+                ((*tokens)->mas_opt)[j].id  = LEF_STR;
                 do
                 {
                     ((*tokens)->mas_opt)[j].end = i;
@@ -84,7 +92,7 @@ void ___logger_pars(logger *lvg, const char *format, ___logger_tokens** tokens)
                 }
             }
             if(((*tokens)->mas_opt)[i].id == LEF_TOK){
-                ((*tokens)->mas_opt)[i].id = LEF_str;
+                ((*tokens)->mas_opt)[i].id = LEF_STR;
 
                 if(((*tokens)->mas_opt)[i].spe != NULL)
                 {
@@ -188,4 +196,6 @@ void ___logger_pars(logger *lvg, const char *format, ___logger_tokens** tokens)
             printf("\n");
         }
     }
+
+    return LE_OK;
 }

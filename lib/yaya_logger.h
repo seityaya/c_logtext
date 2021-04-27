@@ -1,17 +1,6 @@
 #ifndef YAYA_LOGGER_H_
 #define YAYA_LOGGER_H_
 
-#include <inttypes.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
-#include <ctype.h>
-
-#include "yaya_logger_struct.h"
-#include "yaya_logger_macro.h"
-#include "yaya_logger_conf.h"
-
 // clang-format off
 
 #if LOGGER_LOGS == LOGGER_TRUE
@@ -78,44 +67,44 @@
 
 
 /*
-A - struct [logger*]
+A - struct [void*  ]
 B - int    [l1]
 C - int    [l2]
 D - str    [char*] >-.
 E - va     [...]   <-'
 
-A      ->  logger*
+A      ->  void*
 A      ->  l1
 A      ->  l2
 A      ->  char*
 
-AB     ->  logger*, l1
-AC     ->  logger*, l2
-AD     ->  logger*, char*
+AB     ->  void*  , l1
+AC     ->  void*  , l2
+AD     ->  void*  , char*
 BC     ->  l1     , l2
 BD     ->  l1     , char*
 CD     ->  l1     , char*
 DE     ->  char*  , va
 
-ABC    ->  logger*, l1  , l1
-ABD    ->  logger*, l1  , char*
-ACD    ->  logger*, iL2  , char*
-ADE    ->  logger*, char*, va
+ABC    ->  void*  , l1  , l1
+ABD    ->  void*  , l1  , char*
+ACD    ->  void*  , iL2  , char*
+ADE    ->  void*  , char*, va
 BCD    ->  l1    , l2  , char*
 BDE    ->  l1    , char*, va
 CDE    ->  l2    , char*, va
 DEE    ->  DE
 
-ABCD   ->  logger*, l1  , l1  , char*
-ABDE   ->  logger*, l1  , char*, va
-ACDE   ->  logger*, l2  , char*, va
+ABCD   ->  void*  , l1  , l1  , char*
+ABDE   ->  void*  , l1  , char*, va
+ACDE   ->  void*  , l2  , char*, va
 ADEE   ->  ADE
 BCDE   ->  l1    , l1  , char*, va
 BDEE   ->  BDE
 CDEE   ->  CDE
 DEEE   ->  DE
 
-ABCDE  ->  logger*, l1  , l1  , char*, va
+ABCDE  ->  void*  , l1  , l1  , char*, va
 ABDEE  ->  ABDE
 ACDEE  ->  ACDE
 ADEEE  ->  ADE
@@ -132,7 +121,7 @@ DEEEE  ->  DE
 
 #define ___logger_func_1(a) \
     _Generic((a),                                          \
-    logger*     : ___logger_func_A_____("log_1_A____", a), \
+    void*       : ___logger_func_A_____("log_1_A____", a), \
     ___l1_type  : ___logger_func__B____("log_1__B___", a), \
     ___l2_type  : ___logger_func___C___("log_1___C__", a), \
     char*       : ___logger_func____D__("log_1____D_", a), \
@@ -141,7 +130,7 @@ DEEEE  ->  DE
 
 #define ___logger_func_2(a, ...) \
     _Generic((a),                                                                                \
-    logger*     : _Generic((__VA_ARGS__),                                                        \
+    void*       : _Generic((__VA_ARGS__),                                                        \
                   ___l1_type            : ___logger_func_AB____("log_2_AB___", a, __VA_ARGS__),  \
                   ___l2_type            : ___logger_func_A_C___("log_2_A_C__", a, __VA_ARGS__),  \
                   char*                 : ___logger_func_A__D__("log_2_A__D_", a, __VA_ARGS__),  \
@@ -160,7 +149,7 @@ DEEEE  ->  DE
 
 #define ___logger_func_3(a, b, ...) \
     _Generic((a),                                                                                                  \
-    logger*     : _Generic((b),                                                                                    \
+    void*       : _Generic((b),                                                                                    \
                   ___l1_type  : _Generic((__VA_ARGS__),                                                            \
                                 ___l2_type            : ___logger_func_ABC___("log_3_ABC__", a, b, __VA_ARGS__),   \
                                 char*                 : ___logger_func_AB_D__("log_3_AB_D_", a, b, __VA_ARGS__),   \
@@ -190,7 +179,7 @@ DEEEE  ->  DE
 
 #define ___logger_func_4(a, b, c, ...) \
     _Generic((a),                                                                                                                    \
-    logger*     : _Generic((b),                                                                                                      \
+    void*       : _Generic((b),                                                                                                      \
                   ___l1_type  : _Generic((c),                                                                                        \
                                 ___l2_type  : _Generic((__VA_ARGS__),                                                                \
                                               char*                 : ___logger_func_ABCD__("log_4_ABCD_", a, b, c, __VA_ARGS__),    \
@@ -229,7 +218,7 @@ DEEEE  ->  DE
 
 #define ___logger_func_5(a, b, c, d, ...) \
     _Generic((a),                                                                                                                                       \
-    logger*     : _Generic((b),                                                                                                                         \
+    void*       : _Generic((b),                                                                                                                         \
                   ___l1_type  : _Generic((c),                                                                                                           \
                                 ___l2_type  : _Generic((d),                                                                                             \
                                               char*       :  _Generic((__VA_ARGS__),                                                                    \
@@ -275,11 +264,11 @@ DEEEE  ->  DE
 
 
 
-#if LOGGER_DEF == LOGGER_TRUE
+#if LOGGER_TYPE_AUTO == LOGGER_TRUE
 #define ___LOGGER_LVG logger_main_def
 #endif
 
-#define ___LOGGER_LP_OR_DEF(A) _Generic((A), logger*    : (A), default : (___LOGGER_LVG) )
+#define ___LOGGER_LP_OR_DEF(A) _Generic((A), void*      : (A), default : (___LOGGER_LVG) )
 
 #define ___LOGGER_L1_OR_DEF(A) _Generic((A), ___l1_type : (A), default : (L_VOID)     )
 #define ___LOGGER_L2_OR_DEF(A) _Generic((A), ___l2_type : (A), default : (LL_VOID)    )
@@ -353,16 +342,103 @@ DEEEE  ->  DE
 #define ___LOGGER_FREE_0()                 yaya_log_free(___LOGGER_LVG)
 #define ___LOGGER_FREE_A(A)                yaya_log_free(A             )
 
+
+#include "yaya_logger_conf.h"
+#include "yaya_logger_public.h"
+
+logger_error yaya_log_func(uintmax_t count, const char *file, uintmax_t line, const char *func, const char* debug, void* lvg, ___l1_type type_one, ___l2_type type_two, const char *mes, ...);
+logger_error yaya_log_init(void** lvg, logger_filter *type, logger_filter *name, logger_setting *setting, logger_define *define, logger_style *style);
+logger_error yaya_log_free(void* lvg);
+
+
+#if (LOGGER_UNDEF == 1)
+#undef ___LOGGER_FUNC_0
+#undef ___LOGGER_FUNC_A
+#undef ___LOGGER_FUNC_B
+#undef ___LOGGER_FUNC_C
+#undef ___LOGGER_FUNC_D
+#undef ___LOGGER_FUNC_E
+#undef ___LOGGER_FUNC_F
+#undef ___LOGGER_FUNC_G
+#undef ___LOGGER_FUNC_H
+#undef ___LOGGER_FUNC_I
+#undef ___LOGGER_FUNC_J
+#undef ___LOGGER_FUNC_K
+#undef ___LOGGER_FUNC_L
+#undef ___LOGGER_FUNC_M
+#undef ___LOGGER_FUNC_O
+#undef ___LOGGER_FUNC_P
+#undef ___LOGGER_FUNC_Q
+#undef ___LOGGER_FUNC_R
+#undef ___LOGGER_FUNC_S
+#undef ___LOGGER_FUNC_T
+#undef ___LOGGER_FUNC_U
+#undef ___LOGGER_FUNC_V
+#undef ___LOGGER_FUNC_W
+#undef ___LOGGER_FUNC_X
+#undef ___LOGGER_FUNC_Y
+#undef ___LOGGER_FUNC_Z
+
+#undef ___logger_func_0
+#undef ___logger_func_1
+#undef ___logger_func_2
+#undef ___logger_func_3
+#undef ___logger_func_4
+#undef ___logger_func_5
+#undef ___logger_func_6
+
+#undef ___LOGGER_LVG
+
+#undef ___LOGGER_LP_OR_DEF
+#undef ___LOGGER_L1_OR_DEF
+#undef ___LOGGER_L2_OR_DEF
+#undef ___LOGGER_CP_OR_DEF
+
+#undef ___logger_func______V
+#undef ___logger_func_______
+#undef ___logger_func_A_____
+#undef ___logger_func__B____
+#undef ___logger_func___C___
+#undef ___logger_func____D__
+#undef ___logger_func_AB____
+#undef ___logger_func_A_C___
+#undef ___logger_func_A__D__
+#undef ___logger_func__BC___
+#undef ___logger_func__B_D__
+#undef ___logger_func___CD__
+#undef ___logger_func____DE_
+#undef ___logger_func_ABC___
+#undef ___logger_func_AB_D__
+#undef ___logger_func_A_CD__
+#undef ___logger_func_A__DE_
+#undef ___logger_func__BCD__
+#undef ___logger_func__B_DE_
+#undef ___logger_func___CDE_
+#undef ___logger_func_ABCD__
+#undef ___logger_func_AB_DE_
+#undef ___logger_func_A_CDE_
+#undef ___logger_func__BCDE_
+#undef ___logger_func_ABCDE_
+
+#undef ___LOGGER_INIT_0
+#undef ___LOGGER_INIT_A
+#undef ___LOGGER_INIT_B
+#undef ___LOGGER_INIT_C
+#undef ___LOGGER_INIT_D
+#undef ___LOGGER_INIT_E
+#undef ___LOGGER_INIT_F
+
+#undef ___LOGGER_FREE_0
+#undef ___LOGGER_FREE_A
+#endif
+
 #else
 
 #define loggerf(...)      //логгер
 #define loggerf_init(...) //инициализация
 #define loggerf_free(...) //освобождение
-#endif
 
-void yaya_log_init(logger** lvg, logger_filter *type, logger_filter *name, logger_setting *setting, logger_define *define, logger_style *style);
-void yaya_log_free(logger* lvg);
-uintmax_t yaya_log_func(uintmax_t count, const char *file, uintmax_t line, const char *func, const char* debug, logger *lvg, ___l1_type type_one, ___l2_type type_two, const char *mes, ...);
+#endif
 
 // clang-format on
 

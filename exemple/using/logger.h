@@ -3,7 +3,8 @@
 
 #include "yaya_logger.h"
 
-static logger* logger_instans = NULL;
+static void* my_logger_instans = NULL;
+
 #define    NUL      LOGGER_FLAG_N_NUL
 #define    VOID     LOGGER_FLAG_N_GENERATE(0)
 #define    MAIN_FN  LOGGER_FLAG_N_GENERATE(1)

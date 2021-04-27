@@ -1,7 +1,11 @@
 #include "yaya_logger.h"
+#include "yaya_logger_private.h"
 
-uintmax_t yaya_log_func(uintmax_t count, const char* file, uintmax_t line, const char* func, const char* debug, logger* lvg, ___l1_type type_one, ___l2_type type_two, const char* mesg, ...)
+#include <string.h>
+
+logger_error yaya_log_func(uintmax_t count, const char* file, uintmax_t line, const char* func, const char* debug, void *lvgv, ___l1_type type_one, ___l2_type type_two, const char* mesg, ...)
 {
+    logger *lvg = (logger*)(lvgv);
     lvg->absnum++;
 
     if (((uintmax_t)(lvg->psett->type) & (uintmax_t)(type_one)) && ((uintmax_t)(lvg->psett->name) & (uintmax_t)(type_two)))
@@ -33,8 +37,11 @@ uintmax_t yaya_log_func(uintmax_t count, const char* file, uintmax_t line, const
                 {
                     new_mesg   = va_arg(va_mesgptr, char *);
                     new_format = (char*)(mesg);
-                    ___logger_pars(lvg, new_format, &new_tokens);
+                    logger_error status = ___logger_pars(lvg, new_format, &new_tokens);
                     flag_free = 1;
+                    if(status != LE_OK){
+                        goto end;
+                    }
                 }
             }
 
@@ -74,6 +81,7 @@ uintmax_t yaya_log_func(uintmax_t count, const char* file, uintmax_t line, const
         ___logger_out(lvg);
 #endif
 
+end:
         if(flag_free == 1)
         {
             ___free_tokens(new_tokens);
@@ -81,8 +89,8 @@ uintmax_t yaya_log_func(uintmax_t count, const char* file, uintmax_t line, const
 
         va_end(va_mesgptr);
 
-        return LOGGER_TRUE;
+        return LE_OK;
     }
-    return LOGGER_FALSE;
+    return LE_OK;
 }
 
