@@ -34,6 +34,13 @@
 
 /*Включить вывод*/           /*В разработке*/
 #ifndef LOGGER_OUT
+//Author                 : Seityagiya Terlekchi
+//Contacts               : seityaya@ukr.net
+//Creation Date          : 2020.02
+//License Link           : https://spdx.org/licenses/LGPL-2.1-or-later.html
+//SPDX-License-Identifier: LGPL-2.1-or-later
+//Copyright © 2020-2022 Seityagiya Terlekchi. All rights reserved.
+
 #define LOGGER_OUT           LOGGER_ON
 #endif
 
