@@ -1,96 +1,248 @@
 #include "yaya_logger.h"
 #include "yaya_logger_private.h"
 
-#include <string.h>
-
-logger_error yaya_log_func(uintmax_t count, const char* file, uintmax_t line, const char* func, const char* debug, void *lvgv, ___l1_type type_one, ___l2_type type_two, const char* mesg, ...)
-{
-    logger *lvg = (logger*)(lvgv);
-    lvg->absnum++;
-
-    if (((uintmax_t)(lvg->psett->type) & (uintmax_t)(type_one)) && ((uintmax_t)(lvg->psett->name) & (uintmax_t)(type_two)))
-    {
-        char* new_format             = NULL;
-        char* new_mesg               = NULL;
-        ___logger_tokens* new_tokens = NULL;
-        _Bool flag_free = 0;
-
-        va_list va_mesgptr;
-        va_start(va_mesgptr, mesg);
-
-        if(type_one == L_HEAD || type_one == L_ATOM || type_one == L_GNERR)
-        {
-            if(type_one == L_ATOM){
-                if(mesg == NULL)
-                {
-                    new_mesg   = (char*)(mesg);
-                    new_format = (char*)(lvg->psett->atom_format);
-                    new_tokens = lvg->atom;
-                }
-                else if(mesg[0] != ___logger_token_list[LEF_TOK].name[0] )
-                {
-                    new_mesg   = (char*)(mesg);
-                    new_format = (char*)(lvg->psett->atom_format);
-                    new_tokens = lvg->atom;
-                }
-                else
-                {
-                    new_mesg   = va_arg(va_mesgptr, char *);
-                    new_format = (char*)(mesg);
-                    logger_error status = ___logger_pars(lvg, new_format, &new_tokens);
-                    flag_free = 1;
-                    if(status != LE_OK){
-                        goto end;
-                    }
-                }
-            }
-
-            if(type_one == L_HEAD){
-                new_mesg   = (char*)(mesg);
-                new_format = (char*)(lvg->psett->head_format);
-                new_tokens = lvg->head;
-            }
-
-            if(type_one == L_GNERR){
-                new_mesg   = (char*)(mesg);
-                new_format = (char*)(lvg->psett->gerr_format);
-                new_tokens = lvg->gerr;
-            }
-        }
-        else
-        {
-            new_mesg   = (char*)(mesg);
-            new_format = (char*)(lvg->psett->logs_format);
-            new_tokens   = lvg->logs;
-        }
-
-        lvg->curnum++;
-
-        for (uintmax_t i = 0; i < new_tokens->num_token; i++) {
-            memset(lvg->tmp_buff, 0, lvg->tmp_buff_size);
-            ___logger_token_list[new_tokens->mas_opt[i].id].func(lvg, new_format, &new_tokens->mas_opt[i],
-                                                                 count, file, line, func, debug,
-                                                                 type_one, type_two,
-                                                                 new_mesg, va_mesgptr);
-        }
-#if (LOGGER_STYLE != 0)
-        ___logger_styles(lvg);
-#endif
-
-#if (LOGGER_OUT != 0)
-        ___logger_out(lvg);
-#endif
-
-end:
-        if(flag_free == 1)
-        {
-            ___free_tokens(new_tokens);
-        }
-
-        va_end(va_mesgptr);
-
-        return LE_OK;
-    }
+LOGGER_TOKEN_GENERATE_FUNC(line){
+    LOGGER_FUNC_UNUSED;
+    ___format_build_num(lvg, mas_opt, line);
     return LE_OK;
 }
 
+LOGGER_TOKEN_GENERATE_FUNC(file){
+    LOGGER_FUNC_UNUSED;
+    ___format_build_str(lvg, mas_opt, file);
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(func){
+    LOGGER_FUNC_UNUSED;
+    ___format_build_str(lvg, mas_opt, func);
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(type){
+    LOGGER_FUNC_UNUSED;
+    for (uintmax_t j = 0; j < lvg->type.num - 1; j++){
+        if (type == L_ALL){
+            strncpy(lvg->tmp_buff, lvg->type.ptr[lvg->type.num].name, lvg->tmp_buff_size);
+            break;
+        }
+        if (type == L_NUL){
+            strncpy(lvg->tmp_buff, lvg->type.ptr[0].name, lvg->tmp_buff_size);
+            break;
+        }
+        if (LOGGER_BIT_GET(type, j)){
+            strncat(lvg->tmp_buff, lvg->type.ptr[j + 1].name, lvg->tmp_buff_size);
+            strncat(lvg->tmp_buff, " ", lvg->tmp_buff_size);
+        }
+    }
+    ___format_build_str(lvg, mas_opt, lvg->tmp_buff);
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(name){
+    LOGGER_FUNC_UNUSED;
+    for (uintmax_t j = 0; j < lvg->name.num - 1; j++){
+        if (name == LL_ALL){
+            strncpy(lvg->tmp_buff, lvg->name.ptr[lvg->name.num].name, lvg->tmp_buff_size);
+            break;
+        }
+        if (name == LL_NUL){
+            strncpy(lvg->tmp_buff, lvg->name.ptr[0].name, lvg->tmp_buff_size);
+            break;
+        }
+        if (LOGGER_BIT_GET(name, j)){
+            strncat(lvg->tmp_buff, lvg->name.ptr[j + 1].name, lvg->tmp_buff_size);
+            strncat(lvg->tmp_buff, " ", lvg->tmp_buff_size);
+        }
+    }
+    ___format_build_str(lvg, mas_opt, lvg->tmp_buff);
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(mesg){
+    LOGGER_FUNC_UNUSED;
+    vsnprintf(lvg->tmp_buff, lvg->tmp_buff_size, mes, mes_list);
+    ___format_build_str(lvg, mas_opt, lvg->tmp_buff);
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(debug){
+    LOGGER_FUNC_UNUSED;
+    ___format_build_str(lvg, mas_opt, debug);
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(count){
+    LOGGER_FUNC_UNUSED;
+    ___format_build_num(lvg, mas_opt, count);
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(curnum){
+    LOGGER_FUNC_UNUSED;
+    ___format_build_num(lvg, mas_opt, lvg->curnum);
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(absnum){
+    LOGGER_FUNC_UNUSED;
+    ___format_build_num(lvg, mas_opt, lvg->absnum);
+    return LE_OK;
+}
+
+
+
+
+
+
+LOGGER_TOKEN_GENERATE_FUNC(short_path){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(full_path){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(data_build){
+    LOGGER_FUNC_UNUSED;
+    ___format_build_str(lvg, mas_opt, __DATE__);
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(time_build){
+    LOGGER_FUNC_UNUSED;
+    ___format_build_str(lvg, mas_opt, __TIME__);
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(data_curent){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(time_curent){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(prog){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(prog_v){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(prog_p){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(proj){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(compiler){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(compiler_v){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+
+LOGGER_TOKEN_GENERATE_FUNC(tik_core){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(tik_sec){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(tic_rtos){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(tik_unix){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+
+LOGGER_TOKEN_GENERATE_FUNC(type_filter){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(name_filter){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(type_mask){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(name_mask){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(type_list){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(name_list){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(seed){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(alignl){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(aliggt){
+    LOGGER_FUNC_UNUSED;
+
+    return LE_OK;
+}

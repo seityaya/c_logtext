@@ -1,13 +1,6 @@
 #include "yaya_logger.h"
 #include "yaya_logger_private.h"
 
-#include <ctype.h>
-#include <string.h>
-#include <inttypes.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <stdio.h>
-
 logger_error ___logger_pars(logger *lvg, const char *format, ___logger_tokens** tokens)
 {
     (*tokens) = (___logger_tokens*)malloc(sizeof(___logger_tokens));
@@ -171,7 +164,7 @@ logger_error ___logger_pars(logger *lvg, const char *format, ___logger_tokens** 
                 int f1 = 80;
                 memset(lvg->tmp_buff, 0, lvg->tmp_buff_size);
                 strncpy(lvg->tmp_buff, &format[(*tokens)->mas_opt[i].beg], (*tokens)->mas_opt[i].end - (*tokens)->mas_opt[i].beg + 1);
-                char buffmod[300] = {0}; //FIXME
+                char buffmod[LOGGER_TMP_BUFF_SIZE] = {0}; //FIXME
                 if ((*tokens)->mas_opt[i].spe != NULL)
                 {
                     strncpy(buffmod, &format[(*tokens)->mas_opt[i].spe->beg], (*tokens)->mas_opt[i].spe->end - (*tokens)->mas_opt[i].spe->beg + 1);

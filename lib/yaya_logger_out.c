@@ -1,10 +1,7 @@
 #include "yaya_logger.h"
 #include "yaya_logger_private.h"
 
-#include <stdio.h>
-
-#if (LOGGER_OUT != 0)
-
+#if (LOGGER_OUT == LOGGER_ON)
 logger_error ___logger_out(logger *lvg)
 {
     switch (lvg->psett->stream) {
@@ -19,9 +16,11 @@ logger_error ___logger_out(logger *lvg)
             break;
         }
         case LS_STDFILE: {
+            printf("LS_STDFILE");
             break;
         }
         case LS_STDBUF: {
+            printf("LS_STDBUF");
             break;
         }
     }
@@ -31,5 +30,4 @@ logger_error ___logger_out(logger *lvg)
 
     return LE_OK;
 }
-
 #endif

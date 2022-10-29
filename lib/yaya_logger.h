@@ -1,10 +1,14 @@
 #ifndef YAYA_LOGGER_H_
 #define YAYA_LOGGER_H_
 
+#include "yaya_logger_conf.h"
+#include "yaya_logger_public.h"
+
+#if LOGGER_LOGS == LOGGER_ON
 // clang-format off
 
-#if LOGGER_LOGS == LOGGER_TRUE
-
+//loggerf(void *lvgv  , l1_type type_one, l2_type type_two, const char* mesg, ...)
+//loggerf(NULL, L_VOID, LL_VOID, "Text %s", "Hello World");
 #define loggerf(...) \
         ___LOGGER_FUNC_x( ,            \
         ##__VA_ARGS__ ,                \
@@ -88,21 +92,21 @@ DE     ->  char*  , va
 
 ABC    ->  void*  , l1  , l1
 ABD    ->  void*  , l1  , char*
-ACD    ->  void*  , iL2  , char*
+ACD    ->  void*  , i2  , char*
 ADE    ->  void*  , char*, va
-BCD    ->  l1    , l2  , char*
-BDE    ->  l1    , char*, va
-CDE    ->  l2    , char*, va
-DEE    ->  DE
+BCD    ->  l1     , l2  , char*
+BDE    ->  l1     , char*, va
+CDE    ->  l2     , char*, va
+DEE    ->  char*  , va, va
 
-ABCD   ->  void*  , l1  , l1  , char*
-ABDE   ->  void*  , l1  , char*, va
-ACDE   ->  void*  , l2  , char*, va
-ADEE   ->  ADE
-BCDE   ->  l1    , l1  , char*, va
-BDEE   ->  BDE
-CDEE   ->  CDE
-DEEE   ->  DE
+ABCD   ->  void*  , l1    , l1   , char*
+ABDE   ->  void*  , l1    , char*, va
+ACDE   ->  void*  , l2    , char*, va
+ADEE   ->  void*  , char*        , va
+BCDE   ->  l1     , l1    , char*, va
+BDEE   ->  l1     , char* , va
+CDEE   ->  l2     , char* , va   , va
+DEEE   ->  char*  , va
 
 ABCDE  ->  void*  , l1  , l1  , char*, va
 ABDEE  ->  ABDE
@@ -263,16 +267,16 @@ DEEEE  ->  DE
     default                                                                        : ___logger_func______V("log_5___V_8"))
 
 
-
 #if LOGGER_TYPE_AUTO == LOGGER_TRUE
 #define ___LOGGER_LVG logger_main_def
+#else
+#define ___LOGGER_LVG NULL
 #endif
 
-#define ___LOGGER_LP_OR_DEF(A) _Generic((A), void*      : (A), default : (___LOGGER_LVG) )
-
-#define ___LOGGER_L1_OR_DEF(A) _Generic((A), ___l1_type : (A), default : (L_VOID)     )
-#define ___LOGGER_L2_OR_DEF(A) _Generic((A), ___l2_type : (A), default : (LL_VOID)    )
-#define ___LOGGER_CP_OR_DEF(A) _Generic((A), char*      : (A), const char*      : (A), default : (NULL)       )
+#define ___LOGGER_LP_OR_DEF(A) _Generic((A), void*      : (A), default     : (___LOGGER_LVG)      )
+#define ___LOGGER_L1_OR_DEF(A) _Generic((A), ___l1_type : (A), default     : (L_VOID)             )
+#define ___LOGGER_L2_OR_DEF(A) _Generic((A), ___l2_type : (A), default     : (LL_VOID)            )
+#define ___LOGGER_CP_OR_DEF(A) _Generic((A), char*      : (A), const char* : (A), default : (NULL))
 
 #define ___logger_func______V(N)                  yaya_log_func(__COUNTER__, __FILE__, __LINE__, __FUNCTION__, N, ___LOGGER_LVG         , L_GNERR               , LL_VOID               , NULL                  , NULL       )
 
@@ -321,15 +325,18 @@ DEEEE  ->  DE
 
 #define ___LOGGER_INIT_x(x, A, B, C, D, E, F, FUNC, ...) FUNC
 
+#if LOGGER_TYPE_AUTO == LOGGER_TRUE
 #define ___LOGGER_INIT_0()                 yaya_log_init(&___LOGGER_LVG, NULL, NULL, NULL, NULL, NULL)
+#else
+#define ___LOGGER_INIT_0()                 yaya_log_init( ___LOGGER_LVG, NULL, NULL, NULL, NULL, NULL)
+#endif
+
 #define ___LOGGER_INIT_A(A)                yaya_log_init(A             , NULL, NULL, NULL, NULL, NULL)
 #define ___LOGGER_INIT_B(A, B)             yaya_log_init(A             , B   , NULL, NULL, NULL, NULL)
 #define ___LOGGER_INIT_C(A, B, C)          yaya_log_init(A             , B   , C   , NULL, NULL, NULL)
 #define ___LOGGER_INIT_D(A, B, C, D)       yaya_log_init(A             , B   , C   , D   , NULL, NULL)
 #define ___LOGGER_INIT_E(A, B, C, D, E)    yaya_log_init(A             , B   , C   , D   , E   , NULL)
 #define ___LOGGER_INIT_F(A, B, C, D, E, F) yaya_log_init(A             , B   , C   , D   , E   , F   )
-
-
 
 #define loggerf_free(...) \
         ___LOGGER_FREE_x( ,            \
@@ -343,15 +350,11 @@ DEEEE  ->  DE
 #define ___LOGGER_FREE_A(A)                yaya_log_free(A             )
 
 
-#include "yaya_logger_conf.h"
-#include "yaya_logger_public.h"
-
 logger_error yaya_log_func(uintmax_t count, const char *file, uintmax_t line, const char *func, const char* debug, void* lvg, ___l1_type type_one, ___l2_type type_two, const char *mes, ...);
-logger_error yaya_log_init(void** lvg, logger_filter *type, logger_filter *name, logger_setting *setting, logger_define *define, logger_style *style);
+logger_error yaya_log_init(void** lvg, logger_filter *type_one, logger_filter *type_two, logger_setting *setting, logger_define *define, logger_style *style);
 logger_error yaya_log_free(void* lvg);
 
-
-#if (LOGGER_UNDEF == 1)
+#if (LOGGER_UNDEF == LOGGER_ON)
 #undef ___LOGGER_FUNC_0
 #undef ___LOGGER_FUNC_A
 #undef ___LOGGER_FUNC_B

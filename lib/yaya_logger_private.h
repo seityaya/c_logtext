@@ -3,8 +3,22 @@
 
 #include <stdarg.h>
 #include <stdlib.h>
+#include <string.h>
+#include <inttypes.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 
-#include "yaya_logger_public.h"
+#include "yaya_logger.h"
+
+#if (LOGGER_STATIC == LOGGER_ON)
+#define malloc XXX_malloc_XXX
+#define calloc XXX_calloc_XXX
+#define realloc XXX_realloc_XXX
+#define free XXX_free_XXX
+#else
+
+#endif
 
 #define LOGGER_BIT_GET(x, n)        ((uintmax_t)(x) & (UINTMAX_C(1) << (uintmax_t)(n)))
 
@@ -90,7 +104,7 @@ typedef struct logger {
     ___logger_tokens *gerr;
 
     uintmax_t tmp_buff_size;
-    char      *tmp_buff;  // - указатель на времменый буфер
+    char      *tmp_buff;  // - указатель на временный буфер
     uintmax_t out_buff_size;
     char      *out_buff;  // - указатель на буфер вывода
     intmax_t  out_offset; // - указатель на конец строки
@@ -99,22 +113,83 @@ typedef struct logger {
     uintmax_t absnum; // - номер вывода без учета фильтрации
 } logger;
 
+
 typedef struct ___logger_token_func {      /*список токенов*/
         const uintmax_t id;        /*идентификатор*/
         const char *name;          /*текстовое представление ключей*/
         logger_error (*func)(LOGGER_FUNC_PARAM); /*функция токена*/
 } ___logger_token_func;
 
-logger_error ___logger_pars (logger *lvg, const char *format, ___logger_tokens** tokens);
-logger_error ___format_build_str(logger *lvg, ___logger_token_mas *mas_opt, const char *buff_orig);
-logger_error ___format_build_num(logger *lvg, ___logger_token_mas *mas_opt, uintmax_t buff_orig);
 
+logger_error ___logger_pars  (logger *lvg, const char *format, ___logger_tokens** tokens);
+
+#if (LOGGER_OUT == LOGGER_ON)
+logger_error ___logger_out   (logger *lvg);
+#endif
+
+#if (LOGGER_STYLE == LOGGER_ON)
 logger_error ___logger_styles(logger *lvg);
-logger_error ___logger_out(logger *lvg);
+#endif
 
-logger_error ___count_num(___logger_filters *filter) ;
-logger_error ___free_tokens(___logger_tokens* tokens);
+logger_error ___format_build_str(logger *lvg, ___logger_token_mas *mas_opt, const char *buff_orig);
+logger_error ___format_build_num(logger* lvg, ___logger_token_mas* mas_opt, uintmax_t buff_orig);
 
+
+typedef enum {
+    LOGGER_TOKEN_GENERATE_ENUM(TOK),          /* токен формата токена */
+    LOGGER_TOKEN_GENERATE_ENUM(SPE),          /* токен формата вывода, модификатор*/
+    LOGGER_TOKEN_GENERATE_ENUM(SEP),          /* токен формата вывода, разделитель */
+    LOGGER_TOKEN_GENERATE_ENUM(HID),          /* токен формата вывода, скрыватель */
+    LOGGER_TOKEN_GENERATE_ENUM(CAT),          /* токен формата соединения */
+    LOGGER_TOKEN_GENERATE_ENUM(STR),          /* токен формата текста */
+
+    LOGGER_TOKEN_GENERATE_ENUM(BEG),          /* открывающий токен */
+
+    LOGGER_TOKEN_GENERATE_ENUM(file),         /* имя файла */
+    LOGGER_TOKEN_GENERATE_ENUM(line),         /* номер строчки*/
+    LOGGER_TOKEN_GENERATE_ENUM(func),         /* имя функции */
+    LOGGER_TOKEN_GENERATE_ENUM(type),         /* тип сообщения */
+    LOGGER_TOKEN_GENERATE_ENUM(name),         /* имя сообщения*/
+    LOGGER_TOKEN_GENERATE_ENUM(mesg),         /* тело сообщения */
+
+    LOGGER_TOKEN_GENERATE_ENUM(count),        /* номер сообщения, на основе __COUNTER__ */
+    LOGGER_TOKEN_GENERATE_ENUM(curnum),       /* номер выведенного сообщения */
+    LOGGER_TOKEN_GENERATE_ENUM(absnum),       /* номер сообщения без учета фильтрации */
+
+    LOGGER_TOKEN_GENERATE_ENUM(short_path),   /* короткий путь */
+    LOGGER_TOKEN_GENERATE_ENUM(full_path),    /* полный путь */
+
+    LOGGER_TOKEN_GENERATE_ENUM(data_build),   /* дата компиляции */
+    LOGGER_TOKEN_GENERATE_ENUM(time_build),   /* время компиляции */
+    LOGGER_TOKEN_GENERATE_ENUM(data_curent),  /* дата сообщения */
+    LOGGER_TOKEN_GENERATE_ENUM(time_curent),  /* время сообщения */
+
+    LOGGER_TOKEN_GENERATE_ENUM(prog),         /* название программы */
+    LOGGER_TOKEN_GENERATE_ENUM(prog_v),       /* версия программы */
+    LOGGER_TOKEN_GENERATE_ENUM(prog_p),       /* расположение программы */
+    LOGGER_TOKEN_GENERATE_ENUM(proj),         /* название проекта */
+    LOGGER_TOKEN_GENERATE_ENUM(compiler),     /* название компилятора */
+    LOGGER_TOKEN_GENERATE_ENUM(compiler_v),   /* версия компилятора */
+
+    LOGGER_TOKEN_GENERATE_ENUM(tik_core),     /* счетчик тактов процессора */
+    LOGGER_TOKEN_GENERATE_ENUM(tik_sec),      /* счетчик секунд от старта */
+    LOGGER_TOKEN_GENERATE_ENUM(tic_rtos),     /* счетчик rtos */
+    LOGGER_TOKEN_GENERATE_ENUM(tik_unix),     /* счетчик времени в формате UNIX*/
+
+    LOGGER_TOKEN_GENERATE_ENUM(type_filter),  /* вывод настроек фильтрации типа */
+    LOGGER_TOKEN_GENERATE_ENUM(name_filter),  /* вывод настроек фильтрации имени */
+    LOGGER_TOKEN_GENERATE_ENUM(type_mask),    /* вывод настроек фильтрации типа как бинарную маску */
+    LOGGER_TOKEN_GENERATE_ENUM(name_mask),    /* вывод настроек фильтрации имени как бинарную маску */
+    LOGGER_TOKEN_GENERATE_ENUM(type_list),    /* имена всех типов сообщений */
+    LOGGER_TOKEN_GENERATE_ENUM(name_list),    /* имена всех названий сообщений */
+
+    LOGGER_TOKEN_GENERATE_ENUM(alignl),       /* выравнивание при переносе */
+    LOGGER_TOKEN_GENERATE_ENUM(aliggt),       /* выравнивание принудительное */
+
+    LOGGER_TOKEN_GENERATE_ENUM(debug),        /* отладочная информация */
+
+    LOGGER_TOKEN_GENERATE_ENUM(END)           /* замыкающий токен */
+} ___logger_token_id;
 
 LOGGER_TOKEN_GENERATE_FUNC(STR);
 LOGGER_TOKEN_GENERATE_FUNC(file);

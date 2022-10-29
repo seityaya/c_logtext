@@ -1,2 +1,4 @@
 # Logger for C
-Library collection for C
+
+Является частью моей коллекции библиотек для Си
+

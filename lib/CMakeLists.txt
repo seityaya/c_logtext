@@ -9,9 +9,9 @@ set(PROJECT_NAME yaya_logger)
 project(${PROJECT_NAME})
 
 set(SRC_LIST
+    yaya_logger.c
     yaya_logger_format.c
     yaya_logger_func.c
-    yaya_logger_init.c
     yaya_logger_out.c
     yaya_logger_pars.c
     yaya_logger_style.c

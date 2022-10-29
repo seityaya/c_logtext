@@ -1,11 +1,12 @@
 #include <stdio.h>
-#include "test.h"
 #include <inttypes.h>
+
+#include "test.h"
 
 #define IF_TYPE_TEST(test) ((TYPE_TEST) & (test))
 
 void test_printf(){
-#if IF_TYPE_TEST(FREE_TOKEN)
+#if IF_TYPE_TEST(PRINTF)
 
     printf("^^ BEG %s \n", __func__);
 
@@ -47,10 +48,9 @@ void loggerf_test_free(){
                                              .logs_format = "$## $line%03.  >> $func $mesg",
                                              .atom_format = "$## line",
                                              .gerr_format = ">>ERROR<<",
-                                             .type = L_ALL,
-                                             .name = LL_ALL,
+                                             .type_l1 = L_ALL,
+                                             .name_l2 = LL_ALL,
                                              .stream = LS_STDOUT,
-                                             .style = LOGGER_FALSE
                                            } };
 
     for(intmax_t i = 0;  i < NUM_RUN_CYCLES; i++){
@@ -74,11 +74,11 @@ void loggerf_test_param(){
     printf("/* I */\n");
     loggerf_init();
     loggerf_init(&logger_instance);
-    loggerf_init(&logger_instance, logger_type_def);
-    loggerf_init(&logger_instance, logger_type_def, logger_name_def);
-    loggerf_init(&logger_instance, logger_type_def, logger_name_def, logger_setting_def);
-    loggerf_init(&logger_instance, logger_type_def, logger_name_def, logger_setting_def, logger_define_def);
-    loggerf_init(&logger_instance, logger_type_def, logger_name_def, logger_setting_def, logger_define_def, logger_style_def);
+    loggerf_init(&logger_instance, logger_type_l1_def);
+    loggerf_init(&logger_instance, logger_type_l1_def, logger_name_l2_def);
+    loggerf_init(&logger_instance, logger_type_l1_def, logger_name_l2_def, logger_setting_def);
+    loggerf_init(&logger_instance, logger_type_l1_def, logger_name_l2_def, logger_setting_def, logger_define_def);
+    loggerf_init(&logger_instance, logger_type_l1_def, logger_name_l2_def, logger_setting_def, logger_define_def, logger_style_def);
 
     printf("/* H */\n");
     loggerf(L_HEAD);
@@ -170,13 +170,16 @@ void loggerf_test_token(){
 
     loggerf_init();
 
+    loggerf(L_ATOM, "$str", "str"); /*<<<*/
+    loggerf(L_ATOM, "$STR", "STR"); /*<<<*/
     loggerf(L_ATOM, "$## $line%03.  >> $str");
     loggerf(L_ATOM, "$## $line%03.  >> $file");
     loggerf(L_ATOM, "$## $line%03.  >> $line");
     loggerf(L_ATOM, "$## $line%03.  >> $func");
     loggerf(L_ATOM, "$## $line%03.  >> $type");
     loggerf(L_ATOM, "$## $line%03.  >> $name");
-    loggerf(L_ATOM, "$## $line%03.  >> $mesg");              /*<<<*/
+    loggerf(L_ATOM, "$## $line%03.  >> $mesg", "mesg"); /*<<<*/
+    loggerf(L_ATOM, "$## $line%03.  >> $mesg", "$mesg", "$mesg"); /*<<<*/
 
     loggerf(L_ATOM, "$## $line%03.  >> $count");
     loggerf(L_ATOM, "$## $line%03.  >> $curnum");
@@ -205,8 +208,6 @@ void loggerf_test_token(){
     loggerf(L_ATOM, "$## $line%03.  >> $name_mask");
     loggerf(L_ATOM, "$## $line%03.  >> $type_list");
     loggerf(L_ATOM, "$## $line%03.  >> $name_list");
-
-    loggerf(L_ATOM, "$## $line%03.  >> $seed");
 
     loggerf(L_ATOM, "$## $line%03.  >> $alignl");
     loggerf(L_ATOM, "$## $line%03.  >> $aliggt");
