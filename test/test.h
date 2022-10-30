@@ -10,7 +10,7 @@
 
 #include "yaya_logger.h"
 
-#define NUM_RUN_CYCLES 1000000
+#define NUM_RUN_CYCLES 100
 
 #define    PRINTF      1
 #define    FREE_TOKEN  2

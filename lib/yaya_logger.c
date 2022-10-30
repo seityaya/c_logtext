@@ -43,15 +43,15 @@ static logger_error ___free_tokens(___logger_tokens* tokens){
 }
 
 
-logger_error yaya_log_init(void**          lvgv,
-                           logger_filter*  type_one,
-                           logger_filter*  type_two,
+logger_error yaya_log_init(void**          logger_ptr,
+                           logger_filter*  level_one,
+                           logger_filter*  level_two,
                            logger_setting* setting,
                            logger_define*  define,
                            logger_style*   style)
 {
     logger_error status = LE_ERR;
-    logger **lvg = (logger**)(lvgv);
+    logger **lvg = (logger**)(logger_ptr);
 
     if(lvg == NULL){
         return LE_ERR;
@@ -64,8 +64,8 @@ logger_error yaya_log_init(void**          lvgv,
     }
 
     /*Cвязывание указателей*/
-    (*lvg)->type.ptr = (type_one  != NULL) ? type_one  : logger_type_l1_def;
-    (*lvg)->name.ptr = (type_two  != NULL) ? type_two  : logger_name_l2_def;
+    (*lvg)->type.ptr = (level_one  != NULL) ? level_one  : logger_type_l1_def;
+    (*lvg)->name.ptr = (level_two  != NULL) ? level_two  : logger_name_l2_def;
     (*lvg)->psett    = (setting   != NULL) ? setting   : logger_setting_def;
     (*lvg)->pdefn    = (define    != NULL) ? define    : logger_define_def;
     (*lvg)->pstyl    = (style     != NULL) ? style     : logger_style_def;
@@ -122,9 +122,18 @@ logger_error yaya_log_init(void**          lvgv,
     return LE_OK;
 }
 
-logger_error yaya_log_func(uintmax_t count, const char* file, uintmax_t line, const char* func, const char* debug, void *lvgv, ___l1_type type_one, ___l2_type type_two, const char* mesg, ...)
+logger_error yaya_log_func(uintmax_t count,
+                           const char* file,
+                           uintmax_t line,
+                           const char* func,
+                           const char* debug,
+                           void *logger_ptr,
+                           ___l1_type level_one,
+                           ___l2_type level_two,
+                           const char* mesg,
+                           ...)
 {
-    logger *lvg = (logger*)(lvgv);
+    logger *lvg = (logger*)(logger_ptr);
 
     if(lvg == NULL){
         return LE_ERR;
@@ -132,7 +141,7 @@ logger_error yaya_log_func(uintmax_t count, const char* file, uintmax_t line, co
 
     lvg->absnum++;
 
-    if (((uintmax_t)(lvg->psett->type_l1) & (uintmax_t)(type_one)) && ((uintmax_t)(lvg->psett->name_l2) & (uintmax_t)(type_two)))
+    if (((uintmax_t)(lvg->psett->type_l1) & (uintmax_t)(level_one)) && ((uintmax_t)(lvg->psett->name_l2) & (uintmax_t)(level_two)))
     {
         char* new_format             = NULL;
         char* new_mesg               = NULL;
@@ -144,7 +153,7 @@ logger_error yaya_log_func(uintmax_t count, const char* file, uintmax_t line, co
 #if (LOGGER_STATIC == LOGGER_OFF)
 
         _Bool flag_free = 0;
-        if(type_one == L_ATOM)
+        if(level_one == L_ATOM)
         {
             if((mesg == NULL) || (mesg[0] != ___logger_token_list[LEF_TOK].name[0]))
             {
@@ -165,13 +174,13 @@ logger_error yaya_log_func(uintmax_t count, const char* file, uintmax_t line, co
         }
         else
 #endif
-            if(type_one == L_HEAD)
+            if(level_one == L_HEAD)
             {
                 new_mesg   = (char*)(mesg);
                 new_format = (lvg->psett->head_format);
                 new_tokens = lvg->head;
             }
-            else if(type_one == L_GNERR)
+            else if(level_one == L_GNERR)
             {
                 new_mesg   = (char*)(mesg);
                 new_format = (lvg->psett->gerr_format);
@@ -190,7 +199,7 @@ logger_error yaya_log_func(uintmax_t count, const char* file, uintmax_t line, co
             memset(lvg->tmp_buff, 0, lvg->tmp_buff_size);
             ___logger_token_list[new_tokens->mas_opt[i].id].func(lvg, new_format, &new_tokens->mas_opt[i],
                                                                  count, file, line, func, debug,
-                                                                 type_one, type_two,
+                                                                 level_one, level_two,
                                                                  new_mesg, va_mesgptr);
         }
 
@@ -215,9 +224,9 @@ end:
     return LE_OK;
 }
 
-logger_error yaya_log_free(void* lvgv)
+logger_error yaya_log_free(void* logger_ptr)
 {
-    logger *lvg = (logger*)(lvgv);
+    logger *lvg = (logger*)(logger_ptr);
 
     if(lvg == NULL){
         return LE_ERR;

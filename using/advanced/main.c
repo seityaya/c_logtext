@@ -30,13 +30,5 @@ int main(int argc, char *argv[]) {
     loggerf(L_ENDF, "end");
     loggerf_free(logger_main_def);
 
-
-    loggerf_init();
-    loggerf(L_HEAD);
-    loggerf(L_BEGF);
-    loggerf("Hello World!");
-    loggerf(L_ENDF,  "Void");
-    loggerf_free();
-
     return 0;
 }

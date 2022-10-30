@@ -5,7 +5,7 @@
 #SPDX-License-Identifier: LGPL-2.1-or-later
 #Copyright © 2020-2022 Seityagiya Terlekchi. All rights reserved.
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.0)
 
 set(VERSION 0.1)
 set(CMAKE_C_STANDARD 11)

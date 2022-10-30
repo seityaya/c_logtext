@@ -10,8 +10,6 @@
 
 #include "yaya_logger.h"
 
-static void* my_logger_instans = NULL;
-
 #define    NUL      LOGGER_FLAG_N_NUL            /*<<<*/
 #define    VOID     LOGGER_FLAG_N_GENERATE(0)    /*<<<*/
 #define    MAIN_FN  LOGGER_FLAG_N_GENERATE(1)
@@ -30,6 +28,8 @@ static logger_filter my_logger_name[] = { LOGGER_FILTER_GENERATE(NUL),      /*<<
                                           LOGGER_FILTER_GENERATE(FOO),
                                           LOGGER_FILTER_GENERATE(ALL)       /*<<<*/
                                         };
+
+
 
 logger_setting my_logger_setting[] = { { .head_format = "HEAD ## $line%3. >> $mesg",
                                          .logs_format = "LOGS ## $line%03. -- | $type%.15 $name%.08 >> $func%10.  $mesg%.10 << $file%20.",

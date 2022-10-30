@@ -345,6 +345,7 @@ DEEEE  ->  DE
 #define ___LOGGER_INIT_E(A, B, C, D, E)    yaya_log_init(A             , B   , C   , D   , E   , NULL)
 #define ___LOGGER_INIT_F(A, B, C, D, E, F) yaya_log_init(A             , B   , C   , D   , E   , F   )
 
+#if (LOGGER_STATIC == LOGGER_OFF)
 #define loggerf_free(...) \
         ___LOGGER_FREE_x( ,            \
         ##__VA_ARGS__ ,                \
@@ -355,11 +356,14 @@ DEEEE  ->  DE
 
 #define ___LOGGER_FREE_0()                 yaya_log_free(___LOGGER_LVG)
 #define ___LOGGER_FREE_A(A)                yaya_log_free(A             )
+logger_error yaya_log_free(void* logger_ptr);
+#else
+#define loggerf_free(...)
+#endif
 
+logger_error yaya_log_func(uintmax_t count, const char *file, uintmax_t line, const char *func, const char* debug, void* logger_ptr, ___l1_type level_one, ___l2_type level_two, const char *mes, ...);
+logger_error yaya_log_init(void** logger_ptr, logger_filter *level_one, logger_filter *level_two, logger_setting *setting, logger_define *define, logger_style *style);
 
-logger_error yaya_log_func(uintmax_t count, const char *file, uintmax_t line, const char *func, const char* debug, void* lvg, ___l1_type type_one, ___l2_type type_two, const char *mes, ...);
-logger_error yaya_log_init(void** lvg, logger_filter *type_one, logger_filter *type_two, logger_setting *setting, logger_define *define, logger_style *style);
-logger_error yaya_log_free(void* lvg);
 
 #if (LOGGER_UNDEF == LOGGER_ON)
 #undef ___LOGGER_FUNC_0
