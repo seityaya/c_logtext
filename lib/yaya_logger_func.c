@@ -128,13 +128,21 @@ LOGGER_TOKEN_GENERATE_FUNC(time_build){
 
 LOGGER_TOKEN_GENERATE_FUNC(data_curent){
     LOGGER_FUNC_UNUSED;
-
+    time_t curent = time(NULL);
+    struct tm *ptr = NULL;
+    ptr = localtime(&curent);
+    snprintf(lvg->tmp_buff, lvg->tmp_buff_size, "%04d.%02d.%02d", ptr->tm_year + 1900, ptr->tm_mon + 1, ptr->tm_mday);
+    ___format_build_str(lvg, mas_opt, lvg->tmp_buff);
     return LE_OK;
 }
 
 LOGGER_TOKEN_GENERATE_FUNC(time_curent){
     LOGGER_FUNC_UNUSED;
-
+    time_t curent = time(NULL);
+    struct tm *ptr = NULL;
+    ptr = localtime(&curent);
+    snprintf(lvg->tmp_buff, lvg->tmp_buff_size, "%02d:%02d:%02d", ptr->tm_hour, ptr->tm_min, ptr->tm_sec);
+    ___format_build_str(lvg, mas_opt, lvg->tmp_buff);
     return LE_OK;
 }
 

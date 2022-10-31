@@ -10,6 +10,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #define LOGGER_TRUE                        (1 == 1)
 #define LOGGER_FALSE                       (!LOGGER_TRUE)
@@ -48,10 +49,8 @@ typedef enum{
 typedef enum {
     LS_STDOUT,
     LS_STDERR,
-    LS_STDFILE,
-    LS_STDLOG,
-    LS_STDNET,
     LS_STDBUF,
+    LS_STDFILE,
     LS_STDCSV
 } logger_streams;
 
@@ -102,8 +101,12 @@ typedef struct logger_setting {
 
     ___l1_type type_l1;
     ___l2_type name_l2;
-    uintmax_t  stream;
-    char      *out_buff;
+
+    logger_streams stream;
+    char          *out_file;
+    char          *out_buff;
+    size_t        *out_size;
+    size_t         size_buff;
 } logger_setting;
 
 #endif /*YAYA_LOGGER_STRUCT_H_*/

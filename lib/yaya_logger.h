@@ -345,6 +345,8 @@ DEEEE  ->  DE
 #define ___LOGGER_INIT_E(A, B, C, D, E)    yaya_log_init(A             , B   , C   , D   , E   , NULL)
 #define ___LOGGER_INIT_F(A, B, C, D, E, F) yaya_log_init(A             , B   , C   , D   , E   , F   )
 
+
+
 #if (LOGGER_STATIC == LOGGER_OFF)
 #define loggerf_free(...) \
         ___LOGGER_FREE_x( ,            \
@@ -354,16 +356,31 @@ DEEEE  ->  DE
 
 #define ___LOGGER_FREE_x(x, A, FUNC, ...) FUNC
 
-#define ___LOGGER_FREE_0()                 yaya_log_free(___LOGGER_LVG)
-#define ___LOGGER_FREE_A(A)                yaya_log_free(A             )
-logger_error yaya_log_free(void* logger_ptr);
+#define ___LOGGER_FREE_0()                 yaya_log_free(&___LOGGER_LVG)
+#define ___LOGGER_FREE_A(A)                yaya_log_free(&A            )
 #else
 #define loggerf_free(...)
 #endif
 
-logger_error yaya_log_func(uintmax_t count, const char *file, uintmax_t line, const char *func, const char* debug, void* logger_ptr, ___l1_type level_one, ___l2_type level_two, const char *mes, ...);
-logger_error yaya_log_init(void** logger_ptr, logger_filter *level_one, logger_filter *level_two, logger_setting *setting, logger_define *define, logger_style *style);
 
+
+#define loggerf_flush(...) \
+        ___LOGGER_FLUSH_x( ,            \
+        ##__VA_ARGS__ ,                \
+        ___LOGGER_FLUSH_A(__VA_ARGS__), \
+        ___LOGGER_FLUSH_0(__VA_ARGS__))
+
+#define ___LOGGER_FLUSH_x(x, A, FUNC, ...) FUNC
+
+#define ___LOGGER_FLUSH_0()                 yaya_log_flush(&___LOGGER_LVG)
+#define ___LOGGER_FLUSH_A(A)                yaya_log_flush(&A            )
+
+
+
+logger_error yaya_log_func (uintmax_t count, const char *file, uintmax_t line, const char *func, const char* debug, void* logger_ptr, ___l1_type level_one, ___l2_type level_two, const char *mes, ...);
+logger_error yaya_log_init (void** logger_ptr, logger_filter *level_one, logger_filter *level_two, logger_setting *setting, logger_define *define, logger_style *style);
+logger_error yaya_log_free (void** logger_ptr);
+bool         yaya_log_flush(void** logger_ptr);
 
 #if (LOGGER_UNDEF == LOGGER_ON)
 #undef ___LOGGER_FUNC_0

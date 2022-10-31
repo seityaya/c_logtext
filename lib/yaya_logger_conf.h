@@ -149,8 +149,7 @@ static logger_setting logger_setting_def[] = { { .head_format = "HEAD ## $line%3
                                                  .gerr_format = "ERROR Generic  $debug  $line $file $func",
                                                  .type_l1 = L_ALL,
                                                  .name_l2 = LL_ALL,
-                                                 .stream = LS_STDOUT,
-                                                 .out_buff = NULL,
+                                                 .stream  = LS_STDOUT,
                                                }
                                              };
 

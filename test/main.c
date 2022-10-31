@@ -23,5 +23,7 @@ int main(int argc, char *argv[]) {
 
     loggerf_test_format();
 
+    loggerf_test_output();
+
     return 0;
 }

@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 
 #include "yaya_logger.h"
 
@@ -35,6 +36,9 @@
 #define LFS_LEF 1
 #define LFS_RIG 2
 #define LFS_NUL 3
+
+#define LTT_STR 0
+#define LTT_NUM 1
 
 #define LOGGER_FUNC_PARAM \
     logger *lvg, \
@@ -75,7 +79,8 @@ typedef struct ___logger_token_specifiers { /*хранение специфик�
 
 
 typedef struct ___logger_token_mas {    /*хранение токенов*/
-    uintmax_t id;     /*тип токена*/
+    uintmax_t id;     /*вид токена*/
+    uintmax_t type;   /*тип токена*/
     uintmax_t beg;    /*начало токена*/
     uintmax_t end;    /*конец токена*/
     uintmax_t beglog; /*начало токена вывода*/
@@ -111,13 +116,15 @@ typedef struct logger {
     ___logger_tokens *gerr;
 
     uintmax_t tmp_buff_size;
-    char      *tmp_buff;  // - указатель на временный буфер
-    uintmax_t out_buff_size;
-    char      *out_buff;  // - указатель на буфер вывода
-    intmax_t  out_offset; // - указатель на конец строки
+    char     *tmp_buff;      // - указатель на временный буфер
+    char     *out_buff;      // - указатель на буфер вывода
+    intmax_t  out_offset;    // - указатель на конец строки
+    uintmax_t out_buff_size; // - размер буфера
 
     uintmax_t curnum; // - номер текущего вывода
     uintmax_t absnum; // - номер вывода без учета фильтрации
+
+    FILE     *stream;
 } logger;
 
 

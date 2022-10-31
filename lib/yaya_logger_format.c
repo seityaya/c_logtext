@@ -10,6 +10,7 @@
 
 logger_error ___format_build_num(logger* lvg, ___logger_token_mas* mas_opt, uintmax_t buff_orig)
 {
+    mas_opt->type = LTT_NUM;
     mas_opt->beglog = lvg->out_offset;
 
     if (mas_opt->spe != NULL){
@@ -31,6 +32,7 @@ logger_error ___format_build_num(logger* lvg, ___logger_token_mas* mas_opt, uint
 
 logger_error ___format_build_str(logger *lvg, ___logger_token_mas *mas_opt, const char *buff_orig)
 {
+    mas_opt->type = LTT_STR;
     static char buff[LOGGER_TMP_BUFF_SIZE] = {0}; //FIXME
 
     mas_opt->beglog = lvg->out_offset;

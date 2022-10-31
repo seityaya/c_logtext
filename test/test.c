@@ -13,8 +13,6 @@
 #define IF_TYPE_TEST(test) ((TYPE_TEST) & (test))
 
 void test_printf(){
-#if IF_TYPE_TEST(PRINTF)
-
     printf("^^ BEG %s \n", __func__);
 
     for(intmax_t i = 0;  i < NUM_RUN_CYCLES; i++){
@@ -22,12 +20,9 @@ void test_printf(){
     }
 
     printf("^^ END %s \n\n\n\n", __func__);
-#endif
 }
 
 void loggerf_test_free_token(){
-#if IF_TYPE_TEST(FREE_TOKEN)
-
     printf("^^ BEG %s \n", __func__);
 
     void *logger_instance = NULL;
@@ -40,13 +35,9 @@ void loggerf_test_free_token(){
     loggerf_free(logger_instance);
 
     printf("^^ END %s \n\n\n\n", __func__);
-
-#endif
 }
 
 void loggerf_test_free(){
-#if IF_TYPE_TEST(FREE_LOGGER)
-
     printf("^^ BEG %s \n", __func__);
 
     void *logger_instance = NULL;
@@ -67,13 +58,9 @@ void loggerf_test_free(){
     }
 
     printf("^^ END %s \n\n\n\n", __func__);
-
-#endif
 }
 
 void loggerf_test_param(){
-#if IF_TYPE_TEST(PARAM)
-
     printf("^^ BEG %s \n", __func__);
 
     void *logger_instance = NULL;
@@ -166,13 +153,9 @@ void loggerf_test_param(){
     loggerf_free(logger_instance);
 
     printf("^^ END %s \n\n\n\n", __func__);
-
-#endif
 }
 
 void loggerf_test_token(){
-#if IF_TYPE_TEST(TOKEN)
-
     printf("^^ BEG %s \n", __func__);
 
     loggerf_init();
@@ -224,13 +207,9 @@ void loggerf_test_token(){
     loggerf_free();
 
     printf("^^ END %s \n\n\n\n", __func__);
-
-#endif
 }
 
 void loggerf_test_format(){
-#if IF_TYPE_TEST(FORMAT)
-
     printf("^^ BEG %s \n", __func__);
 
     loggerf_init();
@@ -285,5 +264,66 @@ void loggerf_test_format(){
     loggerf_free();
 
     printf("^^ END %s \n\n\n\n", __func__);
-#endif
+}
+
+void loggerf_test_output(){
+    void *logger_instance = NULL;
+
+    logger_setting setting = logger_setting_def[0];
+    setting.logs_format = "LOGS ## $data_curent $time_curent >> $line%03. -- | $type%.08 $name%.08 $mesg";
+
+
+    setting.stream = LS_STDOUT;
+    loggerf_init(&logger_instance, NULL, NULL, &setting);
+    loggerf(logger_instance, "LS_STDOUT 1");
+    loggerf(logger_instance, "LS_STDOUT 2");
+    loggerf(logger_instance, "LS_STDOUT 3");
+    loggerf_free(logger_instance);
+
+
+    setting.stream = LS_STDERR;
+    loggerf_init(&logger_instance, NULL, NULL, &setting);
+    loggerf(logger_instance, "LS_STDERR 1");
+    loggerf(logger_instance, "LS_STDERR 2");
+    loggerf(logger_instance, "LS_STDERR 3");
+    loggerf_free(logger_instance);
+
+
+#define BUFF_SIZE 2
+    char buff[BUFF_SIZE] = {0};
+    size_t size = 0;
+
+    setting.stream = LS_STDBUF;
+    setting.out_buff = buff;
+    setting.out_size = &size;
+    setting.size_buff = BUFF_SIZE;
+
+    loggerf_init(&logger_instance, NULL, NULL, &setting);
+    loggerf(logger_instance, "LS_STDBUF 1");
+    loggerf(logger_instance, "LS_STDBUF 2");
+    loggerf(logger_instance, "LS_STDBUF 3");
+    while(!loggerf_flush(logger_instance)){
+        fwrite(buff, sizeof(char), size, stdout);
+    }
+    loggerf_free(logger_instance);
+
+
+    printf("%s\n", "/tmp/logger_test.txt");
+    setting.stream = LS_STDFILE;
+    setting.out_file = "/tmp/logger_test.txt";
+    loggerf_init(&logger_instance, NULL, NULL, &setting);
+    loggerf(logger_instance, "LS_STDFILE 1");
+    loggerf(logger_instance, "LS_STDFILE 2");
+    loggerf(logger_instance, "LS_STDFILE 3");
+    loggerf_free(logger_instance);
+
+
+    printf("%s\n", "/tmp/logger_test.csv");
+    setting.stream = LS_STDCSV;
+    setting.out_file = "/tmp/logger_test.csv";
+    loggerf_init(&logger_instance, NULL, NULL, &setting);
+    loggerf(logger_instance, "LS_STDCSV 1");
+    loggerf(logger_instance, "LS_STDCSV 2");
+    loggerf(logger_instance, "LS_STDCSV 3");
+    loggerf_free(logger_instance);
 }
