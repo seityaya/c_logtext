@@ -5,10 +5,8 @@
 //SPDX-License-Identifier: LGPL-2.1-or-later
 //Copyright © 2020-2022 Seityagiya Terlekchi. All rights reserved.
 
-#ifndef YAYA_LOGGER_CONF_H
-#define YAYA_LOGGER_CONF_H
-
-#include "yaya_logger_public.h"
+#ifndef YAYA_LOGGER_CONF_H_
+#define YAYA_LOGGER_CONF_H_
 
 // clang-format off
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,8 +23,31 @@
 #endif
 
 /*Включить отладку*/         /*Работает*/
-#ifndef LOGGER_DEBUG
-#define LOGGER_DEBUG         LOGGER_OFF
+#ifndef LOGGER_DEBUG_FORMAT
+#define LOGGER_DEBUG_FORMAT  LOGGER_OFF
+#endif
+
+/*Включить вывод*/           /*Работает*/
+#ifndef LOGGER_OUT
+#define LOGGER_OUT           LOGGER_ON
+#endif
+
+/*Включить заголовок как отдельный формат*/
+                             /*Работает*/
+#ifndef LOGGER_HEAD
+#define LOGGER_HEAD          LOGGER_ON
+#endif
+
+/*Включить динамический вычисляемый формат*/
+                             /*Работает*/
+#ifndef LOGGER_ATOM
+#define LOGGER_ATOM          LOGGER_ON
+#endif
+
+/*Включить ошибку логера как отдельный формат*/
+                             /*Работает*/
+#ifndef LOGGER_ERROR
+#define LOGGER_ERROR         LOGGER_ON
 #endif
 
 /*Метод  выделения памяти*/   /*В разработке*/
@@ -37,11 +58,6 @@
 /*Включить стили*/           /*В разработке*/
 #ifndef LOGGER_STYLE
 #define LOGGER_STYLE         LOGGER_ON
-#endif
-
-/*Включить вывод*/           /*В разработке*/
-#ifndef LOGGER_OUT
-#define LOGGER_OUT           LOGGER_ON
 #endif
 
 /*Включить отмену макросов*/ /*В разработке*/
@@ -64,16 +80,22 @@
 #define LOGGER_TMP_BUFF_SIZE 1000
 #endif
 
-#if (LOGGER_STATIC == LOGGER_ON)
+#if LOGGER_STATIC
 /*Максимальное количество токенов в строке*/
 #define LOGGER_NUM_TOKEN 20
 #endif
 
 // // END // OPTION
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// // BEG // HEADER
+
+#include "yaya_logger_public.h"
+
+// // END // HEADER
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // BEG // DEFAULT
 
-#if LOGGER_TYPE_AUTO == LOGGER_TRUE
+#if LOGGER_TYPE_AUTO
 static void* logger_main_def = NULL;
 #endif
 
@@ -143,15 +165,23 @@ static logger_filter logger_name_l2_def[] = { LOGGER_FILTER_GENERATE(LL_NUL),
                                             };
 
 
-static logger_setting logger_setting_def[] = { { .head_format = "HEAD ## $line%3. $mesg",
-                                                 .logs_format = "LOGS ## $line%03. -- | $type%.08 $name%.08 $mesg",
-                                                 .atom_format = "",
-                                                 .gerr_format = "ERROR Generic  $debug  $line $file $func",
-                                                 .type_l1 = L_ALL,
-                                                 .name_l2 = LL_ALL,
-                                                 .stream  = LS_STDOUT,
-                                               }
-                                             };
+static logger_setting logger_setting_def[] = {
+    {
+        .logs_format = "LOGS ## $line%03. -- | $type%.08 $name%.08 $mesg",
+        #if LOGGER_HEAD
+        .head_format = "HEAD ## $line%3. $mesg",
+        #endif
+        #if LOGGER_ATOM
+        .atom_format = "ATOM ## $mesg",
+        #endif
+        #if LOGGER_ERROR
+        .gerr_format = "ERROR Generic  $debug  $line $file $func",
+        #endif
+        .type_l1 = L_ALL,
+        .name_l2 = LL_ALL,
+        .stream  = LS_STDOUT,
+    }
+};
 
 
 static logger_define logger_define_def[] = { { .prog = "yaya_logger",
@@ -196,4 +226,4 @@ STR
 
 // clang-format on
 
-#endif // YAYA_LOGGER_CONF_H
+#endif // YAYA_LOGGER_CONF_H_

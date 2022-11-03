@@ -8,7 +8,7 @@
 #include "yaya_logger.h"
 #include "yaya_logger_private.h"
 
-logger_error ___format_build_num(logger* lvg, ___logger_token_mas* mas_opt, uintmax_t buff_orig)
+logger_error format_build_num(___logger* lvg, ___logger_token_mas* mas_opt, uintmax_t buff_orig)
 {
     mas_opt->type = LTT_NUM;
     mas_opt->beglog = lvg->out_offset;
@@ -30,7 +30,7 @@ logger_error ___format_build_num(logger* lvg, ___logger_token_mas* mas_opt, uint
     return LE_OK;
 }
 
-logger_error ___format_build_str(logger *lvg, ___logger_token_mas *mas_opt, const char *buff_orig)
+logger_error format_build_str(___logger *lvg, ___logger_token_mas *mas_opt, const char *buff_orig)
 {
     mas_opt->type = LTT_STR;
     static char buff[LOGGER_TMP_BUFF_SIZE] = {0}; //FIXME
@@ -74,6 +74,6 @@ logger_error ___format_build_str(logger *lvg, ___logger_token_mas *mas_opt, cons
 LOGGER_TOKEN_GENERATE_FUNC(STR){
     LOGGER_FUNC_UNUSED;
     strncpy(lvg->tmp_buff, &format[mas_opt->beg], mas_opt->end - mas_opt->beg + 1);
-    ___format_build_str(lvg, mas_opt, lvg->tmp_buff);
+    format_build_str(lvg, mas_opt, lvg->tmp_buff);
     return LE_OK;
 }

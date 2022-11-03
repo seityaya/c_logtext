@@ -8,7 +8,7 @@
 #include "yaya_logger.h"
 #include "yaya_logger_private.h"
 
-logger_error ___logger_pars(logger *lvg, const char *format, ___logger_tokens** tokens)
+logger_error logger_pars(___logger *lvg, const char *format, ___logger_tokens** tokens)
 {
     (*tokens) = (___logger_tokens*)malloc(sizeof(___logger_tokens));
     memset((*tokens), 0, sizeof(___logger_tokens));
@@ -162,13 +162,13 @@ logger_error ___logger_pars(logger *lvg, const char *format, ___logger_tokens** 
     }
 
     { /*Тестовый вывод*/
-        if(LOGGER_DEBUG == 1)
+        if(LOGGER_DEBUG_FORMAT == 1)
         {
             printf("FORMAT = %s\n", format);
             for (uintmax_t i = 0; i < (*tokens)->num_token; i++)
             {
+                const int f1 = 80;
                 int k1 = 0;
-                int f1 = 80;
                 memset(lvg->tmp_buff, 0, lvg->tmp_buff_size);
                 strncpy(lvg->tmp_buff, &format[(*tokens)->mas_opt[i].beg], (*tokens)->mas_opt[i].end - (*tokens)->mas_opt[i].beg + 1);
                 char buffmod[LOGGER_TMP_BUFF_SIZE] = {0}; //FIXME

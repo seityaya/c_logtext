@@ -10,19 +10,19 @@
 
 LOGGER_TOKEN_GENERATE_FUNC(line){
     LOGGER_FUNC_UNUSED;
-    ___format_build_num(lvg, mas_opt, line);
+    format_build_num(lvg, mas_opt, line);
     return LE_OK;
 }
 
 LOGGER_TOKEN_GENERATE_FUNC(file){
     LOGGER_FUNC_UNUSED;
-    ___format_build_str(lvg, mas_opt, file);
+    format_build_str(lvg, mas_opt, file);
     return LE_OK;
 }
 
 LOGGER_TOKEN_GENERATE_FUNC(func){
     LOGGER_FUNC_UNUSED;
-    ___format_build_str(lvg, mas_opt, func);
+    format_build_str(lvg, mas_opt, func);
     return LE_OK;
 }
 
@@ -42,7 +42,7 @@ LOGGER_TOKEN_GENERATE_FUNC(type){
             strncat(lvg->tmp_buff, " ", lvg->tmp_buff_size);
         }
     }
-    ___format_build_str(lvg, mas_opt, lvg->tmp_buff);
+    format_build_str(lvg, mas_opt, lvg->tmp_buff);
     return LE_OK;
 }
 
@@ -62,38 +62,44 @@ LOGGER_TOKEN_GENERATE_FUNC(name){
             strncat(lvg->tmp_buff, " ", lvg->tmp_buff_size);
         }
     }
-    ___format_build_str(lvg, mas_opt, lvg->tmp_buff);
+    format_build_str(lvg, mas_opt, lvg->tmp_buff);
     return LE_OK;
 }
 
 LOGGER_TOKEN_GENERATE_FUNC(mesg){
     LOGGER_FUNC_UNUSED;
     vsnprintf(lvg->tmp_buff, lvg->tmp_buff_size, mes, mes_list);
-    ___format_build_str(lvg, mas_opt, lvg->tmp_buff);
+    format_build_str(lvg, mas_opt, lvg->tmp_buff);
     return LE_OK;
 }
 
-LOGGER_TOKEN_GENERATE_FUNC(debug){
+LOGGER_TOKEN_GENERATE_FUNC(debug_generic){
     LOGGER_FUNC_UNUSED;
-    ___format_build_str(lvg, mas_opt, debug);
+    format_build_str(lvg, mas_opt, debug_generic);
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(debug_stats){
+    LOGGER_FUNC_UNUSED;
+    format_build_str(lvg, mas_opt, debug_generic);
     return LE_OK;
 }
 
 LOGGER_TOKEN_GENERATE_FUNC(count){
     LOGGER_FUNC_UNUSED;
-    ___format_build_num(lvg, mas_opt, count);
+    format_build_num(lvg, mas_opt, count);
     return LE_OK;
 }
 
 LOGGER_TOKEN_GENERATE_FUNC(curnum){
     LOGGER_FUNC_UNUSED;
-    ___format_build_num(lvg, mas_opt, lvg->curnum);
+    format_build_num(lvg, mas_opt, lvg->curnum);
     return LE_OK;
 }
 
 LOGGER_TOKEN_GENERATE_FUNC(absnum){
     LOGGER_FUNC_UNUSED;
-    ___format_build_num(lvg, mas_opt, lvg->absnum);
+    format_build_num(lvg, mas_opt, lvg->absnum);
     return LE_OK;
 }
 
@@ -116,25 +122,27 @@ LOGGER_TOKEN_GENERATE_FUNC(full_path){
 
 LOGGER_TOKEN_GENERATE_FUNC(data_build){
     LOGGER_FUNC_UNUSED;
-    ___format_build_str(lvg, mas_opt, __DATE__);
+    format_build_str(lvg, mas_opt, __DATE__);
     return LE_OK;
 }
 
 LOGGER_TOKEN_GENERATE_FUNC(time_build){
     LOGGER_FUNC_UNUSED;
-    ___format_build_str(lvg, mas_opt, __TIME__);
+    format_build_str(lvg, mas_opt, __TIME__);
     return LE_OK;
 }
 
+#define TM_YEAR 1900
 LOGGER_TOKEN_GENERATE_FUNC(data_curent){
     LOGGER_FUNC_UNUSED;
     time_t curent = time(NULL);
     struct tm *ptr = NULL;
     ptr = localtime(&curent);
-    snprintf(lvg->tmp_buff, lvg->tmp_buff_size, "%04d.%02d.%02d", ptr->tm_year + 1900, ptr->tm_mon + 1, ptr->tm_mday);
-    ___format_build_str(lvg, mas_opt, lvg->tmp_buff);
+    snprintf(lvg->tmp_buff, lvg->tmp_buff_size, "%04d.%02d.%02d", ptr->tm_year + TM_YEAR, ptr->tm_mon + 1, ptr->tm_mday);
+    format_build_str(lvg, mas_opt, lvg->tmp_buff);
     return LE_OK;
 }
+#undef TM_YEAR
 
 LOGGER_TOKEN_GENERATE_FUNC(time_curent){
     LOGGER_FUNC_UNUSED;
@@ -142,7 +150,7 @@ LOGGER_TOKEN_GENERATE_FUNC(time_curent){
     struct tm *ptr = NULL;
     ptr = localtime(&curent);
     snprintf(lvg->tmp_buff, lvg->tmp_buff_size, "%02d:%02d:%02d", ptr->tm_hour, ptr->tm_min, ptr->tm_sec);
-    ___format_build_str(lvg, mas_opt, lvg->tmp_buff);
+    format_build_str(lvg, mas_opt, lvg->tmp_buff);
     return LE_OK;
 }
 

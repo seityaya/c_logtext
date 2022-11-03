@@ -5,7 +5,6 @@
 //SPDX-License-Identifier: LGPL-2.1-or-later
 //Copyright © 2020-2022 Seityagiya Terlekchi. All rights reserved.
 
-#include <stdio.h>
 #include <inttypes.h>
 
 #include "test.h"

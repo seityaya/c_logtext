@@ -8,8 +8,8 @@
 #include "yaya_logger.h"
 #include "yaya_logger_private.h"
 
-#if (LOGGER_OUT == LOGGER_ON)
-logger_error ___logger_out(logger *lvg)
+#if LOGGER_OUT
+logger_error logger_out(___logger *lvg)
 {
     lvg->out_buff[lvg->out_offset + 0] = '\n';
     lvg->out_buff[lvg->out_offset + 1] = '\0';
@@ -27,7 +27,7 @@ logger_error ___logger_out(logger *lvg)
             break;
         }
         case LS_STDBUF: {
-            // TODO circular buffer
+            // TODO(yaya): circular buffer
             return LE_OK;
         }
         case LS_STDFILE: {
@@ -81,7 +81,7 @@ bool yaya_log_flush(void **logger_ptr){
         return true;
     }
 
-    logger **lvg = (logger**)(logger_ptr);
+    ___logger **lvg = (___logger**)(logger_ptr);
 
     if(*lvg == NULL){
         return true;
@@ -102,8 +102,8 @@ bool yaya_log_flush(void **logger_ptr){
                 (*lvg)->psett->out_buff[(*lvg)->psett->size_buff - 1] = '\0';
                 *(*lvg)->psett->out_size = strlen((*lvg)->psett->out_buff);
                 if(((*lvg)->out_offset - (*lvg)->psett->size_buff >= 0)){
-                    strcpy((*lvg)->tmp_buff, (*lvg)->out_buff + (*lvg)->psett->size_buff - 1);
-                    strcpy((*lvg)->out_buff, (*lvg)->tmp_buff);
+                    strncpy((*lvg)->tmp_buff, (*lvg)->out_buff + (*lvg)->psett->size_buff - 1, LOGGER_TMP_BUFF_SIZE);
+                    strncpy((*lvg)->out_buff, (*lvg)->tmp_buff, LOGGER_OUT_BUFF_SIZE);
                     (*lvg)->out_offset -= (*lvg)->psett->size_buff - 1;
                 }else{
                     (*lvg)->out_offset = 0;
