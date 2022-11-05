@@ -44,6 +44,12 @@
 #define LOGGER_ATOM          LOGGER_ON
 #endif
 
+/*Включить вывод перед очисткой как отдельный формат*/
+                             /*Работает*/
+#ifndef LOGGER_FREE
+#define LOGGER_FREE          LOGGER_OFF
+#endif
+
 /*Включить ошибку логера как отдельный формат*/
                              /*Работает*/
 #ifndef LOGGER_ERROR
@@ -103,29 +109,31 @@ static void* logger_main_def = NULL;
 #define L_VOID     LOGGER_FLAG_T_GENERATE( 0) /*<<< VOID    FORMAT TYPE*/
 #define L_HEAD     LOGGER_FLAG_T_GENERATE( 1) /*<<< HEAD    FORMAT TYPE*/
 #define L_ATOM     LOGGER_FLAG_T_GENERATE( 2) /*<<< ATOM    FORMAT TYPE*/
-#define L_GNERR    LOGGER_FLAG_T_GENERATE( 3) /*<<< GENERIC ERROR  TYPE*/
-#define L_INFO     LOGGER_FLAG_T_GENERATE( 4)
-#define L_ERROR    LOGGER_FLAG_T_GENERATE( 5)
-#define L_WARNING  LOGGER_FLAG_T_GENERATE( 6)
-#define L_TODO     LOGGER_FLAG_T_GENERATE( 7)
-#define L_FIXME    LOGGER_FLAG_T_GENERATE( 8)
-#define L_DEBUG    LOGGER_FLAG_T_GENERATE( 9)
-#define L_RELEASE  LOGGER_FLAG_T_GENERATE(10)
-#define L_TRACE    LOGGER_FLAG_T_GENERATE(11)
-#define L_WARN     LOGGER_FLAG_T_GENERATE(12)
-#define L_FATAL    LOGGER_FLAG_T_GENERATE(13)
-#define L_BEGF     LOGGER_FLAG_T_GENERATE(14)
-#define L_ENDF     LOGGER_FLAG_T_GENERATE(15)
-#define L_FUNC     LOGGER_FLAG_T_GENERATE(16)
-#define L_LOGGER   LOGGER_FLAG_T_GENERATE(17)
-#define L_TEST     LOGGER_FLAG_T_GENERATE(18)
-#define L_MESG     LOGGER_FLAG_T_GENERATE(19)
+#define L_FREE     LOGGER_FLAG_T_GENERATE( 3) /*<<< FREE    FORMAT TYPE*/
+#define L_GNERR    LOGGER_FLAG_T_GENERATE( 4) /*<<< GENERIC ERROR  TYPE*/
+#define L_INFO     LOGGER_FLAG_T_GENERATE( 5)
+#define L_ERROR    LOGGER_FLAG_T_GENERATE( 6)
+#define L_WARNING  LOGGER_FLAG_T_GENERATE( 7)
+#define L_TODO     LOGGER_FLAG_T_GENERATE( 8)
+#define L_FIXME    LOGGER_FLAG_T_GENERATE( 9)
+#define L_DEBUG    LOGGER_FLAG_T_GENERATE(10)
+#define L_RELEASE  LOGGER_FLAG_T_GENERATE(11)
+#define L_TRACE    LOGGER_FLAG_T_GENERATE(12)
+#define L_WARN     LOGGER_FLAG_T_GENERATE(13)
+#define L_FATAL    LOGGER_FLAG_T_GENERATE(14)
+#define L_BEGF     LOGGER_FLAG_T_GENERATE(15)
+#define L_ENDF     LOGGER_FLAG_T_GENERATE(16)
+#define L_FUNC     LOGGER_FLAG_T_GENERATE(17)
+#define L_LOGGER   LOGGER_FLAG_T_GENERATE(18)
+#define L_TEST     LOGGER_FLAG_T_GENERATE(19)
+#define L_MESG     LOGGER_FLAG_T_GENERATE(20)
 #define L_ALL      LOGGER_FLAG_T_ALL          /*<<< END <<<*/
 
 static logger_filter logger_type_l1_def[] = { LOGGER_FILTER_GENERATE(L_NUL),
                                               LOGGER_FILTER_GENERATE(L_VOID),
                                               LOGGER_FILTER_GENERATE(L_HEAD),
                                               LOGGER_FILTER_GENERATE(L_ATOM),
+                                              LOGGER_FILTER_GENERATE(L_FREE),
                                               LOGGER_FILTER_GENERATE(L_GNERR),
                                               LOGGER_FILTER_GENERATE(L_INFO),
                                               LOGGER_FILTER_GENERATE(L_ERROR),
@@ -174,8 +182,11 @@ static logger_setting logger_setting_def[] = {
         #if LOGGER_ATOM
         .atom_format = "ATOM ## $mesg",
         #endif
+        #if LOGGER_FREE
+        .free_format = "FREE ## $stats",
+        #endif
         #if LOGGER_ERROR
-        .gerr_format = "ERROR Generic  $debug  $line $file $func",
+        .gerr_format = "ERROR Generic  $generic  $line $file $func",
         #endif
         .type_l1 = L_ALL,
         .name_l2 = LL_ALL,
@@ -187,7 +198,6 @@ static logger_setting logger_setting_def[] = {
 static logger_define logger_define_def[] = { { .prog = "yaya_logger",
                                                .proj = "yaya_library_collection_for_C",
                                                .version = "v0.1",
-                                               .compiler = "gcc 7 x64"
                                              }
                                            };
 

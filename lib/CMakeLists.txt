@@ -19,6 +19,7 @@ set(SRC_LIST
     yaya_logger.c
     yaya_logger_format.c
     yaya_logger_func.c
+    yaya_logger_memory.c
     yaya_logger_out.c
     yaya_logger_pars.c
     yaya_logger_style.c

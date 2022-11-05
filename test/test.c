@@ -6,10 +6,9 @@
 //Copyright © 2020-2022 Seityagiya Terlekchi. All rights reserved.
 
 #include <inttypes.h>
+#include <stdio.h>
 
 #include "test.h"
-
-#define IF_TYPE_TEST(test) ((TYPE_TEST) & (test))
 
 void test_printf(){
     printf("^^ BEG %s \n", __func__);
@@ -41,18 +40,9 @@ void loggerf_test_free(){
 
     void *logger_instance = NULL;
 
-    logger_setting my_logger_setting[] = { { .head_format = "HEAD ## $line%3. >> $mesg",
-                                             .logs_format = "$## $line%03.  >> $func $mesg",
-                                             .atom_format = "$## line",
-                                             .gerr_format = ">>ERROR<<",
-                                             .type_l1 = L_ALL,
-                                             .name_l2 = LL_ALL,
-                                             .stream = LS_STDOUT,
-                                           } };
-
     for(intmax_t i = 0;  i < NUM_RUN_CYCLES; i++){
-        loggerf_init(&logger_instance, NULL, NULL, my_logger_setting);
-        loggerf(logger_instance, L_VOID, "%" PRIuMAX "", i);
+        loggerf_init(&logger_instance, NULL, NULL, logger_setting_def);
+        loggerf(logger_instance, L_VOID, "%s %" PRIuMAX "", __func__, i);
         loggerf_free(logger_instance);
     }
 
@@ -83,6 +73,9 @@ void loggerf_test_param(){
 
     printf("/* A */\n");
     loggerf(L_ATOM);
+
+    printf("/* F */\n");
+    loggerf(L_FREE);
 
     printf("/* E */\n");
     loggerf(L_GNERR);
@@ -179,18 +172,6 @@ void loggerf_test_token(){
     loggerf(L_ATOM, "$## $line%03.  >> $data_curent");
     loggerf(L_ATOM, "$## $line%03.  >> $time_curent");
 
-    loggerf(L_ATOM, "$## $line%03.  >> $prog");
-    loggerf(L_ATOM, "$## $line%03.  >> $prog_v");
-    loggerf(L_ATOM, "$## $line%03.  >> $prog_p");
-    loggerf(L_ATOM, "$## $line%03.  >> $proj");
-    loggerf(L_ATOM, "$## $line%03.  >> $compiler");
-    loggerf(L_ATOM, "$## $line%03.  >> $compiler_v");
-
-    loggerf(L_ATOM, "$## $line%03.  >> $tik_core");
-    loggerf(L_ATOM, "$## $line%03.  >> $tik_sec");
-    loggerf(L_ATOM, "$## $line%03.  >> $tic_rtos");
-    loggerf(L_ATOM, "$## $line%03.  >> $tik_unix");
-
     loggerf(L_ATOM, "$## $line%03.  >> $type_filter");
     loggerf(L_ATOM, "$## $line%03.  >> $name_filter");
     loggerf(L_ATOM, "$## $line%03.  >> $type_mask");
@@ -198,10 +179,18 @@ void loggerf_test_token(){
     loggerf(L_ATOM, "$## $line%03.  >> $type_list");
     loggerf(L_ATOM, "$## $line%03.  >> $name_list");
 
+    loggerf(L_ATOM, "$## $line%03.  >> $prog");
+    loggerf(L_ATOM, "$## $line%03.  >> $proj");
+    loggerf(L_ATOM, "$## $line%03.  >> $version");
+
+    loggerf(L_ATOM, "$## $line%03.  >> $comp_v");
+    loggerf(L_ATOM, "$## $line%03.  >> $lang_v");
+
+    loggerf(L_ATOM, "$## $line%03.  >> $generic");
+    loggerf(L_ATOM, "$## $line%03.  >> $stats");
+
     loggerf(L_ATOM, "$## $line%03.  >> $alignl");
     loggerf(L_ATOM, "$## $line%03.  >> $aliggt");
-
-    loggerf(L_ATOM, "$## $line%03.  >> $debug");
 
     loggerf_free();
 

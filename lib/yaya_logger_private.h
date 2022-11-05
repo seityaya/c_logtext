@@ -16,15 +16,9 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
+#include <malloc.h>
 
 #include "yaya_logger.h"
-
-#if LOGGER_STATIC
-#define malloc XXX_malloc_XXX
-#define calloc XXX_calloc_XXX
-#define realloc XXX_realloc_XXX
-#define free XXX_free_XXX
-#endif
 
 #define LOGGER_BIT_GET(x, n)        ((uintmax_t)(x) & (UINTMAX_C(1) << (uintmax_t)(n)))
 
@@ -46,7 +40,7 @@
     const char *file, \
     uintmax_t line, \
     const char *func, \
-    const char* debug_generic, \
+    const char* generic, \
     logger_l1_type type, \
     logger_l2_type name, \
     const char *mes, \
@@ -60,7 +54,7 @@
     (void*)file, \
     (void*)line, \
     (void*)func, \
-    (void*)debug_generic, \
+    (void*)generic, \
     (void*)type, \
     (void*)name, \
     (void*)mes, \
@@ -108,12 +102,15 @@ typedef struct ___logger {
     ___logger_filters type;
     ___logger_filters name;
 
-    ___logger_tokens *logs;
+    ___logger_tokens *logs_f;
 #if LOGGER_HEAD
-    ___logger_tokens *head;
+    ___logger_tokens *head_f;
 #endif
 #if LOGGER_ATOM
-    ___logger_tokens *atom;
+    ___logger_tokens *atom_f;
+#endif
+#if LOGGER_FREE
+    ___logger_tokens *free_f;
 #endif
 #if LOGGER_ERROR
     ___logger_tokens *gerr;
@@ -128,9 +125,17 @@ typedef struct ___logger {
     uintmax_t curnum;// - номер текущего вывода
     uintmax_t absnum;// - номер вывода без учета фильтрации
 
+    intmax_t memory_total;
+    intmax_t memory_usage;
+    intmax_t memory_count_new;
+    intmax_t memory_count_del;
+    intmax_t memory_count_res;
+
     FILE     *stream;
 } ___logger;
 
+void logger_memory_new(___logger *lvg, void **ptr, void *old_ptr, size_t new_size);
+void logger_memory_del(___logger *lvg, void *ptr);
 
 typedef struct ___logger_token_func {      /*список токенов*/
     const uintmax_t id;       /*идентификатор*/
@@ -153,41 +158,41 @@ logger_error format_build_str(___logger *lvg, ___logger_token_mas *mas_opt, cons
 logger_error format_build_num(___logger* lvg, ___logger_token_mas* mas_opt, uintmax_t buff_orig);
 
 #define LIST_OF_TOKEN \
-    X(file)            /* имя файла */\
-    X(line)            /* номер строчки */\
-    X(func)            /* имя функции */\
-    X(type)            /* тип сообщения */\
-    X(name)            /* имя сообщения*/\
-    X(mesg)            /* тело сообщения */\
-    X(count)           /* номер сообщения\ на основе __COUNTER__ */\
+    X(count)           /* ARG1 номер сообщения\ на основе __COUNTER__ */\
+    X(file)            /* ARG2 имя файла */\
+    X(line)            /* ARG3 номер строчки */\
+    X(func)            /* ARG4 имя функции */\
+    X(generic)         /* ARG5 отладочная информация макроса _Generic*/\
+    X(type)            /* ARG6 тип сообщения */\
+    X(name)            /* ARG7 имя сообщения*/\
+    X(mesg)            /* ARG8 тело сообщения */\
+    \
     X(curnum)          /* номер выведенного сообщения */\
     X(absnum)          /* номер сообщения без учета фильтрации */\
-    X(short_path)      /* короткий путь */\
-    X(full_path)       /* полный путь */\
+    \
     X(data_build)      /* дата компиляции */\
     X(time_build)      /* время компиляции */\
     X(data_curent)     /* дата сообщения */\
     X(time_curent)     /* время сообщения */\
-    X(prog)            /* название программы */\
-    X(prog_v)          /* версия программы */\
-    X(prog_p)          /* расположение программы */\
-    X(proj)            /* название проекта */\
-    X(compiler)        /* название компилятора */\
-    X(compiler_v)      /* версия компилятора */\
-    X(tik_core)        /* счетчик тактов процессора */\
-    X(tik_sec)         /* счетчик секунд от старта */\
-    X(tic_rtos)        /* счетчик rtos */\
-    X(tik_unix)        /* счетчик времени в формате UNIX*/\
+    \
     X(type_filter)     /* вывод настроек фильтрации типа */\
     X(name_filter)     /* вывод настроек фильтрации имени */\
     X(type_mask)       /* вывод настроек фильтрации типа как бинарную маску */\
     X(name_mask)       /* вывод настроек фильтрации имени как бинарную маску */\
     X(type_list)       /* имена всех типов сообщений */\
     X(name_list)       /* имена всех названий сообщений */\
-    X(alignl)          /* выравнивание при переносе */\
-    X(aliggt)          /* выравнивание принудительное */\
-    X(debug_generic)   /* отладочная информация макроса _Generic*/\
-    X(debug_stats)     /* отладочная информация выделения памяти*/
+    \
+    X(proj)            /* название проекта */\
+    X(prog)            /* название программы */\
+    X(version)         /* версия программы */\
+    \
+    X(comp_v)          /* версия компилятора */\
+    X(lang_v)          /* версия языка */\
+    \
+    X(stats)           /* отладочная информация выделения памяти*/\
+    \
+    X(alignl)          /* TODO выравнивание при переносе */\
+    X(aliggt)          /* TODO выравнивание принудительное */\
 
 
 LOGGER_TOKEN_GENERATE_FUNC(STR);

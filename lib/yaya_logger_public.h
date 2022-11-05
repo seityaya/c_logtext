@@ -71,11 +71,6 @@ typedef struct logger_define {
     char *prog;               // - название программы
     char *proj;               // - название проекта
     char *version;            // - версия программы
-    char *compiler;           // - версия компилятора
-    char *data_build;         // - дата сборки
-    char *time_build;         // - время сборки
-    char *projpath;           // - папка проекта
-    char *compilerversion;
 } logger_define;
 
 
@@ -95,6 +90,7 @@ typedef struct logger_filter {
     const char      *name;
 } logger_filter;
 
+
 typedef struct logger_setting {
     char *logs_format;
 #if LOGGER_HEAD
@@ -102,6 +98,9 @@ typedef struct logger_setting {
 #endif
 #if LOGGER_ATOM
     char *atom_format;
+#endif
+#if LOGGER_FREE
+    char *free_format;
 #endif
 #if LOGGER_ERROR
     char *gerr_format;

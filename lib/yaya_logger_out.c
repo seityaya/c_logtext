@@ -38,18 +38,18 @@ logger_error logger_out(___logger *lvg)
         case LS_STDCSV: {
             lvg->tmp_buff[0] = '\0';
             size_t len = 0;
-            for(uintmax_t i = 0; i < lvg->logs->num_token; i++){
+            for(uintmax_t i = 0; i < lvg->logs_f->num_token; i++){
 
-                if(lvg->logs->mas_opt[i].type == LTT_STR){
+                if(lvg->logs_f->mas_opt[i].type == LTT_STR){
                     lvg->tmp_buff[len + 0] = '"';
                     lvg->tmp_buff[len + 1] = '\0';
                     len += 1;
                 }
 
-                strncat(lvg->tmp_buff,  &lvg->out_buff[lvg->logs->mas_opt[i].beglog], lvg->logs->mas_opt[i].endlog - lvg->logs->mas_opt[i].beglog);
-                len += lvg->logs->mas_opt[i].endlog - lvg->logs->mas_opt[i].beglog;
+                strncat(lvg->tmp_buff,  &lvg->out_buff[lvg->logs_f->mas_opt[i].beglog], lvg->logs_f->mas_opt[i].endlog - lvg->logs_f->mas_opt[i].beglog);
+                len += lvg->logs_f->mas_opt[i].endlog - lvg->logs_f->mas_opt[i].beglog;
 
-                if(lvg->logs->mas_opt[i].type == LTT_STR){
+                if(lvg->logs_f->mas_opt[i].type == LTT_STR){
                     lvg->tmp_buff[len + 0] = '"';
                     lvg->tmp_buff[len + 1] = '\0';
                     len += 1;

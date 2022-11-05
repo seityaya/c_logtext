@@ -15,14 +15,14 @@ logger_error format_build_num(___logger* lvg, ___logger_token_mas* mas_opt, uint
 
     if (mas_opt->spe != NULL){
         if (mas_opt->spe->lfs == LFS_NUL){
-            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%0*" PRIuMAX "", (int)mas_opt->spe->lef, buff_orig);
+            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%0*" PRIiMAX "", (int)mas_opt->spe->lef, buff_orig);
         }else if (mas_opt->spe->lfs == LFS_LEF){
-            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%*" PRIuMAX "", (int)mas_opt->spe->lef, buff_orig);
+            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%*" PRIiMAX "", (int)mas_opt->spe->lef, buff_orig);
         }else if (mas_opt->spe->lfs == LFS_RIG){
-            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%-*" PRIuMAX "", (int)mas_opt->spe->rig, buff_orig);
+            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%-*" PRIiMAX "", (int)mas_opt->spe->rig, buff_orig);
         }
     }else{
-        lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%" PRIuMAX "", buff_orig);
+        lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%" PRIiMAX "", buff_orig);
     }
 
     mas_opt->endlog = lvg->out_offset;

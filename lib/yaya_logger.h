@@ -357,8 +357,13 @@ DEEEE  ->  DE
 
 #define ___LOGGER_FREE_x(x, A, FUNC, ...) FUNC
 
+#if LOGGER_FREE
+#define ___LOGGER_FREE_0()                 loggerf(___LOGGER_LVG, L_FREE); yaya_log_free(&___LOGGER_LVG)
+#define ___LOGGER_FREE_A(A)                loggerf(A            , L_FREE); yaya_log_free(&A            )
+#else
 #define ___LOGGER_FREE_0()                 yaya_log_free(&___LOGGER_LVG)
 #define ___LOGGER_FREE_A(A)                yaya_log_free(&A            )
+#endif
 #else
 #define loggerf_free(...)
 #endif
@@ -378,7 +383,7 @@ DEEEE  ->  DE
 
 
 
-logger_error yaya_log_func (uintmax_t count, const char *file, uintmax_t line, const char *func, const char* debug_generic, void* logger_ptr, logger_l1_type level_one, logger_l2_type level_two, const char *mes, ...);
+logger_error yaya_log_func (uintmax_t count, const char *file, uintmax_t line, const char *func, const char* generic, void* logger_ptr, logger_l1_type level_one, logger_l2_type level_two, const char *mes, ...);
 logger_error yaya_log_init (void** logger_ptr, logger_filter *level_one, logger_filter *level_two, logger_setting *setting, logger_define *define, logger_style *style);
 logger_error yaya_log_free (void** logger_ptr);
 bool         yaya_log_flush(void** logger_ptr);

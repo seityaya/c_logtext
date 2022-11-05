@@ -9,9 +9,8 @@
 #define LOGGER_TEST_H
 
 #include "yaya_logger.h"
-#include <stdio.h>
 
-#define NUM_RUN_CYCLES 100
+#define NUM_RUN_CYCLES 10000
 
 void test_printf();
 

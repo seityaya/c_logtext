@@ -10,17 +10,19 @@
 
 logger_error logger_pars(___logger *lvg, const char *format, ___logger_tokens** tokens)
 {
-    (*tokens) = (___logger_tokens*)malloc(sizeof(___logger_tokens));
-    memset((*tokens), 0, sizeof(___logger_tokens));
-
-    (*tokens)->mas_opt = NULL;
+    logger_memory_new(lvg, (void*)(&(*tokens)), NULL, sizeof(___logger_tokens) * 1);
+    if(*tokens == NULL){
+        return LE_ERR;
+    }
 
     { /*Подсчет количества токенов и спецификаторов, выделение памяти и определение их диапазона и типа*/
         uintmax_t j = 0;
         for (uintmax_t i = 0; i < strlen(format); i++)
         {
-            (*tokens)->mas_opt = (___logger_token_mas*)realloc((*tokens)->mas_opt, sizeof(___logger_token_mas) * (j + 1));
-            memset(&(*tokens)->mas_opt[j], 0, sizeof(___logger_token_mas));
+            logger_memory_new(lvg, (void*)(&((*tokens)->mas_opt)) , (*tokens)->mas_opt, sizeof(___logger_token_mas) * (j + 1));
+            if((*tokens)->mas_opt == NULL){
+                return LE_ERR;
+            }
 
             if ((format[i] == ___logger_token_list[LEF_TOK].name[0])
                 && (isalpha(format[i + 1])
@@ -40,8 +42,10 @@ logger_error logger_pars(___logger *lvg, const char *format, ___logger_tokens** 
                         || (format[i + 1] == ___logger_token_list[LEF_HID].name[0])
                         || (format[i + 1] == ___logger_token_list[LEF_SEP].name[0])))
                 {
-                    ((*tokens)->mas_opt)[j].spe = (___logger_token_specifiers*) malloc(sizeof(___logger_token_specifiers));
-                    memset(((*tokens)->mas_opt)[j].spe, 0, sizeof(___logger_token_specifiers));
+                    logger_memory_new(lvg, (void*)(&(((*tokens)->mas_opt)[j].spe)) , ((*tokens)->mas_opt)[j].spe, sizeof(___logger_token_specifiers) * 1);
+                    if(((*tokens)->mas_opt)[j].spe == NULL){
+                        return LE_ERR;
+                    }
 
                     ((*tokens)->mas_opt)[j].spe->beg = i;
                     do
@@ -97,7 +101,7 @@ logger_error logger_pars(___logger *lvg, const char *format, ___logger_tokens** 
                 if(((*tokens)->mas_opt)[i].spe != NULL)
                 {
                     ((*tokens)->mas_opt)[i].end = ((*tokens)->mas_opt)[i].spe->end;
-                    free(((*tokens)->mas_opt)[i].spe);
+                    logger_memory_del(lvg, ((*tokens)->mas_opt)[i].spe);
                     ((*tokens)->mas_opt)[i].spe = NULL;
                 }
 
@@ -111,7 +115,7 @@ logger_error logger_pars(___logger *lvg, const char *format, ___logger_tokens** 
             if (((*tokens)->mas_opt[i].spe) != NULL)
             {
                 memset(lvg->tmp_buff, 0, lvg->tmp_buff_size);
-                strncpy(lvg->tmp_buff, &format[((*tokens)->mas_opt)[i].spe->beg ] , (((*tokens)->mas_opt)[i].spe->end - ((*tokens)->mas_opt)[i].spe->beg + 1) );
+                strncpy(lvg->tmp_buff, &format[ ((*tokens)->mas_opt)[i].spe->beg ] , (((*tokens)->mas_opt)[i].spe->end - ((*tokens)->mas_opt)[i].spe->beg + 1) );
 
                 uintmax_t k   = 0;
                 uintmax_t beg = ((*tokens)->mas_opt)[i].spe->beg + 1;

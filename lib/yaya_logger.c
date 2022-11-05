@@ -14,9 +14,17 @@ static logger_error count_num(___logger_filters *filter) {
     }
 
     filter->num = 0;
-    for (uintmax_t i = 0; i < sizeof(uintmax_t) * __CHAR_BIT__; i++)
+
+    if(filter->ptr[0].flag != LOGGER_FLAG_NUL(uintmax_t))
     {
-        if(((i == 0) ? (0) : (filter->ptr[i].flag & (1ULL << (i)))) && !(filter->ptr[i].flag == LOGGER_FLAG_ALL(uintmax_t))) {
+        return LE_ERR;
+    }
+
+    for (uintmax_t i = 1; i < sizeof(uintmax_t) * __CHAR_BIT__; i++)
+    {
+        if((filter->ptr[i].flag & (1ULL << (i)))
+           &&
+           (filter->ptr[i].flag != LOGGER_FLAG_ALL(uintmax_t))) {
             return LE_ERR;
         }
 
@@ -28,7 +36,7 @@ static logger_error count_num(___logger_filters *filter) {
     return LE_OK;
 }
 
-static logger_error free_tokens(___logger_tokens* tokens){
+static logger_error free_tokens(___logger *lvg, ___logger_tokens* tokens){
     if(tokens == NULL){
         return LE_ERR;
     }
@@ -37,14 +45,14 @@ static logger_error free_tokens(___logger_tokens* tokens){
     {
         if(tokens->mas_opt[i].spe != NULL)
         {
-            free(tokens->mas_opt[i].spe);
+            logger_memory_del(lvg, tokens->mas_opt[i].spe);
             tokens->mas_opt[i].spe = NULL;
         }
     }
-    free(tokens->mas_opt);
+    logger_memory_del(lvg, tokens->mas_opt);
     tokens->mas_opt = NULL;
 
-    free(tokens);
+    logger_memory_del(lvg, tokens);
     tokens = NULL;
 
     return LE_OK;
@@ -66,7 +74,7 @@ logger_error yaya_log_init(void**          logger_ptr,
     }
 
     /*Выделение памяти для главной структуры*/
-    *lvg = calloc(1, sizeof(___logger));
+    logger_memory_new(*lvg, (void*)(&(*lvg)), NULL, sizeof(___logger));
     if((*lvg) == NULL){
         return LE_ALLOC;
     }
@@ -74,9 +82,9 @@ logger_error yaya_log_init(void**          logger_ptr,
     /*Связывание указателей*/
     (*lvg)->type.ptr = (level_one != NULL) ? level_one  : logger_type_l1_def;
     (*lvg)->name.ptr = (level_two != NULL) ? level_two  : logger_name_l2_def;
-    (*lvg)->psett    = (setting   != NULL) ? setting   : logger_setting_def;
-    (*lvg)->pdefn    = (define    != NULL) ? define    : logger_define_def;
-    (*lvg)->pstyl    = (style     != NULL) ? style     : logger_style_def;
+    (*lvg)->psett    = (setting   != NULL) ? setting    : logger_setting_def;
+    (*lvg)->pdefn    = (define    != NULL) ? define     : logger_define_def;
+    (*lvg)->pstyl    = (style     != NULL) ? style      : logger_style_def;
 
     (*lvg)->out_offset = 0;
     (*lvg)->absnum     = 0;
@@ -97,36 +105,42 @@ logger_error yaya_log_init(void**          logger_ptr,
 
     /*Инициализация переменных*/
     (*lvg)->tmp_buff_size = LOGGER_TMP_BUFF_SIZE;
-    (*lvg)->tmp_buff = calloc((*lvg)->tmp_buff_size, sizeof(char));
+    logger_memory_new(*lvg, (void*)(&((*lvg)->tmp_buff)), NULL, sizeof(char) * (*lvg)->tmp_buff_size);
     if((*lvg)->tmp_buff == NULL){
         yaya_log_free(logger_ptr);
         return LE_ALLOC;
     }
 
     (*lvg)->out_buff_size = LOGGER_OUT_BUFF_SIZE;
-    (*lvg)->out_buff = calloc((*lvg)->tmp_buff_size, sizeof(char));
+    logger_memory_new(*lvg, (void*)(&((*lvg)->out_buff)), NULL, sizeof(char) * (*lvg)->out_buff_size);
     if((*lvg)->out_buff == NULL){
         yaya_log_free(logger_ptr);
         return LE_ALLOC;
     }
 
     /*Парсинг форматированной строки*/
-    status = logger_pars((*lvg), (*lvg)->psett->logs_format, &(*lvg)->logs);
+    status = logger_pars((*lvg), (*lvg)->psett->logs_format, &(*lvg)->logs_f);
     if(status != LE_OK){
         yaya_log_free(logger_ptr);
         return status;
     }
 
-
-#if LOGGER_ATOM
-    status = logger_pars((*lvg), (*lvg)->psett->atom_format, &(*lvg)->atom);
+#if LOGGER_HEAD
+    status = logger_pars((*lvg), (*lvg)->psett->head_format, &(*lvg)->head_f);
     if(status != LE_OK){
         yaya_log_free(logger_ptr);
         return status;
     }
 #endif
-#if LOGGER_HEAD
-    status = logger_pars((*lvg), (*lvg)->psett->head_format, &(*lvg)->head);
+#if LOGGER_ATOM
+    status = logger_pars((*lvg), (*lvg)->psett->atom_format, &(*lvg)->atom_f);
+    if(status != LE_OK){
+        yaya_log_free(logger_ptr);
+        return status;
+    }
+#endif
+#if LOGGER_FREE
+    status = logger_pars((*lvg), (*lvg)->psett->free_format, &(*lvg)->free_f);
     if(status != LE_OK){
         yaya_log_free(logger_ptr);
         return status;
@@ -187,7 +201,7 @@ logger_error yaya_log_func(uintmax_t count,
                            const char* file,
                            uintmax_t line,
                            const char* func,
-                           const char* debug_generic,
+                           const char* generic,
                            void *logger_ptr,
                            logger_l1_type level_one,
                            logger_l2_type level_two,
@@ -213,22 +227,25 @@ logger_error yaya_log_func(uintmax_t count,
         va_list va_mesgptr;
         va_start(va_mesgptr, mesg);
 
+#if LOGGER_ATOM || LOGGER_FREE
+        bool flag_free = false;
+#endif
+
 #if LOGGER_ATOM
-        _Bool flag_free = 0;
         if(level_one == L_ATOM)
         {
             if((mesg == NULL) || (mesg[0] != ___logger_token_list[LEF_TOK].name[0]))
             {
                 new_mesg   = (char*)(mesg);
                 new_format = (lvg->psett->atom_format);
-                new_tokens = lvg->atom;
+                new_tokens = lvg->atom_f;
             }
             else
             {
                 new_mesg   = va_arg(va_mesgptr, char *);
                 new_format = (char*)(mesg);
                 logger_error status = logger_pars(lvg, new_format, &new_tokens);
-                flag_free = 1;
+                flag_free = true;
                 if(status != LE_OK){
                     goto end;
                 }
@@ -241,31 +258,40 @@ logger_error yaya_log_func(uintmax_t count,
             {
                 new_mesg   = (char*)(mesg);
                 new_format = (lvg->psett->head_format);
-                new_tokens = lvg->head;
+                new_tokens = lvg->head_f;
             }
             else
 #endif
-#if LOGGER_ERROR
-                if(level_one == L_GNERR)
+#if LOGGER_FREE
+                if(level_one == L_FREE)
                 {
                     new_mesg   = (char*)(mesg);
-                    new_format = (lvg->psett->gerr_format);
-                    new_tokens = lvg->gerr;
+                    new_format = (lvg->psett->free_format);
+                    new_tokens = lvg->free_f;
                 }
                 else
 #endif
-                {
-                    new_mesg   = (char*)(mesg);
-                    new_format = (lvg->psett->logs_format);
-                    new_tokens = lvg->logs;
-                }
+#if LOGGER_ERROR
+                    if(level_one == L_GNERR)
+                    {
+                        new_mesg   = (char*)(mesg);
+                        new_format = (lvg->psett->gerr_format);
+                        new_tokens = lvg->gerr;
+                    }
+                    else
+#endif
+                    {
+                        new_mesg   = (char*)(mesg);
+                        new_format = (lvg->psett->logs_format);
+                        new_tokens = lvg->logs_f;
+                    }
 
         lvg->curnum++;
 
         for (uintmax_t i = 0; i < new_tokens->num_token; i++) {
             memset(lvg->tmp_buff, 0, lvg->tmp_buff_size);
             ___logger_token_list[new_tokens->mas_opt[i].id].func(lvg, new_format, &new_tokens->mas_opt[i],
-                                                                 count, file, line, func, debug_generic,
+                                                                 count, file, line, func, generic,
                                                                  level_one, level_two,
                                                                  new_mesg, va_mesgptr);
         }
@@ -278,11 +304,11 @@ logger_error yaya_log_func(uintmax_t count,
         logger_out(lvg);
 #endif
 
-#if LOGGER_ATOM
+#if LOGGER_ATOM || LOGGER_FREE
 end:
-        if(flag_free == 1)
+        if(flag_free)
         {
-            free_tokens(new_tokens);
+            free_tokens(lvg, new_tokens);
         }
 #endif
         va_end(va_mesgptr);
@@ -307,24 +333,27 @@ logger_error yaya_log_free(void** logger_ptr)
         fclose((*lvg)->stream);
     }
 
-    free_tokens((*lvg)->logs);
+    free_tokens(*lvg, (*lvg)->logs_f);
 #if LOGGER_HEAD
-    free_tokens((*lvg)->head);
+    free_tokens(*lvg, (*lvg)->head_f);
 #endif
 #if LOGGER_ATOM
-    free_tokens((*lvg)->atom);
+    free_tokens(*lvg, (*lvg)->atom_f);
+#endif
+#if LOGGER_FREE
+    free_tokens(*lvg, (*lvg)->free_f);
 #endif
 #if LOGGER_ERROR
-    free_tokens((*lvg)->gerr);
+    free_tokens(*lvg, (*lvg)->gerr);
 #endif
 
-    free((*lvg)->out_buff);
+    logger_memory_del(*lvg, (*lvg)->out_buff);
     (*lvg)->out_buff = NULL;
 
-    free((*lvg)->tmp_buff);
+    logger_memory_del(*lvg, (*lvg)->tmp_buff);
     (*lvg)->tmp_buff = NULL;
 
-    free((*lvg));
+    logger_memory_del(*lvg, *lvg);
     *lvg = NULL;
 
     logger_ptr = NULL;
