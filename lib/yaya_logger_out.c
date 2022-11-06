@@ -8,7 +8,6 @@
 #include "yaya_logger.h"
 #include "yaya_logger_private.h"
 
-#if LOGGER_OUT
 logger_error logger_out(___logger *lvg)
 {
     lvg->out_buff[lvg->out_offset + 0] = '\n';
@@ -74,7 +73,6 @@ logger_error logger_out(___logger *lvg)
 
     return LE_OK;
 }
-#endif
 
 bool yaya_log_flush(void **logger_ptr){
     if(logger_ptr == NULL){

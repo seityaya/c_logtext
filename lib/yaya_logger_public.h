@@ -93,16 +93,16 @@ typedef struct logger_filter {
 
 typedef struct logger_setting {
     char *logs_format;
-#if LOGGER_HEAD
+#if LOGGER_FORMAT_HEAD
     char *head_format;
 #endif
-#if LOGGER_ATOM
+#if LOGGER_FORMAT_ATOM
     char *atom_format;
 #endif
-#if LOGGER_FREE
+#if LOGGER_FORMAT_FREE
     char *free_format;
 #endif
-#if LOGGER_ERROR
+#if LOGGER_FORMAT_ERROR
     char *gerr_format;
 #endif
     logger_l1_type type_l1;

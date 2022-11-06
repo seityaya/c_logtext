@@ -58,7 +58,6 @@ static logger_error free_tokens(___logger *lvg, ___logger_tokens* tokens){
     return LE_OK;
 }
 
-
 logger_error yaya_log_init(void**          logger_ptr,
                            logger_filter*  level_one,
                            logger_filter*  level_two,
@@ -125,28 +124,28 @@ logger_error yaya_log_init(void**          logger_ptr,
         return status;
     }
 
-#if LOGGER_HEAD
+#if LOGGER_FORMAT_HEAD
     status = logger_pars((*lvg), (*lvg)->psett->head_format, &(*lvg)->head_f);
     if(status != LE_OK){
         yaya_log_free(logger_ptr);
         return status;
     }
 #endif
-#if LOGGER_ATOM
+#if LOGGER_FORMAT_ATOM
     status = logger_pars((*lvg), (*lvg)->psett->atom_format, &(*lvg)->atom_f);
     if(status != LE_OK){
         yaya_log_free(logger_ptr);
         return status;
     }
 #endif
-#if LOGGER_FREE
+#if LOGGER_FORMAT_FREE
     status = logger_pars((*lvg), (*lvg)->psett->free_format, &(*lvg)->free_f);
     if(status != LE_OK){
         yaya_log_free(logger_ptr);
         return status;
     }
 #endif
-#if LOGGER_ERROR
+#if LOGGER_FORMAT_ERROR
     status = logger_pars((*lvg), (*lvg)->psett->gerr_format, &(*lvg)->gerr);
     if(status != LE_OK){
         yaya_log_free(logger_ptr);
@@ -227,11 +226,11 @@ logger_error yaya_log_func(uintmax_t count,
         va_list va_mesgptr;
         va_start(va_mesgptr, mesg);
 
-#if LOGGER_ATOM || LOGGER_FREE
+#if LOGGER_FORMAT_ATOM || LOGGER_FORMAT_FREE
         bool flag_free = false;
 #endif
 
-#if LOGGER_ATOM
+#if LOGGER_FORMAT_ATOM
         if(level_one == L_ATOM)
         {
             if((mesg == NULL) || (mesg[0] != ___logger_token_list[LEF_TOK].name[0]))
@@ -253,7 +252,7 @@ logger_error yaya_log_func(uintmax_t count,
         }
         else
 #endif
-#if LOGGER_HEAD
+#if LOGGER_FORMAT_HEAD
             if(level_one == L_HEAD)
             {
                 new_mesg   = (char*)(mesg);
@@ -262,7 +261,7 @@ logger_error yaya_log_func(uintmax_t count,
             }
             else
 #endif
-#if LOGGER_FREE
+#if LOGGER_FORMAT_FREE
                 if(level_one == L_FREE)
                 {
                     new_mesg   = (char*)(mesg);
@@ -271,7 +270,7 @@ logger_error yaya_log_func(uintmax_t count,
                 }
                 else
 #endif
-#if LOGGER_ERROR
+#if LOGGER_FORMAT_ERROR
                     if(level_one == L_GNERR)
                     {
                         new_mesg   = (char*)(mesg);
@@ -300,11 +299,9 @@ logger_error yaya_log_func(uintmax_t count,
         logger_styles(lvg);
 #endif
 
-#if LOGGER_OUT
         logger_out(lvg);
-#endif
 
-#if LOGGER_ATOM || LOGGER_FREE
+#if LOGGER_FORMAT_ATOM || LOGGER_FORMAT_FREE
 end:
         if(flag_free)
         {
@@ -334,16 +331,16 @@ logger_error yaya_log_free(void** logger_ptr)
     }
 
     free_tokens(*lvg, (*lvg)->logs_f);
-#if LOGGER_HEAD
+#if LOGGER_FORMAT_HEAD
     free_tokens(*lvg, (*lvg)->head_f);
 #endif
-#if LOGGER_ATOM
+#if LOGGER_FORMAT_ATOM
     free_tokens(*lvg, (*lvg)->atom_f);
 #endif
-#if LOGGER_FREE
+#if LOGGER_FORMAT_FREE
     free_tokens(*lvg, (*lvg)->free_f);
 #endif
-#if LOGGER_ERROR
+#if LOGGER_FORMAT_ERROR
     free_tokens(*lvg, (*lvg)->gerr);
 #endif
 

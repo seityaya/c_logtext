@@ -9,70 +9,47 @@
 #define YAYA_LOGGER_CONF_H_
 
 // clang-format off
+
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // BEG // OPTION
 
-/*Включить логгер*/          /*Работает*/
-#ifndef LOGGER_LOGS
+/*Включить логгер*/
+#ifndef LOGGER_LOGS          /*Работает*/
 #define LOGGER_LOGS          LOGGER_ON
 #endif
 
-/*Тип логера обобщенный*/    /*Работает*/
-#ifndef LOGGER_TYPE_AUTO
-#define LOGGER_TYPE_AUTO     LOGGER_ON
-#endif
-
-/*Включить отладку*/         /*Работает*/
-#ifndef LOGGER_DEBUG_FORMAT
-#define LOGGER_DEBUG_FORMAT  LOGGER_OFF
-#endif
-
-/*Включить вывод*/           /*Работает*/
-#ifndef LOGGER_OUT
-#define LOGGER_OUT           LOGGER_ON
-#endif
-
-/*Включить заголовок как отдельный формат*/
-                             /*Работает*/
-#ifndef LOGGER_HEAD
-#define LOGGER_HEAD          LOGGER_ON
-#endif
-
-/*Включить динамический вычисляемый формат*/
-                             /*Работает*/
-#ifndef LOGGER_ATOM
-#define LOGGER_ATOM          LOGGER_ON
-#endif
-
-/*Включить вывод перед очисткой как отдельный формат*/
-                             /*Работает*/
-#ifndef LOGGER_FREE
-#define LOGGER_FREE          LOGGER_OFF
-#endif
-
-/*Включить ошибку логера как отдельный формат*/
-                             /*Работает*/
-#ifndef LOGGER_ERROR
-#define LOGGER_ERROR         LOGGER_ON
-#endif
-
-/*Метод  выделения памяти*/   /*В разработке*/
-#ifndef LOGGER_STATIC
+/*Метод  выделения памяти*/
+#ifndef LOGGER_STATIC        /*В разработке*/
 #define LOGGER_STATIC        LOGGER_OFF
 #endif
 
-/*Включить стили*/           /*В разработке*/
-#ifndef LOGGER_STYLE
+/*Включить стили*/
+#ifndef LOGGER_STYLE         /*В разработке*/
 #define LOGGER_STYLE         LOGGER_ON
 #endif
 
-/*Включить отмену макросов*/ /*В разработке*/
-#ifndef LOGGER_UNDEF
-#define LOGGER_UNDEF         LOGGER_OFF
+/*Включить заголовок как отдельный формат*/
+#ifndef LOGGER_FORMAT_HEAD   /*Работает*/
+#define LOGGER_FORMAT_HEAD   LOGGER_ON
 #endif
 
-/*Строка скрыватель*/        /*Работает*/
-#ifndef LOGGER_HIDDEN_STR
+/*Включить динамический вычисляемый формат*/
+#ifndef LOGGER_FORMAT_ATOM   /*Работает*/
+#define LOGGER_FORMAT_ATOM   LOGGER_ON
+#endif
+
+/*Включить вывод перед очисткой как отдельный формат*/
+#ifndef LOGGER_FORMAT_FREE   /*Работает*/
+#define LOGGER_FORMAT_FREE   LOGGER_OFF
+#endif
+
+/*Включить ошибку логера как отдельный формат*/
+#ifndef LOGGER_FORMAT_ERROR  /*Работает*/
+#define LOGGER_FORMAT_ERROR  LOGGER_ON
+#endif
+
+/*Строка скрыватель*/
+#ifndef LOGGER_HIDDEN_STR    /*Работает*/
 #define LOGGER_HIDDEN_STR    "..."
 #endif
 
@@ -83,7 +60,7 @@
 
 /*Размер буфера для нужд логера*/
 #ifndef LOGGER_TMP_BUFF_SIZE
-#define LOGGER_TMP_BUFF_SIZE 1000
+#define LOGGER_TMP_BUFF_SIZE 500
 #endif
 
 #if LOGGER_STATIC
@@ -101,9 +78,7 @@
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // BEG // DEFAULT
 
-#if LOGGER_TYPE_AUTO
 static void* logger_main_def = NULL;
-#endif
 
 #define L_NUL      LOGGER_FLAG_T_NUL          /*<<< BEG <<<*/
 #define L_VOID     LOGGER_FLAG_T_GENERATE( 0) /*<<< VOID    FORMAT TYPE*/
@@ -176,21 +151,22 @@ static logger_filter logger_name_l2_def[] = { LOGGER_FILTER_GENERATE(LL_NUL),
 static logger_setting logger_setting_def[] = {
     {
         .logs_format = "LOGS ## $line%03. -- | $type%.08 $name%.08 $mesg",
-        #if LOGGER_HEAD
+        #if LOGGER_FORMAT_HEAD
         .head_format = "HEAD ## $line%3. $mesg",
         #endif
-        #if LOGGER_ATOM
+        #if LOGGER_FORMAT_ATOM
         .atom_format = "ATOM ## $mesg",
         #endif
-        #if LOGGER_FREE
+        #if LOGGER_FORMAT_FREE
         .free_format = "FREE ## $stats",
         #endif
-        #if LOGGER_ERROR
+        #if LOGGER_FORMAT_ERROR
         .gerr_format = "ERROR Generic  $generic  $line $file $func",
         #endif
         .type_l1 = L_ALL,
         .name_l2 = LL_ALL,
         .stream  = LS_STDOUT,
+        .out_file = "/tmp/log.txt",
     }
 };
 

@@ -20,6 +20,18 @@ void test_printf(){
     printf("^^ END %s \n\n\n\n", __func__);
 }
 
+void test_fputs(){
+    printf("^^ BEG %s \n", __func__);
+
+    char buff[100] = {0};
+    for(intmax_t i = 0;  i < NUM_RUN_CYCLES; i++){
+        sprintf(buff, "## %03d  >> %s %" PRIiMAX " \n" , __LINE__, __func__, i);
+        fputs(buff, stdout);
+    }
+
+    printf("^^ END %s \n\n\n\n", __func__);
+}
+
 void loggerf_test_free_token(){
     printf("^^ BEG %s \n", __func__);
 

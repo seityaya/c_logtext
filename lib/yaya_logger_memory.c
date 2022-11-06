@@ -26,7 +26,7 @@ void logger_memory_new(___logger *lvg, void **ptr, void *old_ptr, size_t new_siz
         }
         if(diff > 0){
             *ptr = realloc(old_ptr, new_size);
-            memset(&(*ptr)[old_sise], 0, diff);
+            memset(&((*ptr)[old_sise]), 0, diff);
             lvg->memory_usage += diff;
         }
 

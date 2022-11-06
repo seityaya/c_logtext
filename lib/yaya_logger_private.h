@@ -20,6 +20,17 @@
 
 #include "yaya_logger.h"
 
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// // BEG // OPTION
+
+/*Включить отладку формата*/
+#ifndef LOGGER_DEBUG_FORMAT  /*Работает*/
+#define LOGGER_DEBUG_FORMAT  LOGGER_OFF
+#endif
+
+// // END // OPTION
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #define LOGGER_BIT_GET(x, n)        ((uintmax_t)(x) & (UINTMAX_C(1) << (uintmax_t)(n)))
 
 #define LOGGER_TOKEN_GENERATE_FUNC(TOKEN)  logger_error ___logger_func_##TOKEN(LOGGER_FUNC_PARAM)
@@ -103,16 +114,16 @@ typedef struct ___logger {
     ___logger_filters name;
 
     ___logger_tokens *logs_f;
-#if LOGGER_HEAD
+#if LOGGER_FORMAT_HEAD
     ___logger_tokens *head_f;
 #endif
-#if LOGGER_ATOM
+#if LOGGER_FORMAT_ATOM
     ___logger_tokens *atom_f;
 #endif
-#if LOGGER_FREE
+#if LOGGER_FORMAT_FREE
     ___logger_tokens *free_f;
 #endif
-#if LOGGER_ERROR
+#if LOGGER_FORMAT_ERROR
     ___logger_tokens *gerr;
 #endif
 
@@ -134,9 +145,6 @@ typedef struct ___logger {
     FILE     *stream;
 } ___logger;
 
-void logger_memory_new(___logger *lvg, void **ptr, void *old_ptr, size_t new_size);
-void logger_memory_del(___logger *lvg, void *ptr);
-
 typedef struct ___logger_token_func {      /*список токенов*/
     const uintmax_t id;       /*идентификатор*/
     const char *name;         /*текстовое представление ключей*/
@@ -144,11 +152,11 @@ typedef struct ___logger_token_func {      /*список токенов*/
 } ___logger_token_func;
 
 
-logger_error logger_pars  (___logger *lvg, const char *format, ___logger_tokens** tokens);
+void logger_memory_new(___logger *lvg, void **ptr, void *old_ptr, size_t new_size);
+void logger_memory_del(___logger *lvg, void *ptr);
 
-#if LOGGER_OUT
+logger_error logger_pars  (___logger *lvg, const char *format, ___logger_tokens** tokens);
 logger_error logger_out   (___logger *lvg);
-#endif
 
 #if LOGGER_STYLE
 logger_error logger_styles(___logger *lvg);

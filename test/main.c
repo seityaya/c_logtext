@@ -11,7 +11,9 @@ int main(int argc, char *argv[]) {
     (void)argc;
     (void)argv;
 
-    test_printf();
+    //test_printf();
+
+    //test_fputs();
 
     loggerf_test_free_token();
 

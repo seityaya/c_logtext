@@ -14,6 +14,8 @@
 
 void test_printf();
 
+void test_fputs();
+
 void loggerf_test_free_token();
 
 void loggerf_test_free();
