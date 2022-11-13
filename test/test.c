@@ -233,6 +233,13 @@ void loggerf_test_format(){
     loggerf(L_ATOM, "$** $line%03.  >> $num%2.0     |$line%2.0|");
 
     loggerf(L_ATOM);
+
+    loggerf(L_ATOM, "$** $line%03.  >> $num%+2       |$line%2|");    //TODO
+    loggerf(L_ATOM, "$** $line%03.  >> $num%+02      |$line%+02|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%+ 2      |$line%+ 2|");
+
+    loggerf(L_ATOM);
+
     loggerf(L_ATOM, "$mesg", "======================================================");
 
     loggerf(L_ATOM, "$** $line%03.  >> $str         |$mesg|", "str");
@@ -260,6 +267,7 @@ void loggerf_test_format(){
     loggerf(L_ATOM, "$** $line%03.  >> $str%:5.      |$mesg%5.|"   , "string");
     loggerf(L_ATOM, "$** $line%03.  >> $str%:05.     |$mesg%05.|"  , "string");
     loggerf(L_ATOM, "$** $line%03.  >> $str%:5.0     |$mesg%5.0|"  , "string");
+
 
     loggerf_free();
 
@@ -326,4 +334,39 @@ void loggerf_test_output(){
     loggerf(logger_instance, "LS_STDCSV 2");
     loggerf(logger_instance, "LS_STDCSV 3");
     loggerf_free(logger_instance);
+}
+
+void *logger_instance = NULL;
+
+uintmax_t factorial(uintmax_t i) {
+   loggerf(logger_instance, L_BEGF, "factorial i = %d", i);
+
+   uintmax_t k = 0;
+
+   if(i <= 0) {
+      k = 1;
+   }else{
+       k = i * factorial(i - 1);
+   }
+
+   loggerf(logger_instance, L_ENDF, "factorial k = %d", k);
+   return k;
+}
+
+void loggerf_test_recursion(){
+    logger_setting setting = logger_setting_def[0];
+    setting.logs_format = "LOGS ## $data_curent $time_curent >> %file $line $recnum%03 $rectab $mesg";
+
+    setting.stream = LS_STDOUT;
+    loggerf_init(&logger_instance, NULL, NULL, &setting);
+
+    loggerf(logger_instance, L_INFO, "Beg");
+    loggerf(logger_instance, L_INFO, "factorial");
+    loggerf(logger_instance, L_INFO, "recursion");
+    loggerf(logger_instance, L_INFO, "test");
+    factorial(5);
+    loggerf(logger_instance, L_INFO, "End");
+    loggerf(logger_instance, L_INFO, "factorial");
+    loggerf(logger_instance, L_INFO, "recursion");
+    loggerf(logger_instance, L_INFO, "test");
 }

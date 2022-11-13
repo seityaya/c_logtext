@@ -180,7 +180,7 @@ logger_error logger_pars(___logger *lvg, const char *format, ___logger_tokens** 
                 {
                     strncpy(buffmod, &format[(*tokens)->mas_opt[i].spe->beg], (*tokens)->mas_opt[i].spe->end - (*tokens)->mas_opt[i].spe->beg + 1);
                 }
-                printf("%3" PRIXMAX " | %10s = %02" PRIXMAX " | %3" PRIXMAX " <%3" PRIXMAX "> %3" PRIXMAX " | -%s- %n",
+                printf("%3" PRIXMAX " | %12s = %02" PRIXMAX " | %3" PRIXMAX " <%3" PRIXMAX "> %3" PRIXMAX " | -%s- %n",
                        i,
                        ___logger_token_list[(*tokens)->mas_opt[i].id].name,
                         (*tokens)->mas_opt[i].id,

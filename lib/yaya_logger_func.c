@@ -97,6 +97,30 @@ LOGGER_TOKEN_GENERATE_FUNC(absnum){
     return LE_OK;
 }
 
+LOGGER_TOKEN_GENERATE_FUNC(recnum){
+    LOGGER_FUNC_UNUSED;
+    format_build_num(lvg, mas_opt, lvg->recnum);
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(rectab){
+    LOGGER_FUNC_UNUSED;
+
+    intmax_t len = labs(lvg->recnum);
+    if(labs(lvg->recnum) > LOGGER_TMP_BUFF_SIZE){
+        len = LOGGER_TMP_BUFF_SIZE;
+    }
+
+    lvg->tmp_buff[0] = '\0';
+    for (intmax_t i = 0; i <= len - 1; i++) {
+      lvg->tmp_buff[i] = '\t';
+    }
+    lvg->tmp_buff[len] = '\0';
+
+    format_build_str(lvg, mas_opt, lvg->tmp_buff);
+    return LE_OK;
+}
+
 LOGGER_TOKEN_GENERATE_FUNC(data_build){
     LOGGER_FUNC_UNUSED;
 

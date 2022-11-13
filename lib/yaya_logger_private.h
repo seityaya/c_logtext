@@ -133,8 +133,9 @@ typedef struct ___logger {
     intmax_t  out_offset;   // - указатель на конец строки
     uintmax_t out_buff_size;// - размер буфера
 
-    uintmax_t curnum;// - номер текущего вывода
-    uintmax_t absnum;// - номер вывода без учета фильтрации
+    uintmax_t curnum; // - номер текущего вывода
+    uintmax_t absnum; // - номер вывода без учета фильтрации
+     intmax_t recnum; // - номер рекурсивного вызова
 
     intmax_t memory_total;
     intmax_t memory_usage;
@@ -177,6 +178,8 @@ logger_error format_build_num(___logger* lvg, ___logger_token_mas* mas_opt, uint
     \
     X(curnum)          /* номер выведенного сообщения */\
     X(absnum)          /* номер сообщения без учета фильтрации */\
+    X(recnum)          /* номер в рекурсивном вызове +N 0 -N*/\
+    X(rectab)          /* отступ в рекурсивном вызове*/\
     \
     X(data_build)      /* дата компиляции */\
     X(time_build)      /* время компиляции */\

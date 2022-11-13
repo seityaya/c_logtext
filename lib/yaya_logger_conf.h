@@ -28,6 +28,11 @@
 #define LOGGER_STYLE         LOGGER_ON
 #endif
 
+/*Включить стили*/
+#ifndef LOGGER_RECURSION     /*Работает*/
+#define LOGGER_RECURSION     LOGGER_ON
+#endif
+
 /*Включить заголовок как отдельный формат*/
 #ifndef LOGGER_FORMAT_HEAD   /*Работает*/
 #define LOGGER_FORMAT_HEAD   LOGGER_ON
@@ -81,23 +86,23 @@
 static void* logger_main_def = NULL;
 
 #define L_NUL      LOGGER_FLAG_T_NUL          /*<<< BEG <<<*/
-#define L_VOID     LOGGER_FLAG_T_GENERATE( 0) /*<<< VOID    FORMAT TYPE*/
-#define L_HEAD     LOGGER_FLAG_T_GENERATE( 1) /*<<< HEAD    FORMAT TYPE*/
-#define L_ATOM     LOGGER_FLAG_T_GENERATE( 2) /*<<< ATOM    FORMAT TYPE*/
-#define L_FREE     LOGGER_FLAG_T_GENERATE( 3) /*<<< FREE    FORMAT TYPE*/
-#define L_GNERR    LOGGER_FLAG_T_GENERATE( 4) /*<<< GENERIC ERROR  TYPE*/
-#define L_INFO     LOGGER_FLAG_T_GENERATE( 5)
-#define L_ERROR    LOGGER_FLAG_T_GENERATE( 6)
-#define L_WARNING  LOGGER_FLAG_T_GENERATE( 7)
-#define L_TODO     LOGGER_FLAG_T_GENERATE( 8)
-#define L_FIXME    LOGGER_FLAG_T_GENERATE( 9)
-#define L_DEBUG    LOGGER_FLAG_T_GENERATE(10)
-#define L_RELEASE  LOGGER_FLAG_T_GENERATE(11)
-#define L_TRACE    LOGGER_FLAG_T_GENERATE(12)
-#define L_WARN     LOGGER_FLAG_T_GENERATE(13)
-#define L_FATAL    LOGGER_FLAG_T_GENERATE(14)
-#define L_BEGF     LOGGER_FLAG_T_GENERATE(15)
-#define L_ENDF     LOGGER_FLAG_T_GENERATE(16)
+#define L_VOID     LOGGER_FLAG_T_GENERATE( 0) /*<<< VOID      FORMAT TYPE*/
+#define L_HEAD     LOGGER_FLAG_T_GENERATE( 1) /*<<< HEAD      FORMAT TYPE*/
+#define L_ATOM     LOGGER_FLAG_T_GENERATE( 2) /*<<< ATOM      FORMAT TYPE*/
+#define L_FREE     LOGGER_FLAG_T_GENERATE( 3) /*<<< FREE      FORMAT TYPE*/
+#define L_GNERR    LOGGER_FLAG_T_GENERATE( 4) /*<<< GENERIC   ERROR  TYPE*/
+#define L_BEGF     LOGGER_FLAG_T_GENERATE( 5) /*<<< RECURSION FORMAT TYPE*/
+#define L_ENDF     LOGGER_FLAG_T_GENERATE( 6) /*<<< RECURSION FORMAT TYPE*/
+#define L_INFO     LOGGER_FLAG_T_GENERATE( 7)
+#define L_ERROR    LOGGER_FLAG_T_GENERATE( 8)
+#define L_WARNING  LOGGER_FLAG_T_GENERATE( 9)
+#define L_TODO     LOGGER_FLAG_T_GENERATE(10)
+#define L_FIXME    LOGGER_FLAG_T_GENERATE(11)
+#define L_DEBUG    LOGGER_FLAG_T_GENERATE(12)
+#define L_RELEASE  LOGGER_FLAG_T_GENERATE(13)
+#define L_TRACE    LOGGER_FLAG_T_GENERATE(14)
+#define L_WARN     LOGGER_FLAG_T_GENERATE(15)
+#define L_FATAL    LOGGER_FLAG_T_GENERATE(16)
 #define L_FUNC     LOGGER_FLAG_T_GENERATE(17)
 #define L_LOGGER   LOGGER_FLAG_T_GENERATE(18)
 #define L_TEST     LOGGER_FLAG_T_GENERATE(19)
@@ -110,6 +115,8 @@ static logger_filter logger_type_l1_def[] = { LOGGER_FILTER_GENERATE(L_NUL),
                                               LOGGER_FILTER_GENERATE(L_ATOM),
                                               LOGGER_FILTER_GENERATE(L_FREE),
                                               LOGGER_FILTER_GENERATE(L_GNERR),
+                                              LOGGER_FILTER_GENERATE(L_BEGF),
+                                              LOGGER_FILTER_GENERATE(L_ENDF),
                                               LOGGER_FILTER_GENERATE(L_INFO),
                                               LOGGER_FILTER_GENERATE(L_ERROR),
                                               LOGGER_FILTER_GENERATE(L_WARNING),
@@ -120,8 +127,6 @@ static logger_filter logger_type_l1_def[] = { LOGGER_FILTER_GENERATE(L_NUL),
                                               LOGGER_FILTER_GENERATE(L_TRACE),
                                               LOGGER_FILTER_GENERATE(L_WARN),
                                               LOGGER_FILTER_GENERATE(L_FATAL),
-                                              LOGGER_FILTER_GENERATE(L_BEGF),
-                                              LOGGER_FILTER_GENERATE(L_ENDF),
                                               LOGGER_FILTER_GENERATE(L_FUNC),
                                               LOGGER_FILTER_GENERATE(L_LOGGER),
                                               LOGGER_FILTER_GENERATE(L_TEST),

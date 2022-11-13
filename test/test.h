@@ -28,4 +28,6 @@ void loggerf_test_format();
 
 void loggerf_test_output();
 
+void loggerf_test_recursion();
+
 #endif /* LOGGER_TEST_H */

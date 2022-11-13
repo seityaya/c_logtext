@@ -27,5 +27,7 @@ int main(int argc, char *argv[]) {
 
     loggerf_test_output();
 
+    loggerf_test_recursion();
+
     return 0;
 }
