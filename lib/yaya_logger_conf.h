@@ -28,7 +28,7 @@
 #define LOGGER_STYLE         LOGGER_ON
 #endif
 
-/*Включить стили*/
+/*Включить вложенный вывод*/
 #ifndef LOGGER_RECURSION     /*Работает*/
 #define LOGGER_RECURSION     LOGGER_ON
 #endif
@@ -45,7 +45,7 @@
 
 /*Включить вывод перед очисткой как отдельный формат*/
 #ifndef LOGGER_FORMAT_FREE   /*Работает*/
-#define LOGGER_FORMAT_FREE   LOGGER_OFF
+#define LOGGER_FORMAT_FREE   LOGGER_ON
 #endif
 
 /*Включить ошибку логера как отдельный формат*/

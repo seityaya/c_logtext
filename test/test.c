@@ -234,9 +234,13 @@ void loggerf_test_format(){
 
     loggerf(L_ATOM);
 
-    loggerf(L_ATOM, "$** $line%03.  >> $num%+2       |$line%2|");    //TODO
+    loggerf(L_ATOM, "$** $line%03.  >> $num%+2       |$line%2|");    // TODO(yaya): implement
     loggerf(L_ATOM, "$** $line%03.  >> $num%+02      |$line%+02|");
     loggerf(L_ATOM, "$** $line%03.  >> $num%+ 2      |$line%+ 2|");
+
+    loggerf(L_ATOM, "$** $line%03.  >> $num%-2       |$line%2|");    // TODO(yaya): implement
+    loggerf(L_ATOM, "$** $line%03.  >> $num%-02      |$line%+02|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%- 2      |$line%+ 2|");
 
     loggerf(L_ATOM);
 

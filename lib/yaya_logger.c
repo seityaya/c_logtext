@@ -289,31 +289,30 @@ logger_error yaya_log_func(uintmax_t count,
         lvg->curnum++;
 
 #if LOGGER_RECURSION
-#define POSITIV(a) (a) > 0 ? (a) : (-a)
-#define NEGITIV(a) (a) < 0 ? (a) : (-a)
+#define POSITIV(a) (a) > 0 ? (a) : (-(a))
+#define NEGITIV(a) (a) < 0 ? (a) : (-(a))
+        if(level_one == L_BEGF){
+            lvg->recnum = POSITIV(lvg->recnum);
+            lvg->recnum++;
+        }
 
-    if(level_one == L_BEGF){
-        lvg->recnum = POSITIV(lvg->recnum);
-        lvg->recnum++;
-    }
+        if(level_one == L_ENDF){
+            lvg->recnum = NEGITIV(lvg->recnum);
+        }
+#undef POSITIV
+#undef NEGITIV
 #endif
-
         for (uintmax_t i = 0; i < new_tokens->num_token; i++) {
-            memset(lvg->tmp_buff, 0, lvg->tmp_buff_size);
+            memset(lvg->tmp_buff, 0, lvg->tmp_buff_size); // TODO(yaya): del
             ___logger_token_list[new_tokens->mas_opt[i].id].func(lvg, new_format, &new_tokens->mas_opt[i],
                                                                  count, file, line, func, generic,
                                                                  level_one, level_two,
                                                                  new_mesg, va_mesgptr);
         }
-
 #if LOGGER_RECURSION
         if(level_one == L_ENDF){
-            lvg->recnum = NEGITIV(lvg->recnum);
             lvg->recnum++;
         }
-
-#undef POSITIV
-#undef NEGITIV
 #endif
 
 #if LOGGER_STYLE
