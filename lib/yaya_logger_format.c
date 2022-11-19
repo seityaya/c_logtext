@@ -8,6 +8,14 @@
 #include "yaya_logger.h"
 #include "yaya_logger_private.h"
 
+size_t format_build_cpy(char *restrict dest, const char *restrict src, size_t full_size_dst){ // TODO(yaya):
+        dest[0] = '\0';
+        strncpy(dest, src, full_size_dst);
+        dest[full_size_dst - 1] = '\0';
+        size_t len = strlen(src);
+        return len > full_size_dst ? full_size_dst : len;
+}
+
 logger_error format_build_num(___logger* lvg, ___logger_token_mas* mas_opt, uintmax_t buff_orig)
 {
     mas_opt->type = LTT_NUM;

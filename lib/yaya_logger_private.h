@@ -163,6 +163,7 @@ logger_error logger_out   (___logger *lvg);
 logger_error logger_styles(___logger *lvg);
 #endif
 
+size_t       format_build_cpy(char *restrict dest, const char *restrict src, size_t full_size_dst);
 logger_error format_build_str(___logger *lvg, ___logger_token_mas *mas_opt, const char *buff_orig);
 logger_error format_build_num(___logger* lvg, ___logger_token_mas* mas_opt, uintmax_t buff_orig);
 
