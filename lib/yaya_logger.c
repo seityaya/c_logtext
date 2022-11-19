@@ -14,26 +14,22 @@ static logger_error count_num(___logger_filters *filter) {
     }
 
     filter->num = 0;
-
-    if(filter->ptr[0].flag != LOGGER_FLAG_NUL(uintmax_t))
-    {
+    if(filter->ptr[0].flag != LOGGER_FLAG_NUL(uintmax_t)) {
         return LE_ERR;
     }
 
-    for (uintmax_t i = 1; i < sizeof(uintmax_t) * __CHAR_BIT__; i++)
-    {
-        if((filter->ptr[i].flag & (1ULL << (i)))
-           &&
-           (filter->ptr[i].flag != LOGGER_FLAG_ALL(uintmax_t))) {
+    for (uintmax_t i = 1; i < sizeof(uintmax_t) * __CHAR_BIT__; i++) {
+        uintmax_t flag = filter->ptr[i].flag;
+        if(((flag != (1ULL << (i - 1)))) && (flag != LOGGER_FLAG_ALL(uintmax_t))) {
             return LE_ERR;
         }
-
-        if (filter->ptr[i].flag == LOGGER_FLAG_ALL(uintmax_t)) {
+        if (flag == LOGGER_FLAG_ALL(uintmax_t)) {
             filter->num = i;
-            break;
+            return LE_OK;
         }
     }
-    return LE_OK;
+
+    return LE_ERR;
 }
 
 static logger_error free_tokens(___logger *lvg, ___logger_tokens* tokens){
@@ -41,10 +37,8 @@ static logger_error free_tokens(___logger *lvg, ___logger_tokens* tokens){
         return LE_ERR;
     }
 
-    for(uintmax_t i = 0; i < tokens->num_token; i++)
-    {
-        if(tokens->mas_opt[i].spe != NULL)
-        {
+    for(uintmax_t i = 0; i < tokens->num_token; i++) {
+        if(tokens->mas_opt[i].spe != NULL) {
             logger_memory_del(lvg, tokens->mas_opt[i].spe);
             tokens->mas_opt[i].spe = NULL;
         }
@@ -359,7 +353,9 @@ logger_error yaya_log_free(void** logger_ptr)
 
 #if (((LOGGER_OUT) & (DLS_STDFILE | DLS_STDCSV)) || (LOGGER_OUT == LOGGER_ON))
     if(((*lvg)->psett->stream == LS_STDFILE) || ((*lvg)->psett->stream == LS_STDCSV)){
-        fclose((*lvg)->stream);
+        if((*lvg)->stream != NULL){
+            fclose((*lvg)->stream);
+        }
     }
 #endif
 

@@ -94,16 +94,14 @@ bool yaya_log_flush(void **logger_ptr){
     (void)(logger_ptr);
 #else
     if(logger_ptr == NULL){
-        return true;
+        return false;
+    }
+    ___logger *lvg = (___logger*)(*logger_ptr);
+    if(lvg == NULL){
+        return false;
     }
 
-    ___logger **lvg = (___logger**)(logger_ptr);
-
-    if(*lvg == NULL){
-        return true;
-    }
-
-    switch ((*lvg)->psett->stream) {
+    switch (lvg->psett->stream) {
 #if (((LOGGER_OUT) & DLS_STDOUT) || (LOGGER_OUT == LOGGER_ON))
         case LS_STDOUT:
 #endif
@@ -118,31 +116,32 @@ bool yaya_log_flush(void **logger_ptr){
 #endif
 #if (((LOGGER_OUT) & (DLS_STDOUT | DLS_STDERR | DLS_STDFILE | DLS_STDCSV)) || (LOGGER_OUT == LOGGER_ON))
         {
-            fflush((*lvg)->stream);
-            return true;
+            fflush(lvg->stream);
+            return false;
         }
 #endif
 #if (((LOGGER_OUT) & DLS_STDBUF) || (LOGGER_OUT == LOGGER_ON))
         case LS_STDBUF: {
             // TODO(yaya): circular buffer
-            if((*lvg)->out_offset > 0){
-                strncpy((*lvg)->psett->out_buff, (*lvg)->out_buff, (*lvg)->psett->size_buff - 1);
-                (*lvg)->psett->out_buff[(*lvg)->psett->size_buff - 1] = '\0';
-                *(*lvg)->psett->out_size = strlen((*lvg)->psett->out_buff);
-                if(((*lvg)->out_offset - (*lvg)->psett->size_buff >= 0)){
-                    strncpy((*lvg)->tmp_buff, (*lvg)->out_buff + (*lvg)->psett->size_buff - 1, LOGGER_TMP_BUFF_SIZE);
-                    strncpy((*lvg)->out_buff, (*lvg)->tmp_buff, LOGGER_OUT_BUFF_SIZE);
-                    (*lvg)->out_offset -= (*lvg)->psett->size_buff - 1;
+            if(lvg->out_offset > 0){
+                strncpy(lvg->psett->out_buff, lvg->out_buff, lvg->psett->size_buff - 1);
+                lvg->psett->out_buff[lvg->psett->size_buff - 1] = '\0';
+                *lvg->psett->out_size = strlen(lvg->psett->out_buff);
+                if((lvg->out_offset - lvg->psett->size_buff >= 0)){
+                    strncpy(lvg->tmp_buff, lvg->out_buff + lvg->psett->size_buff - 1, LOGGER_TMP_BUFF_SIZE);
+                    strncpy(lvg->out_buff, lvg->tmp_buff, LOGGER_OUT_BUFF_SIZE);
+                    lvg->out_offset -= lvg->psett->size_buff - 1;
                 }else{
-                    (*lvg)->out_offset = 0;
-                    return true;
+                    lvg->out_offset = 0;
+                    return false;
                 }
-                return false;
+                return true;
             }
-            return true;
+            return false;
         }
 #endif
     }
+    return false;
 #endif
 }
 

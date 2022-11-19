@@ -316,7 +316,7 @@ void loggerf_test_output(){
     loggerf(logger_instance, "LS_STDBUF 1");
     loggerf(logger_instance, "LS_STDBUF 2");
     loggerf(logger_instance, "LS_STDBUF 3");
-    while(!loggerf_flush(logger_instance)){
+    while(loggerf_flush(logger_instance)){
         fwrite(buff, sizeof(char), size, stdout);
     }
     loggerf_free(logger_instance);
