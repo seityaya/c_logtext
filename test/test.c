@@ -284,23 +284,25 @@ void loggerf_test_output(){
     logger_setting setting = logger_setting_def[0];
     setting.logs_format = "LOGS ## $data_curent $time_curent >> $line%03. -- | $type%.08 $name%.08 $mesg";
 
-
+#if (((LOGGER_OUT) & DLS_STDOUT) || (LOGGER_OUT == LOGGER_ON))
     setting.stream = LS_STDOUT;
     loggerf_init(&logger_instance, NULL, NULL, &setting);
     loggerf(logger_instance, "LS_STDOUT 1");
     loggerf(logger_instance, "LS_STDOUT 2");
     loggerf(logger_instance, "LS_STDOUT 3");
     loggerf_free(logger_instance);
+#endif
 
-
+#if (((LOGGER_OUT) & DLS_STDERR) || (LOGGER_OUT == LOGGER_ON))
     setting.stream = LS_STDERR;
     loggerf_init(&logger_instance, NULL, NULL, &setting);
     loggerf(logger_instance, "LS_STDERR 1");
     loggerf(logger_instance, "LS_STDERR 2");
     loggerf(logger_instance, "LS_STDERR 3");
     loggerf_free(logger_instance);
+#endif
 
-
+#if (((LOGGER_OUT) & DLS_STDBUF) || (LOGGER_OUT == LOGGER_ON))
 #define BUFF_SIZE 2
     char buff[BUFF_SIZE] = {0};
     size_t size = 0;
@@ -318,8 +320,9 @@ void loggerf_test_output(){
         fwrite(buff, sizeof(char), size, stdout);
     }
     loggerf_free(logger_instance);
+#endif
 
-
+#if (((LOGGER_OUT) & DLS_STDFILE) || (LOGGER_OUT == LOGGER_ON))
     printf("%s\n", "/tmp/logger_test.txt");
     setting.stream = LS_STDFILE;
     setting.out_file = "/tmp/logger_test.txt";
@@ -328,8 +331,9 @@ void loggerf_test_output(){
     loggerf(logger_instance, "LS_STDFILE 2");
     loggerf(logger_instance, "LS_STDFILE 3");
     loggerf_free(logger_instance);
+#endif
 
-
+#if (((LOGGER_OUT) & DLS_STDCSV) || (LOGGER_OUT == LOGGER_ON))
     printf("%s\n", "/tmp/logger_test.csv");
     setting.stream = LS_STDCSV;
     setting.out_file = "/tmp/logger_test.csv";
@@ -338,30 +342,30 @@ void loggerf_test_output(){
     loggerf(logger_instance, "LS_STDCSV 2");
     loggerf(logger_instance, "LS_STDCSV 3");
     loggerf_free(logger_instance);
+#endif
 }
 
 void *logger_instance = NULL;
 
 uintmax_t factorial(uintmax_t i) {
-   loggerf(logger_instance, L_BEGF, "factorial i = %d", i);
+    loggerf(logger_instance, L_BEGF, "factorial i = %d", i);
 
-   uintmax_t k = 0;
+    uintmax_t k = 0;
 
-   if(i <= 0) {
-      k = 1;
-   }else{
-       k = i * factorial(i - 1);
-   }
+    if(i <= 0) {
+        k = 1;
+    }else{
+        k = i * factorial(i - 1);
+    }
 
-   loggerf(logger_instance, L_ENDF, "factorial k = %d", k);
-   return k;
+    loggerf(logger_instance, L_ENDF, "factorial k = %d", k);
+    return k;
 }
 
 void loggerf_test_recursion(){
     logger_setting setting = logger_setting_def[0];
     setting.logs_format = "LOGS ## $data_curent $time_curent >> %file $line $recnum%03 $rectab $mesg";
 
-    setting.stream = LS_STDOUT;
     loggerf_init(&logger_instance, NULL, NULL, &setting);
 
     loggerf(logger_instance, L_INFO, "Beg");

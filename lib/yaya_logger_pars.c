@@ -10,6 +10,10 @@
 
 logger_error logger_pars(___logger *lvg, const char *format, ___logger_tokens** tokens)
 {
+    if(format == NULL){
+        return LE_ERR;
+    }
+
     logger_memory_new(lvg, (void*)(&(*tokens)), NULL, sizeof(___logger_tokens) * 1);
     if(*tokens == NULL){
         return LE_ERR;

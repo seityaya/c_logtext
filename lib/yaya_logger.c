@@ -155,15 +155,21 @@ logger_error yaya_log_init(void**          logger_ptr,
 #endif
 
     /*Создание потока вывода*/
+#if (((LOGGER_OUT) != LOGGER_OFF))
     switch ((*lvg)->psett->stream) {
+#if (((LOGGER_OUT) & DLS_STDOUT) || (LOGGER_OUT == LOGGER_ON))
         case LS_STDOUT: {
             (*lvg)->stream = stdout;
             break;
         }
+#endif
+#if (((LOGGER_OUT) & DLS_STDERR) || (LOGGER_OUT == LOGGER_ON))
         case LS_STDERR: {
             (*lvg)->stream = stderr;
             break;
         }
+#endif
+#if (((LOGGER_OUT) & DLS_STDBUF) || (LOGGER_OUT == LOGGER_ON))
         case LS_STDBUF: {
             (*lvg)->stream = NULL;
             if((*lvg)->psett->size_buff < 2){
@@ -172,6 +178,8 @@ logger_error yaya_log_init(void**          logger_ptr,
             }
             break;
         }
+#endif
+#if (((LOGGER_OUT) & DLS_STDFILE) || (LOGGER_OUT == LOGGER_ON))
         case LS_STDFILE: {
             FILE *file_out = fopen((*lvg)->psett->out_file, "a+");
             if(file_out != NULL){
@@ -182,6 +190,8 @@ logger_error yaya_log_init(void**          logger_ptr,
             }
             break;
         }
+#endif
+#if (((LOGGER_OUT) & DLS_STDCSV) || (LOGGER_OUT == LOGGER_ON))
         case LS_STDCSV: {
             FILE *file_out = fopen((*lvg)->psett->out_file, "a+");
             if(file_out != NULL){
@@ -192,8 +202,9 @@ logger_error yaya_log_init(void**          logger_ptr,
             }
             break;
         }
+#endif
     }
-
+#endif
     return LE_OK;
 }
 
@@ -346,9 +357,11 @@ logger_error yaya_log_free(void** logger_ptr)
         return LE_ERR;
     }
 
+#if (((LOGGER_OUT) & (DLS_STDFILE | DLS_STDCSV)) || (LOGGER_OUT == LOGGER_ON))
     if(((*lvg)->psett->stream == LS_STDFILE) || ((*lvg)->psett->stream == LS_STDCSV)){
         fclose((*lvg)->stream);
     }
+#endif
 
     free_tokens(*lvg, (*lvg)->logs_f);
 #if LOGGER_FORMAT_HEAD

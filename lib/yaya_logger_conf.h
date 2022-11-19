@@ -24,6 +24,11 @@
 #endif
 
 /*Включить стили*/
+#ifndef LOGGER_OUT           /*Работает*/
+#define LOGGER_OUT           LOGGER_ON //or (DLS_STDOUT | DLS_STDERR | DLS_STDBUF | DLS_STDFILE | DLS_STDCSV)
+#endif
+
+/*Включить стили*/
 #ifndef LOGGER_STYLE         /*В разработке*/
 #define LOGGER_STYLE         LOGGER_ON
 #endif

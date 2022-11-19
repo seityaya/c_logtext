@@ -382,10 +382,10 @@ bool         yaya_log_flush(void** logger_ptr);
 
 #else
 
-#define loggerf(...)      //логгер
-#define loggerf_init(...) //инициализация
-#define loggerf_free(...) //освобождение
-
+#define loggerf(...)         //логгер
+#define loggerf_init(...)    //инициализация
+#define loggerf_free(...)    //освобождение
+#define loggerf_flush(...) 1 //сброс буфера
 #endif
 
 // clang-format on

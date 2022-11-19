@@ -48,13 +48,29 @@ typedef enum{
     LE_ALLOC
 } logger_error;
 
+#define DLS_STDOUT  2
+#define DLS_STDERR  4
+#define DLS_STDBUF  8
+#define DLS_STDFILE 16
+#define DLS_STDCSV  32
 
-typedef enum {
-    LS_STDOUT,
-    LS_STDERR,
-    LS_STDBUF,
-    LS_STDFILE,
-    LS_STDCSV
+typedef enum logger_streams{
+    LS_NOTUSE  = 0,
+#if (((LOGGER_OUT) & DLS_STDOUT) || (LOGGER_OUT == LOGGER_ON))
+    LS_STDOUT  = 2,
+#endif
+#if (((LOGGER_OUT) & DLS_STDERR) || (LOGGER_OUT == LOGGER_ON))
+    LS_STDERR  = 4,
+#endif
+#if (((LOGGER_OUT) & DLS_STDBUF) || (LOGGER_OUT == LOGGER_ON))
+    LS_STDBUF  = 8,
+#endif
+#if (((LOGGER_OUT) & DLS_STDFILE) || (LOGGER_OUT == LOGGER_ON))
+    LS_STDFILE = 16,
+#endif
+#if (((LOGGER_OUT) & DLS_STDCSV) || (LOGGER_OUT == LOGGER_ON))
+    LS_STDCSV  = 32
+#endif
 } logger_streams;
 
 

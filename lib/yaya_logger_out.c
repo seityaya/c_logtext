@@ -10,30 +10,44 @@
 
 logger_error logger_out(___logger *lvg)
 {
+#if (((LOGGER_OUT) == LOGGER_OFF))
+    (void)(lvg);
+    lvg->out_buff[0] = '\0';
+    lvg->out_offset  = 0;    // TODO(yaya): Баг с контролем выхода за границу
+#else
     lvg->out_buff[lvg->out_offset + 0] = '\n';
     lvg->out_buff[lvg->out_offset + 1] = '\0';
     lvg->out_offset += 1;
 
     switch (lvg->psett->stream) {
+#if (((LOGGER_OUT) & DLS_STDOUT) || (LOGGER_OUT == LOGGER_ON))
         case LS_STDOUT: {
             fputs(lvg->out_buff, stdout);
             fflush(stdout);
             break;
         }
+#endif
+#if (((LOGGER_OUT) & DLS_STDERR) || (LOGGER_OUT == LOGGER_ON))
         case LS_STDERR: {
             fputs(lvg->out_buff, stderr);
             fflush(stderr);
             break;
         }
+#endif
+#if (((LOGGER_OUT) & DLS_STDBUF) || (LOGGER_OUT == LOGGER_ON))
         case LS_STDBUF: {
             // TODO(yaya): circular buffer
             return LE_OK;
         }
+#endif
+#if (((LOGGER_OUT) & DLS_STDFILE) || (LOGGER_OUT == LOGGER_ON))
         case LS_STDFILE: {
             fwrite(lvg->out_buff, sizeof(char), lvg->out_offset, lvg->stream);
             fflush(lvg->stream);
             break;
         }
+#endif
+#if (((LOGGER_OUT) & DLS_STDCSV) || (LOGGER_OUT == LOGGER_ON))
         case LS_STDCSV: {
             lvg->tmp_buff[0] = '\0';
             size_t len = 0;
@@ -66,15 +80,19 @@ logger_error logger_out(___logger *lvg)
             fflush(lvg->stream);
             break;
         }
+#endif
     }
 
     lvg->out_buff[0] = '\0';
     lvg->out_offset  = 0;
-
+#endif
     return LE_OK;
 }
 
 bool yaya_log_flush(void **logger_ptr){
+#if (((LOGGER_OUT) == LOGGER_OFF))
+    (void)(logger_ptr);
+#else
     if(logger_ptr == NULL){
         return true;
     }
@@ -86,13 +104,25 @@ bool yaya_log_flush(void **logger_ptr){
     }
 
     switch ((*lvg)->psett->stream) {
+#if (((LOGGER_OUT) & DLS_STDOUT) || (LOGGER_OUT == LOGGER_ON))
         case LS_STDOUT:
+#endif
+#if (((LOGGER_OUT) & DLS_STDERR) || (LOGGER_OUT == LOGGER_ON))
         case LS_STDERR:
+#endif
+#if (((LOGGER_OUT) & DLS_STDFILE) || (LOGGER_OUT == LOGGER_ON))
         case LS_STDFILE:
-        case LS_STDCSV: {
+#endif
+#if (((LOGGER_OUT) & DLS_STDCSV) || (LOGGER_OUT == LOGGER_ON))
+        case LS_STDCSV:
+#endif
+#if (((LOGGER_OUT) & (DLS_STDOUT | DLS_STDERR | DLS_STDFILE | DLS_STDCSV)) || (LOGGER_OUT == LOGGER_ON))
+        {
             fflush((*lvg)->stream);
             return true;
         }
+#endif
+#if (((LOGGER_OUT) & DLS_STDBUF) || (LOGGER_OUT == LOGGER_ON))
         case LS_STDBUF: {
             // TODO(yaya): circular buffer
             if((*lvg)->out_offset > 0){
@@ -111,7 +141,8 @@ bool yaya_log_flush(void **logger_ptr){
             }
             return true;
         }
-
+#endif
     }
+#endif
 }
 
