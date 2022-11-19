@@ -99,7 +99,9 @@ LOGGER_TOKEN_GENERATE_FUNC(absnum){
 
 LOGGER_TOKEN_GENERATE_FUNC(recnum){
     LOGGER_FUNC_UNUSED;
-    format_build_num(lvg, mas_opt, lvg->recnum);
+    intmax_t len = labs(lvg->recnum);
+    len = len > 0 ? len - 1 : len < 0 ? len - 1 : 0;
+    format_build_num(lvg, mas_opt, len);
     return LE_OK;
 }
 
@@ -107,7 +109,8 @@ LOGGER_TOKEN_GENERATE_FUNC(rectab){
     LOGGER_FUNC_UNUSED;
 
     intmax_t len = labs(lvg->recnum);
-    if(labs(lvg->recnum) > LOGGER_TMP_BUFF_SIZE){
+    len = len > 0 ? len - 1 : len < 0 ? len - 1 : 0;
+    if(labs(lvg->recnum) > LOGGER_TMP_BUFF_SIZE){ //
         len = LOGGER_TMP_BUFF_SIZE;
     }
 

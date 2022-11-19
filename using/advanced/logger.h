@@ -32,12 +32,12 @@ static logger_filter my_logger_name[] = { LOGGER_FILTER_GENERATE(NUL),      /*<<
 
 
 logger_setting my_logger_setting[] = { { .head_format = "HEAD ## $line%3. >> $mesg",
-                                         .logs_format = "LOGS ## $line%03. -- | $type%.15 $name%.08 >> $func%10.  $mesg%.10 << $file%20.",
+                                         .logs_format = "$data_curent $time_curent $func%.5 $line%.3 $type%.8 $name%.5 $recnum%2. >> $rectab $mesg",
                                          .atom_format = "$line",
                                          .free_format = "FREE ## $stats",
                                          .gerr_format = ">>ERROR<<",
                                          .type_l1 = L_ALL,
-                                         .name_l2 = FOO,
+                                         .name_l2 = ALL,
                                          .stream = LS_STDOUT,
                                      } };
 
