@@ -55,6 +55,9 @@ typedef enum{
 #define DLS_STDCSV  32
 
 typedef enum logger_streams{
+#if !LOGGER_OUT
+    LS_NOTUSE  = 0,
+#endif
 #if (((LOGGER_OUT) & DLS_STDOUT) || (LOGGER_OUT == LOGGER_ON))
     LS_STDOUT  = 2,
 #endif

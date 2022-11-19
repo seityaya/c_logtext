@@ -23,7 +23,6 @@ set(SRC_LIST
     yaya_logger_out.c
     yaya_logger_pars.c
     yaya_logger_style.c
-    yaya_logger_static.c
     )
 
 set(INC_LIST
