@@ -100,7 +100,6 @@ LOGGER_TOKEN_GENERATE_FUNC(absnum){
 LOGGER_TOKEN_GENERATE_FUNC(recnum){
     LOGGER_FUNC_UNUSED;
     intmax_t len = labs(lvg->recnum);
-    len = len > 0 ? len - 1 : len < 0 ? len - 1 : 0;
     format_build_num(lvg, mas_opt, len);
     return LE_OK;
 }
@@ -109,14 +108,13 @@ LOGGER_TOKEN_GENERATE_FUNC(rectab){
     LOGGER_FUNC_UNUSED;
 
     intmax_t len = labs(lvg->recnum);
-    len = len > 0 ? len - 1 : len < 0 ? len - 1 : 0;
-    if(labs(lvg->recnum) > LOGGER_TMP_BUFF_SIZE){ //
+    if(labs(lvg->recnum) > LOGGER_TMP_BUFF_SIZE){
         len = LOGGER_TMP_BUFF_SIZE;
     }
 
     lvg->tmp_buff[0] = '\0';
     for (intmax_t i = 0; i <= len - 1; i++) {
-      lvg->tmp_buff[i] = '\t';
+        lvg->tmp_buff[i] = '\t';
     }
     lvg->tmp_buff[len] = '\0';
 
@@ -287,7 +285,7 @@ LOGGER_TOKEN_GENERATE_FUNC(comp_v){
     format_build_str(lvg, mas_opt, "GNUC:");
     format_build_num(lvg, mas_opt, 1);
 
-        format_build_str(lvg, mas_opt, "; ");
+    format_build_str(lvg, mas_opt, "; ");
 
     format_build_str(lvg, mas_opt, "VERSION:");
     format_build_str(lvg, mas_opt, __VERSION__);
@@ -310,25 +308,23 @@ LOGGER_TOKEN_GENERATE_FUNC(lang_v){
 LOGGER_TOKEN_GENERATE_FUNC(stats){
     LOGGER_FUNC_UNUSED;
 
-    format_build_str(lvg, mas_opt, "TOTAL:");
-    format_build_num(lvg, mas_opt, lvg->memory_total);
-    format_build_str(lvg, mas_opt, "; ");
+    if(lvg->mem_stats != NULL){
+        format_build_str(lvg, mas_opt, "USAGE:");
+        format_build_num(lvg, mas_opt, lvg->mem_stats->memory_produce - lvg->mem_stats->memory_release);
+        format_build_str(lvg, mas_opt, "; ");
 
-    format_build_str(lvg, mas_opt, "USAGE:");
-    format_build_num(lvg, mas_opt, lvg->memory_usage);
-    format_build_str(lvg, mas_opt, "; ");
+        format_build_str(lvg, mas_opt, "NEW:");
+        format_build_num(lvg, mas_opt, lvg->mem_stats->memory_call_new);
+        format_build_str(lvg, mas_opt, "; ");
 
-    format_build_str(lvg, mas_opt, "NEW:");
-    format_build_num(lvg, mas_opt, lvg->memory_count_new);
-    format_build_str(lvg, mas_opt, "; ");
+        format_build_str(lvg, mas_opt, "RES:");
+        format_build_num(lvg, mas_opt, lvg->mem_stats->memory_call_res);
+        format_build_str(lvg, mas_opt, "; ");
 
-    format_build_str(lvg, mas_opt, "RES:");
-    format_build_num(lvg, mas_opt, lvg->memory_count_res);
-    format_build_str(lvg, mas_opt, "; ");
-
-    format_build_str(lvg, mas_opt, "DEL:");
-    format_build_num(lvg, mas_opt, lvg->memory_count_del);
-    format_build_str(lvg, mas_opt, "; ");
+        format_build_str(lvg, mas_opt, "DEL:");
+        format_build_num(lvg, mas_opt, lvg->mem_stats->memory_call_del);
+        format_build_str(lvg, mas_opt, "; ");
+    }
     return LE_OK;
 }
 

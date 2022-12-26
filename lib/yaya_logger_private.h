@@ -19,6 +19,7 @@
 #include <malloc.h>
 
 #include "yaya_logger.h"
+#include "yaya_memory.h"
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // BEG // OPTION
@@ -36,9 +37,19 @@
 #define LOGGER_TOKEN_GENERATE_FUNC(TOKEN)  logger_error ___logger_func_##TOKEN(LOGGER_FUNC_PARAM)
 #define LOGGER_TOKEN_GENERATE_ST(TOKEN)    { LEF_##TOKEN, #TOKEN, ___logger_func_##TOKEN }
 
+#define LFS_NUL 0
 #define LFS_LEF 1
 #define LFS_RIG 2
-#define LFS_NUL 3
+
+#define LMS_VOID 0
+#define LMS_NUL 1
+#define LMS_CAT 2
+#define LMS_PLUS 3
+#define LMS_MINUS 4
+#define LMS_PLUS_NUL 5
+#define LMS_MINUS_NUL 6
+#define LMS_PLUS_CAT  7
+#define LMS_MINUS_CAT 8
 
 #define LTT_STR 0
 #define LTT_NUM 1
@@ -75,9 +86,10 @@
 typedef struct ___logger_token_specifiers { /*хранение спецификаторов*/
     uintmax_t beg;/*начало спецификатора*/
     uintmax_t end;/*конец спецификатора*/
-    uintmax_t lef;/*смещение слева*/
-    uintmax_t rig;/*смещение справа*/
-    uintmax_t lfs;/*сторона скрытия*/
+    intmax_t lef;/*смещение слева*/
+    intmax_t rig;/*смещение справа*/
+    intmax_t lfs;/*сторона скрытия*/
+    intmax_t lms;/*модификаторы вывода*/
 } ___logger_token_specifiers;
 
 
@@ -137,11 +149,7 @@ typedef struct ___logger {
     uintmax_t absnum; // - номер вывода без учета фильтрации
      intmax_t recnum; // - номер рекурсивного вызова
 
-    intmax_t memory_total;
-    intmax_t memory_usage;
-    intmax_t memory_count_new;
-    intmax_t memory_count_del;
-    intmax_t memory_count_res;
+     mem_stats_t *mem_stats;
 
     FILE     *stream;
 } ___logger;
@@ -152,11 +160,12 @@ typedef struct ___logger_token_func {      /*список токенов*/
     logger_error (*func)(LOGGER_FUNC_PARAM);/*функция токена*/
 } ___logger_token_func;
 
+#define logger_memory_del(L, P)       memory_del((L)->mem_stats, (void**)(P))
+#define logger_memory_new(L, N, O, s) memory_new((L)->mem_stats, N, O, s)
 
-void logger_memory_new(___logger *lvg, void **ptr, void *old_ptr, size_t new_size);
-void logger_memory_del(___logger *lvg, void *ptr);
+logger_error tokens_init (___logger *lvg, const char *format, ___logger_tokens** tokens);
+logger_error tokens_free (___logger *lvg, ___logger_tokens* tokens);
 
-logger_error logger_pars  (___logger *lvg, const char *format, ___logger_tokens** tokens);
 logger_error logger_out   (___logger *lvg);
 
 #if LOGGER_STYLE

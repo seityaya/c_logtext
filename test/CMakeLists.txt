@@ -6,11 +6,12 @@
 #Copyright © 2020-2022 Seityagiya Terlekchi. All rights reserved.
 
 cmake_minimum_required(VERSION 3.0)
+set(CMAKE_C_STANDARD 11)
+add_definitions(-std=c11)
 
+set(VERSION 0.1)
 set(PROJECT_NAME logger_test)
 project(${PROJECT_NAME})
-
-set(CMAKE_C_STANDARD 11)
 
 add_executable(${PROJECT_NAME}
     main.c

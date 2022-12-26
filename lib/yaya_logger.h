@@ -346,13 +346,13 @@ DEEEE  ->  DE
 
 #define ___LOGGER_FREE_x(x, A, FUNC, ...) FUNC
 
-#if LOGGER_FORMAT_FREE
-#define ___LOGGER_FREE_0()                 loggerf(___LOGGER_LVG, L_FREE); yaya_log_free(&___LOGGER_LVG)
-#define ___LOGGER_FREE_A(A)                loggerf(A            , L_FREE); yaya_log_free(&A            )
-#else
+//#if !LOGGER_FORMAT_FREE
+//#define ___LOGGER_FREE_0()                 loggerf(___LOGGER_LVG, L_FREE); yaya_log_free(&___LOGGER_LVG)
+//#define ___LOGGER_FREE_A(A)                loggerf(A            , L_FREE); yaya_log_free(&A            )
+//#else
 #define ___LOGGER_FREE_0()                 yaya_log_free(&___LOGGER_LVG)
 #define ___LOGGER_FREE_A(A)                yaya_log_free(&A            )
-#endif
+//#endif
 
 #else
 #define loggerf_free(...)

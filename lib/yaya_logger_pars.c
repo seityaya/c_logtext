@@ -8,14 +8,30 @@
 #include "yaya_logger.h"
 #include "yaya_logger_private.h"
 
-logger_error logger_pars(___logger *lvg, const char *format, ___logger_tokens** tokens)
-{
-    if(format == NULL){
+logger_error tokens_free(___logger *lvg, ___logger_tokens* tokens){
+    if(tokens == NULL){
         return LE_ERR;
     }
 
-    logger_memory_new(lvg, (void*)(&(*tokens)), NULL, sizeof(___logger_tokens) * 1);
-    if(*tokens == NULL){
+    for(uintmax_t i = 0; i < tokens->num_token; i++) {
+        logger_memory_del(lvg, &(tokens)->mas_opt[i].spe);
+    }
+
+    logger_memory_del(lvg, &(tokens)->mas_opt);
+    logger_memory_del(lvg, &(tokens));
+
+    return LE_OK;
+}
+
+logger_error tokens_init(___logger *lvg, const char *format, ___logger_tokens** tokens)
+{
+    /*Проверка на  NULL*/
+    if((format == NULL) || (format[0] == '\0')){
+        return LE_ERR;
+    }
+
+    /*Выделение памяти под первый токен*/
+    if(!logger_memory_new(lvg, (void*)(&(*tokens)), NULL, sizeof(___logger_tokens))){
         return LE_ERR;
     }
 
@@ -23,14 +39,14 @@ logger_error logger_pars(___logger *lvg, const char *format, ___logger_tokens** 
         uintmax_t j = 0;
         for (uintmax_t i = 0; i < strlen(format); i++)
         {
-            logger_memory_new(lvg, (void*)(&((*tokens)->mas_opt)) , (*tokens)->mas_opt, sizeof(___logger_token_mas) * (j + 1));
-            if((*tokens)->mas_opt == NULL){
+            /*Выделение памяти под токен*/
+            if(!logger_memory_new(lvg, (void*)(&((*tokens)->mas_opt)), (*tokens)->mas_opt, sizeof(___logger_token_mas) * (j + 1))){
+                tokens_free(lvg, *tokens);
                 return LE_ERR;
             }
 
-            if ((format[i] == ___logger_token_list[LEF_TOK].name[0])
-                && (isalpha(format[i + 1])
-                    || (format[i + 1] == ___logger_token_list[LEF_CAT].name[0])))
+            /*Проверка что текуще вхождение начало токена*/
+            if ((format[i] == ___logger_token_list[LEF_TOK].name[0]) && isalpha(format[i + 1]))
             {
                 ((*tokens)->mas_opt)[j].id  = LEF_TOK;
                 ((*tokens)->mas_opt)[j].beg = i;
@@ -41,53 +57,72 @@ logger_error logger_pars(___logger *lvg, const char *format, ___logger_tokens** 
                 }
                 while ((isalpha(format[i]) || (format[i] == ___logger_token_list[LEF_CAT].name[0])));
 
-                if ((format[i] == ___logger_token_list[LEF_SPE].name[0])
-                    && (isdigit(format[i + 1])
-                        || (format[i + 1] == ___logger_token_list[LEF_HID].name[0])
-                        || (format[i + 1] == ___logger_token_list[LEF_SEP].name[0])))
+                /*Проверка что текуще вхождение начало спецификатора*/
+                if ((format[i] == ___logger_token_list[LEF_SPE].name[0]) &&
+                    (isdigit(format[i + 1])
+                     || (format[i + 1] == ___logger_token_list[LEF_HID].name[0])
+                     || (format[i + 1] == ___logger_token_list[LEF_SEP].name[0])
+                     || (format[i + 1] == ___logger_token_list[LEF_CAT].name[0])
+                     || (format[i + 1] == '-')
+                     || (format[i + 1] == '+')))
                 {
-                    logger_memory_new(lvg, (void*)(&(((*tokens)->mas_opt)[j].spe)) , ((*tokens)->mas_opt)[j].spe, sizeof(___logger_token_specifiers) * 1);
-                    if(((*tokens)->mas_opt)[j].spe == NULL){
+                    /*Выделение памяти под спецификатор*/
+                    if(!logger_memory_new(lvg, (void*)(&(((*tokens)->mas_opt)[j].spe)), NULL, sizeof(___logger_token_specifiers))){
+                        tokens_free(lvg, *tokens);
                         return LE_ERR;
                     }
 
                     ((*tokens)->mas_opt)[j].spe->beg = i;
+                    ((*tokens)->mas_opt)[j].spe->end = i;
+                    i++;
                     do
                     {
                         ((*tokens)->mas_opt)[j].spe->end = i;
+                        if((format[i - 1] != ___logger_token_list[LEF_SPE].name[0]) &&
+                           (
+                               (format[i] == ___logger_token_list[LEF_HID].name[0])
+                               || (format[i] == ___logger_token_list[LEF_SEP].name[0])
+                               || (format[i] == ___logger_token_list[LEF_CAT].name[0])
+                               || (format[i] == '-')
+                               || (format[i] == '+'))){
+                            i++;
+                            break;
+                        }
                         i++;
                     }
                     while (isdigit(format[i])
-                           || format[i] == ___logger_token_list[LEF_HID].name[0]
-                           || format[i] == ___logger_token_list[LEF_SEP].name[0]);
+                           || (format[i] == ___logger_token_list[LEF_HID].name[0])
+                           || (format[i] == ___logger_token_list[LEF_SEP].name[0])
+                           || (format[i] == ___logger_token_list[LEF_CAT].name[0])
+                           || (format[i] == '-')
+                           || (format[i] == '+'));
                 }
                 i--;
             }
             else
             {
+                /*Пропуск ключа токенов*/
                 if(format[i] == ___logger_token_list[LEF_TOK].name[0])
                 {
                     i++;
                 }
-                ((*tokens)->mas_opt)[j].beg = i;
+
                 ((*tokens)->mas_opt)[j].id  = LEF_STR;
+                ((*tokens)->mas_opt)[j].beg = i;
                 do
                 {
                     ((*tokens)->mas_opt)[j].end = i;
                     i++;
                 }
-                while (!(format[i] == ___logger_token_list[LEF_TOK].name[0]
-                         && isalpha(format[i + 1]))
-                       && (format[i] != '\0'));
+                while (!(format[i] == ___logger_token_list[LEF_TOK].name[0] && isalpha(format[i + 1])) && (format[i] != '\0'));
                 i--;
             }
-
             j++;
         }
         (*tokens)->num_token = j;
     }
 
-    { /*Определение типа токенов*/
+    { /*Определение имени токенов*/
         for (uintmax_t i = 0; i < (*tokens)->num_token; i++) {
             memset(lvg->tmp_buff, 0, lvg->tmp_buff_size);
             if (((*tokens)->mas_opt)[i].id == LEF_TOK) {
@@ -95,7 +130,7 @@ logger_error logger_pars(___logger *lvg, const char *format, ___logger_tokens** 
                 for (uintmax_t j = LEF_BEG + 1; j < LEF_END; j++) {
                     if (strcmp(lvg->tmp_buff, ___logger_token_list[j].name) == 0) {
                         ((*tokens)->mas_opt)[i].id = j;
-                        break;
+                        goto end_1;
                     }
                 }
             }
@@ -105,66 +140,104 @@ logger_error logger_pars(___logger *lvg, const char *format, ___logger_tokens** 
                 if(((*tokens)->mas_opt)[i].spe != NULL)
                 {
                     ((*tokens)->mas_opt)[i].end = ((*tokens)->mas_opt)[i].spe->end;
-                    logger_memory_del(lvg, ((*tokens)->mas_opt)[i].spe);
-                    ((*tokens)->mas_opt)[i].spe = NULL;
+                    logger_memory_del(lvg, &(((*tokens)->mas_opt)[i].spe));
                 }
-
             }
+end_1:;
         }
     }
 
     { /*Парсинг спецификаторов*/
         for (uintmax_t i = 0; i < (*tokens)->num_token; i++)
         {
-            if (((*tokens)->mas_opt[i].spe) != NULL)
-            {
-                memset(lvg->tmp_buff, 0, lvg->tmp_buff_size);
-                strncpy(lvg->tmp_buff, &format[ ((*tokens)->mas_opt)[i].spe->beg ] , (((*tokens)->mas_opt)[i].spe->end - ((*tokens)->mas_opt)[i].spe->beg + 1) );
+            if ((*tokens)->mas_opt[i].spe == NULL) {
+                continue;
+            }
 
-                uintmax_t k   = 0;
-                uintmax_t beg = ((*tokens)->mas_opt)[i].spe->beg + 1;
-                uintmax_t end = ((*tokens)->mas_opt)[i].spe->end + 1;
+            uintmax_t beg = ((*tokens)->mas_opt)[i].spe->beg + 1;
+            uintmax_t end = ((*tokens)->mas_opt)[i].spe->end + 1;
 
-                if (format[((*tokens)->mas_opt)[i].spe->beg + 1] == ___logger_token_list[LEF_HID].name[0])
-                {
+            memset(lvg->tmp_buff, 0, lvg->tmp_buff_size);
+            snprintf(lvg->tmp_buff, end - beg + 1, "%s", &format[beg]);
+
+            /*Поиск ограничителей*/
+            ((*tokens)->mas_opt)[i].spe->lfs = LFS_NUL;
+            if (format[beg] == ___logger_token_list[LEF_HID].name[0]) {
+                beg++;
+                ((*tokens)->mas_opt)[i].spe->lfs = LFS_LEF;
+            }
+            if (format[end] == ___logger_token_list[LEF_HID].name[0] && ((*tokens)->mas_opt)[i].spe->lfs != LFS_LEF) {
+                end--;
+                ((*tokens)->mas_opt)[i].spe->lfs = LFS_RIG;
+            }
+
+            /*Поиск отрывающих спецификаторов*/
+            ((*tokens)->mas_opt)[i].spe->lms = LMS_VOID;
+            if (format[beg] == '0') {
+                beg++;
+                ((*tokens)->mas_opt)[i].spe->lms = LMS_NUL;
+            }
+            if (format[beg] == '_') {
+                beg++;
+                ((*tokens)->mas_opt)[i].spe->lms = LMS_CAT;
+            }
+            if (format[beg] == '+') {
+                beg++;
+                ((*tokens)->mas_opt)[i].spe->lms = LMS_PLUS;
+                if (format[beg] == '0') {
                     beg++;
-                    ((*tokens)->mas_opt)[i].spe->lfs = LFS_LEF;
+                    ((*tokens)->mas_opt)[i].spe->lms = LMS_PLUS_NUL;
                 }
-                if (format[((*tokens)->mas_opt)[i].spe->end] == ___logger_token_list[LEF_HID].name[0] && ((*tokens)->mas_opt)[i].spe->lfs != LFS_LEF)
-                {
-                    end--;
-                    ((*tokens)->mas_opt)[i].spe->lfs = LFS_RIG;
-                }
-                if (format[beg] == '0')
-                {
+                if (format[beg] == '_') {
                     beg++;
-                    ((*tokens)->mas_opt)[i].spe->lfs = LFS_NUL;
+                    ((*tokens)->mas_opt)[i].spe->lms = LMS_PLUS_CAT;
                 }
-                while (isdigit(format[beg + k]) || format[beg + k] == ___logger_token_list[LEF_SEP].name[0])
-                {
-                    k++;
+            }
+            if (format[beg] == '-') {
+                beg++;
+                ((*tokens)->mas_opt)[i].spe->lms = LMS_MINUS;
+                if (format[beg] == '0') {
+                    beg++;
+                    ((*tokens)->mas_opt)[i].spe->lms = LMS_MINUS_NUL;
                 }
-                end = beg + k;
+                if (format[beg] == '_') {
+                    beg++;
+                    ((*tokens)->mas_opt)[i].spe->lms = LMS_MINUS_CAT;
+                }
+            }
 
-                memset(lvg->tmp_buff, 0, lvg->tmp_buff_size);
-                strncpy(lvg->tmp_buff, &format[beg], end - beg);
+            /*Поиск ограничителей спецификатора*/
+            end = beg;
+            while (isdigit(format[end]) || format[end] == ___logger_token_list[LEF_SEP].name[0]) {
+                end++;
+            }
 
-                if (format[beg] == ___logger_token_list[LEF_SEP].name[0])
-                {
-                    if (((*tokens)->mas_opt)[i].spe->lfs != LFS_NUL && ((*tokens)->mas_opt)[i].spe->lfs != LFS_LEF)
-                    {
-                        ((*tokens)->mas_opt)[i].spe->lfs = LFS_RIG;
-                    }
-                    sscanf(lvg->tmp_buff, ".%" PRIXMAX "", &((*tokens)->mas_opt)[i].spe->rig);
-                }
-                else
-                {
-                    if (((*tokens)->mas_opt)[i].spe->lfs != LFS_NUL && ((*tokens)->mas_opt)[i].spe->lfs != LFS_RIG)
-                    {
-                        ((*tokens)->mas_opt)[i].spe->lfs = LFS_LEF;
-                    }
-                    sscanf(lvg->tmp_buff, "%" PRIXMAX ".", &((*tokens)->mas_opt)[i].spe->lef);
-                }
+            if(beg == end){
+                continue;
+            }
+
+            ((*tokens)->mas_opt)[i].spe->rig = -1;
+            ((*tokens)->mas_opt)[i].spe->lef = -1;
+
+            memset(lvg->tmp_buff, 0, lvg->tmp_buff_size);
+            strncpy(lvg->tmp_buff, &format[beg], end - beg);
+
+            if (format[beg] == ___logger_token_list[LEF_SEP].name[0]) {
+                sscanf(lvg->tmp_buff, ".%" PRIuMAX "", &((*tokens)->mas_opt)[i].spe->rig);
+                continue;
+            }
+
+            if (format[end] == ___logger_token_list[LEF_SEP].name[0]) {
+                sscanf(lvg->tmp_buff, "%" PRIuMAX ".", &((*tokens)->mas_opt)[i].spe->lef);
+                continue;
+            }
+
+            if (strchr(lvg->tmp_buff, ___logger_token_list[LEF_SEP].name[0]) == NULL) {
+                sscanf(lvg->tmp_buff, "%" PRIuMAX "", &((*tokens)->mas_opt)[i].spe->lef);
+                continue;
+            }else{
+                sscanf(lvg->tmp_buff, "%" PRIuMAX "." "%" PRIuMAX ".", &((*tokens)->mas_opt)[i].spe->lef, &((*tokens)->mas_opt)[i].spe->rig);
+                continue;
             }
         }
     }
@@ -172,6 +245,7 @@ logger_error logger_pars(___logger *lvg, const char *format, ___logger_tokens** 
     { /*Тестовый вывод*/
         if(LOGGER_DEBUG_FORMAT == 1)
         {
+            printf("\n");
             printf("FORMAT = %s\n", format);
             for (uintmax_t i = 0; i < (*tokens)->num_token; i++)
             {
@@ -184,7 +258,7 @@ logger_error logger_pars(___logger *lvg, const char *format, ___logger_tokens** 
                 {
                     strncpy(buffmod, &format[(*tokens)->mas_opt[i].spe->beg], (*tokens)->mas_opt[i].spe->end - (*tokens)->mas_opt[i].spe->beg + 1);
                 }
-                printf("%3" PRIXMAX " | %12s = %02" PRIXMAX " | %3" PRIXMAX " <%3" PRIXMAX "> %3" PRIXMAX " | -%s- %n",
+                printf("%3" PRIXMAX " | %12s = %02" PRIXMAX " | %3" PRIXMAX " <%3" PRIXMAX "> %3" PRIXMAX " | ]%s[ %n",
                        i,
                        ___logger_token_list[(*tokens)->mas_opt[i].id].name,
                         (*tokens)->mas_opt[i].id,
@@ -193,7 +267,7 @@ logger_error logger_pars(___logger *lvg, const char *format, ___logger_tokens** 
                         (*tokens)->mas_opt[i].end,
                         lvg->tmp_buff,
                         &k1);
-                printf("%*s %" PRIXMAX " [(%2" PRIXMAX ") (%2" PRIXMAX ")] -%s- \n",
+                printf("%*s %" PRIXMAX " [(%2" PRIXMAX ") (%2" PRIXMAX ")] ]%s[ \n",
                        f1 - k1,
                        "",
                        (*tokens)->mas_opt[i].spe != NULL ? (*tokens)->mas_opt[i].spe->lfs : 0,
@@ -201,7 +275,6 @@ logger_error logger_pars(___logger *lvg, const char *format, ___logger_tokens** 
                        (*tokens)->mas_opt[i].spe != NULL ? (*tokens)->mas_opt[i].spe->rig : 0,
                        buffmod);
             }
-            printf("\n");
         }
     }
 

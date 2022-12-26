@@ -52,9 +52,9 @@ void loggerf_test_free(){
 
     void *logger_instance = NULL;
 
-    for(intmax_t i = 0;  i < NUM_RUN_CYCLES; i++){
-        loggerf_init(&logger_instance, NULL, NULL, logger_setting_def);
-        loggerf(logger_instance, L_VOID, "%s %" PRIuMAX "", __func__, i);
+    for(intmax_t i = 0;  i < NUM_RUN_CYCLES; i++) {
+        loggerf_init(&logger_instance, NULL, NULL, NULL);
+        loggerf(logger_instance, "%s %" PRIuMAX "", __func__, i);
         loggerf_free(logger_instance);
     }
 
@@ -214,33 +214,60 @@ void loggerf_test_format(){
 
     loggerf_init();
 
-    loggerf(L_ATOM, "$** $line%03.  >> $num         |$line|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num         |xxx|          =>  |$line|");
 
     loggerf(L_ATOM);
 
-    loggerf(L_ATOM, "$** $line%03.  >> $num%5       |$line%5|");
-    loggerf(L_ATOM, "$** $line%03.  >> $num%.5      |$line%.5|");
-    loggerf(L_ATOM, "$** $line%03.  >> $num%5.      |$line%5.|");
-    loggerf(L_ATOM, "$** $line%03.  >> $num%05.     |$line%05.|");
-    loggerf(L_ATOM, "$** $line%03.  >> $num%5.0     |$line%5.0|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%2       |xxx|          =>  |$line%2|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%02      |xxx|          =>  |$line%02|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%.2      |xxx|          =>  |$line%.2|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%2.      |xxx|          =>  |$line%2.|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%02.     |xxx|          =>  |$line%02.|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%2.0     |xxx|          =>  |$line%2.0|");
 
     loggerf(L_ATOM);
 
-    loggerf(L_ATOM, "$** $line%03.  >> $num%2       |$line%2|");
-    loggerf(L_ATOM, "$** $line%03.  >> $num%.2      |$line%.2|");
-    loggerf(L_ATOM, "$** $line%03.  >> $num%2.      |$line%2.|");
-    loggerf(L_ATOM, "$** $line%03.  >> $num%02.     |$line%02.|");
-    loggerf(L_ATOM, "$** $line%03.  >> $num%2.0     |$line%2.0|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%5       |  xxx|        =>  |$line%5|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%05      |00xxx|        =>  |$line%05|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%.5      |xxx  |        =>  |$line%.5|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%5.      |  xxx|        =>  |$line%5.|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%05.     |00xxx|        =>  |$line%05.|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%5.0     |  xxx|        =>  |$line%5.0|");
 
     loggerf(L_ATOM);
 
-    loggerf(L_ATOM, "$** $line%03.  >> $num%+2       |$line%2|");    // TODO(yaya): implement
-    loggerf(L_ATOM, "$** $line%03.  >> $num%+02      |$line%+02|");
-    loggerf(L_ATOM, "$** $line%03.  >> $num%+ 2      |$line%+ 2|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%11      |        xxx|  =>  |$line%11|");    // -> %11.
+    loggerf(L_ATOM, "$** $line%03.  >> $num%011     |00000000xxx|  =>  |$line%011|");   // -> %11.
+    loggerf(L_ATOM, "$** $line%03.  >> $num%.11     |xxx        |  =>  |$line%.11|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%11.     |        xxx|  =>  |$line%11.|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%011.    |00000000xxx|  =>  |$line%011|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%11.0    |        xxx|  =>  |$line%11.0|");
 
-    loggerf(L_ATOM, "$** $line%03.  >> $num%-2       |$line%2|");    // TODO(yaya): implement
-    loggerf(L_ATOM, "$** $line%03.  >> $num%-02      |$line%+02|");
-    loggerf(L_ATOM, "$** $line%03.  >> $num%- 2      |$line%+ 2|");
+    loggerf(L_ATOM);
+
+    loggerf(L_ATOM, "$** $line%03.  >> $num%_2      | xxx|         =>  |$line%_2|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%+       |+xxx|         =>  |$line%+|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%+2      |+xxx|         =>  |$line%+2|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%+02     |+xxx|         =>  |$line%+02|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%+_2     |+xxx|         =>  |$line%+_2|");
+
+    loggerf(L_ATOM, "$** $line%03.  >> $num%-       | xxx|         =>  |$line%-|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%-2      | xxx|         =>  |$line%-2|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%-02     | xxx|         =>  |$line%-02|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%-_2     | xxx|         =>  |$line%-_2|");
+
+    loggerf(L_ATOM);
+
+    loggerf(L_ATOM, "$** $line%03.  >> $num%_5      |   xxx|       =>  |$line%_5|");    // -> %-_5
+    loggerf(L_ATOM, "$** $line%03.  >> $num%+       |  +xxx|       =>  |$line%+|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%+5      |  +xxx|       =>  |$line%+5|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%+05     |+00xxx|       =>  |$line%+05|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%+_5     |+  xxx|       =>  |$line%+_5|");
+
+    loggerf(L_ATOM, "$** $line%03.  >> $num%-       |   xxx|       =>  |$line%-|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%-5      |   xxx|       =>  |$line%-5|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%-05     | 00xxx|       =>  |$line%-05|");
+    loggerf(L_ATOM, "$** $line%03.  >> $num%-_5     |   xxx|       =>  |$line%-_5|");
 
     loggerf(L_ATOM);
 
@@ -250,11 +277,11 @@ void loggerf_test_format(){
 
     loggerf(L_ATOM);
 
-    loggerf(L_ATOM, "$** $line%03.  >> $str%9       |$mesg%9|"    , "string");
-    loggerf(L_ATOM, "$** $line%03.  >> $str%.9      |$mesg%.9|"   , "string");
-    loggerf(L_ATOM, "$** $line%03.  >> $str%9.      |$mesg%9.|"   , "string");
-    loggerf(L_ATOM, "$** $line%03.  >> $str%09.     |$mesg%09.|"  , "string");
-    loggerf(L_ATOM, "$** $line%03.  >> $str%9.0     |$mesg%9.0|"  , "string");
+    loggerf(L_ATOM, "$** $line%03.  >> $str%9    |   string|  =>  |$mesg%9|"    , "string");
+    loggerf(L_ATOM, "$** $line%03.  >> $str%.9   |   string|  =>  |$mesg%.9|"   , "string");
+    loggerf(L_ATOM, "$** $line%03.  >> $str%9.   |   string|  =>  |$mesg%9.|"   , "string");
+    loggerf(L_ATOM, "$** $line%03.  >> $str%09.  |   string|  =>  |$mesg%09.|"  , "string");
+    loggerf(L_ATOM, "$** $line%03.  >> $str%9.0  |   string|  =>  |$mesg%9.0|"  , "string");
 
     loggerf(L_ATOM);
 
@@ -271,7 +298,6 @@ void loggerf_test_format(){
     loggerf(L_ATOM, "$** $line%03.  >> $str%:5.      |$mesg%5.|"   , "string");
     loggerf(L_ATOM, "$** $line%03.  >> $str%:05.     |$mesg%05.|"  , "string");
     loggerf(L_ATOM, "$** $line%03.  >> $str%:5.0     |$mesg%5.0|"  , "string");
-
 
     loggerf_free();
 
@@ -364,7 +390,7 @@ uintmax_t factorial(uintmax_t i) {
 
 void loggerf_test_recursion(){
     logger_setting setting = logger_setting_def[0];
-    setting.logs_format = "LOGS ## $data_curent $time_curent >> %file $line $recnum%03 $rectab $mesg";
+    setting.logs_format = "LOGS ## $data_curent $time_curent >> $file%20. $line $recnum%03 $rectab $mesg";
 
     loggerf_init(&logger_instance, NULL, NULL, &setting);
 

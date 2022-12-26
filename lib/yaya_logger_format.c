@@ -14,15 +14,15 @@ logger_error format_build_num(___logger* lvg, ___logger_token_mas* mas_opt, uint
     mas_opt->beglog = lvg->out_offset;
 
     if (mas_opt->spe != NULL){
-        if (mas_opt->spe->lfs == LFS_NUL){
-            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%0*" PRIiMAX "", (int)mas_opt->spe->lef, buff_orig);
+        if (mas_opt->spe->lms == LMS_NUL){
+            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size - lvg->out_offset, "%0*" PRIiMAX "", (int)mas_opt->spe->lef, buff_orig);
         }else if (mas_opt->spe->lfs == LFS_LEF){
-            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%*" PRIiMAX "", (int)mas_opt->spe->lef, buff_orig);
+            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size - lvg->out_offset, "%*" PRIiMAX "", (int)mas_opt->spe->lef, buff_orig);
         }else if (mas_opt->spe->lfs == LFS_RIG){
-            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%-*" PRIiMAX "", (int)mas_opt->spe->rig, buff_orig);
+            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size - lvg->out_offset, "%-*" PRIiMAX "", (int)mas_opt->spe->rig, buff_orig);
         }
     }else{
-        lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%" PRIiMAX "", buff_orig);
+        lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size - lvg->out_offset, "%" PRIiMAX "", buff_orig);
     }
 
     mas_opt->endlog = lvg->out_offset;
@@ -38,32 +38,32 @@ logger_error format_build_str(___logger *lvg, ___logger_token_mas *mas_opt, cons
     mas_opt->beglog = lvg->out_offset;
 
     if (mas_opt->spe != NULL){
-        uintmax_t max = mas_opt->spe->lef > mas_opt->spe->rig ? mas_opt->spe->lef : mas_opt->spe->rig;
-        uintmax_t len = strlen(buff_orig);
+        intmax_t max = mas_opt->spe->lef > mas_opt->spe->rig ? mas_opt->spe->lef : mas_opt->spe->rig;
+        intmax_t len = strlen(buff_orig);
         if (len <= mas_opt->spe->lef || len <= mas_opt->spe->rig){
             goto jmp_else_null;
         }
         if (mas_opt->spe->lfs == LFS_LEF){
             strncpy(buff, &buff_orig[len - max], max);
             strncpy(buff, LOGGER_HIDDEN_STR, strlen(LOGGER_HIDDEN_STR));
-            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%s", buff);
+            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size - lvg->out_offset, "%s", buff);
         }else if (mas_opt->spe->lfs == LFS_RIG){
             strncpy(buff, &buff_orig[0], max);
             strncpy(&buff[max - strlen(LOGGER_HIDDEN_STR)], LOGGER_HIDDEN_STR, strlen(LOGGER_HIDDEN_STR));
-            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%s", buff);
+            lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size - lvg->out_offset, "%s", buff);
         }else{
         jmp_else_null:
             if (mas_opt->spe->lef != 0){
-                lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%*s", (int)max, buff_orig);
+                lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size - lvg->out_offset, "%*s", (int)max, buff_orig);
             }else if (mas_opt->spe->rig != 0){
-                lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%-*s", (int)max, buff_orig);
+                lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size - lvg->out_offset, "%-*s", (int)max, buff_orig);
             }else{
                 goto jmp_else_main;
             }
         }
     }else{
     jmp_else_main:
-        lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size, "%s", buff_orig);
+        lvg->out_offset += snprintf(&lvg->out_buff[lvg->out_offset], lvg->out_buff_size - lvg->out_offset, "%s", buff_orig);
     }
 
     mas_opt->endlog = lvg->out_offset;

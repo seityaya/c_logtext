@@ -6,11 +6,10 @@
 #Copyright © 2020-2022 Seityagiya Terlekchi. All rights reserved.
 
 cmake_minimum_required(VERSION 3.0)
-
-set(VERSION 0.1)
 set(CMAKE_C_STANDARD 11)
 add_definitions(-std=c11)
 
+set(VERSION 0.1)
 set(PROJECT_NAME yaya_logger)
 
 project(${PROJECT_NAME})
@@ -19,7 +18,6 @@ set(SRC_LIST
     yaya_logger.c
     yaya_logger_format.c
     yaya_logger_func.c
-    yaya_logger_memory.c
     yaya_logger_out.c
     yaya_logger_pars.c
     yaya_logger_style.c
@@ -35,3 +33,7 @@ set(INC_LIST
 
 add_library(${PROJECT_NAME} SHARED ${SRC_LIST} ${INC_LIST})
 #add_executable(${PROJECT_NAME} ${SRC_LIST} ${INC_LIST})
+
+add_subdirectory(${CMAKE_SOURCE_DIR}/../../yaya_memory/lib/ yaya_memory)
+target_include_directories(${PROJECT_NAME} PUBLIC ../../yaya_memory/lib/)
+target_link_libraries(${PROJECT_NAME} yaya_memory)
