@@ -19,6 +19,8 @@
 #include <malloc.h>
 
 #include "yaya_logger.h"
+
+#define USE_MEMORY_STATS 1
 #include "yaya_memory.h"
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,7 +109,6 @@ typedef struct ___logger_token_mas {    /*хранение токенов*/
 typedef struct ___logger_tokens{
     uintmax_t            num_token;
     ___logger_token_mas *mas_opt;
-    uintmax_t            curnum;
 }___logger_tokens;
 
 
@@ -188,7 +189,8 @@ logger_error format_build_num(___logger* lvg, ___logger_token_mas* mas_opt, uint
     X(curnum)          /* номер выведенного сообщения */\
     X(absnum)          /* номер сообщения без учета фильтрации */\
     X(recnum)          /* номер в рекурсивном вызове +N 0 -N*/\
-    X(rectab)          /* отступ в рекурсивном вызове*/\
+    X(rectab)          /* отступ tab в рекурсивном вызове*/\
+    X(recast)          /* отступ ast в рекурсивном вызове*/\
     \
     X(data_build)      /* дата компиляции */\
     X(time_build)      /* время компиляции */\

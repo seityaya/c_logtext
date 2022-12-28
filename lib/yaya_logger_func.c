@@ -8,6 +8,13 @@
 #include "yaya_logger.h"
 #include "yaya_logger_private.h"
 
+LOGGER_TOKEN_GENERATE_FUNC(STR){
+    LOGGER_FUNC_UNUSED;
+    strncpy(lvg->tmp_buff, &format[mas_opt->beg], mas_opt->end - mas_opt->beg + 1);
+    format_build_str(lvg, mas_opt, lvg->tmp_buff);
+    return LE_OK;
+}
+
 LOGGER_TOKEN_GENERATE_FUNC(line){
     LOGGER_FUNC_UNUSED;
     format_build_num(lvg, mas_opt, line);
@@ -113,8 +120,32 @@ LOGGER_TOKEN_GENERATE_FUNC(rectab){
     }
 
     lvg->tmp_buff[0] = '\0';
-    for (intmax_t i = 0; i <= len - 1; i++) {
+    for (intmax_t i = 0; i <= len; i++) {
         lvg->tmp_buff[i] = '\t';
+        if(i == len - 1){
+            lvg->tmp_buff[len] = ' ';
+        }
+    }
+    lvg->tmp_buff[len] = '\0';
+
+    format_build_str(lvg, mas_opt, lvg->tmp_buff);
+    return LE_OK;
+}
+
+LOGGER_TOKEN_GENERATE_FUNC(recast){
+    LOGGER_FUNC_UNUSED;
+
+    intmax_t len = labs(lvg->recnum);
+    if(labs(lvg->recnum) > LOGGER_TMP_BUFF_SIZE){
+        len = LOGGER_TMP_BUFF_SIZE;
+    }
+
+    lvg->tmp_buff[0] = '\0';
+    for (intmax_t i = 0; i <= len; i++) {
+        lvg->tmp_buff[i] = '*';
+        if(i == len - 1){
+            lvg->tmp_buff[len] = ' ';
+        }
     }
     lvg->tmp_buff[len] = '\0';
 

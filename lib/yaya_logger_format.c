@@ -70,10 +70,3 @@ logger_error format_build_str(___logger *lvg, ___logger_token_mas *mas_opt, cons
 
     return LE_OK;
 }
-
-LOGGER_TOKEN_GENERATE_FUNC(STR){
-    LOGGER_FUNC_UNUSED;
-    strncpy(lvg->tmp_buff, &format[mas_opt->beg], mas_opt->end - mas_opt->beg + 1);
-    format_build_str(lvg, mas_opt, lvg->tmp_buff);
-    return LE_OK;
-}

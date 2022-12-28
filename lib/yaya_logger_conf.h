@@ -50,7 +50,7 @@
 
 /*Включить вывод перед очисткой как отдельный формат*/
 #ifndef LOGGER_FORMAT_FREE   /*Работает*/
-#define LOGGER_FORMAT_FREE   LOGGER_ON
+#define LOGGER_FORMAT_FREE   LOGGER_OFF
 #endif
 
 /*Включить ошибку логера как отдельный формат*/

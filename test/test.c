@@ -164,16 +164,17 @@ void loggerf_test_token(){
 
     loggerf_init();
 
-    loggerf(L_ATOM, "$str", "str"); /*<<<*/
-    loggerf(L_ATOM, "$STR", "STR"); /*<<<*/
+    loggerf(L_ATOM, "$str", "str_txt"); /*<<<*/
+    loggerf(L_ATOM, "$STR", "STR_txt"); /*<<<*/
     loggerf(L_ATOM, "$## $line%03.  >> $str");
     loggerf(L_ATOM, "$## $line%03.  >> $file");
     loggerf(L_ATOM, "$## $line%03.  >> $line");
     loggerf(L_ATOM, "$## $line%03.  >> $func");
     loggerf(L_ATOM, "$## $line%03.  >> $type");
     loggerf(L_ATOM, "$## $line%03.  >> $name");
-    loggerf(L_ATOM, "$## $line%03.  >> $mesg", "mesg"); /*<<<*/
-    loggerf(L_ATOM, "$## $line%03.  >> $mesg", "$mesg", "$mesg"); /*<<<*/
+    loggerf(L_ATOM, "$## $line%03.  >> $mesg", "mesg_txt"); /*<<<*/
+    loggerf(L_ATOM, "$## $line%03.  >> $mesg", "$mesg_txt1", "$mesg_txt2"); /*<<<*/
+    loggerf(L_ATOM, "$## $line%03.  >> $mesg $mesg", "$mesg_txt1", "$mesg_txt2"); /*<<<*/
 
     loggerf(L_ATOM, "$## $line%03.  >> $count");
     loggerf(L_ATOM, "$## $line%03.  >> $curnum");
@@ -390,7 +391,7 @@ uintmax_t factorial(uintmax_t i) {
 
 void loggerf_test_recursion(){
     logger_setting setting = logger_setting_def[0];
-    setting.logs_format = "LOGS ## $data_curent $time_curent >> $file%20. $line $recnum%03 $rectab $mesg";
+    setting.logs_format = "LOGS ## $data_curent $time_curent >> $file%20. $line $recnum%03 $recast$mesg";
 
     loggerf_init(&logger_instance, NULL, NULL, &setting);
 
