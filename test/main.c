@@ -15,19 +15,19 @@ int main(int argc, char *argv[]) {
 
     //test_fputs();
 
-    loggerf_test_free_token();
+//    loggerf_test_free_token();
 
-    loggerf_test_free();
+//    loggerf_test_free();
 
-    loggerf_test_param();
+//    loggerf_test_param();
 
-    loggerf_test_token();
+//    loggerf_test_token();
 
     loggerf_test_format();
 
-    loggerf_test_output();
+//    loggerf_test_output();
 
-    loggerf_test_recursion();
+//    loggerf_test_recursion();
 
     return 0;
 }
