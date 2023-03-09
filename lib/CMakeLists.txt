@@ -14,6 +14,8 @@ set(PROJECT_NAME yaya_logger)
 
 project(${PROJECT_NAME})
 
+add_definitions(-DYAYA_MEMORY_STATS_USE=1)
+
 set(SRC_LIST
     yaya_logger.c
     yaya_logger_format.c
