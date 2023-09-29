@@ -31,7 +31,7 @@ logger_error tokens_init(___logger *lvg, const char *format, ___logger_tokens** 
     }
 
     /*Выделение памяти под токены*/
-    if(!logger_memory_new(lvg, (void*)(&(*tokens)), NULL, sizeof(___logger_tokens))){
+    if(!logger_memory_new(lvg, (void*)(&(*tokens)), NULL, 1, sizeof(___logger_tokens))){
         return LE_ERR;
     }
 
@@ -40,7 +40,7 @@ logger_error tokens_init(___logger *lvg, const char *format, ___logger_tokens** 
         for (uintmax_t i = 0; i < strlen(format); i++)
         {
             /*Выделение памяти под токен*/
-            if(!logger_memory_new(lvg, (void*)(&((*tokens)->mas_opt)), (*tokens)->mas_opt, sizeof(___logger_token_mas) * (j + 1))){
+            if(!logger_memory_new(lvg, (void*)(&((*tokens)->mas_opt)), (*tokens)->mas_opt, (j + 1), sizeof(___logger_token_mas))){
                 tokens_free(lvg, *tokens);
                 return LE_ERR;
             }
@@ -67,7 +67,7 @@ logger_error tokens_init(___logger *lvg, const char *format, ___logger_tokens** 
                      || (format[i + 1] == '+')))
                 {
                     /*Выделение памяти под спецификатор*/
-                    if(!logger_memory_new(lvg, (void*)(&(((*tokens)->mas_opt)[j].spe)), NULL, sizeof(___logger_token_specifiers))){
+                    if(!logger_memory_new(lvg, (void*)(&(((*tokens)->mas_opt)[j].spe)), NULL, 1, sizeof(___logger_token_specifiers))){
                         tokens_free(lvg, *tokens);
                         return LE_ERR;
                     }

@@ -150,7 +150,7 @@ typedef struct ___logger {
     uintmax_t absnum; // - номер вывода без учета фильтрации
      intmax_t recnum; // - номер рекурсивного вызова
 
-     mem_stats_t *mem_stats;
+    memory_stats_t *mem_stats;
 
     FILE     *stream;
 } ___logger;
@@ -161,8 +161,8 @@ typedef struct ___logger_token_func {      /*список токенов*/
     logger_error (*func)(LOGGER_FUNC_PARAM);/*функция токена*/
 } ___logger_token_func;
 
-#define logger_memory_del(L, P)       memory_del((L)->mem_stats, (void**)(P))
-#define logger_memory_new(L, N, O, s) memory_new((L)->mem_stats, N, O, s)
+#define logger_memory_del(L, P)          memory_del((L)->mem_stats, (void**)(P))
+#define logger_memory_new(L, N, O, c, s) memory_new((L)->mem_stats, N, O, c, s)
 
 logger_error tokens_init (___logger *lvg, const char *format, ___logger_tokens** tokens);
 logger_error tokens_free (___logger *lvg, ___logger_tokens* tokens);

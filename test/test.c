@@ -10,6 +10,8 @@
 
 #include "test.h"
 
+#define NUM_RUN_CYCLES 10000
+
 void test_printf(){
     printf("^^ BEG %s \n", __func__);
 
@@ -19,7 +21,6 @@ void test_printf(){
 
     printf("^^ END %s \n\n\n\n", __func__);
 }
-
 void test_fputs(){
     printf("^^ BEG %s \n", __func__);
 

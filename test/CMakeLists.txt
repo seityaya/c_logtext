@@ -10,7 +10,7 @@ set(CMAKE_C_STANDARD 11)
 add_definitions(-std=c11)
 
 set(VERSION 0.1)
-set(PROJECT_NAME logger_test)
+set(PROJECT_NAME yaya_logger_text_test)
 project(${PROJECT_NAME})
 
 add_executable(${PROJECT_NAME}
@@ -19,6 +19,6 @@ add_executable(${PROJECT_NAME}
     test.h
     )
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/../lib/ yaya_logger)
+add_subdirectory(${CMAKE_SOURCE_DIR}/../lib/ yaya_logger_text)
 target_include_directories(${PROJECT_NAME} PUBLIC ../lib/)
-target_link_libraries(${PROJECT_NAME} yaya_logger)
+target_link_libraries(${PROJECT_NAME} yaya_logger_text)

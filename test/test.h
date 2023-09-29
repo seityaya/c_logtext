@@ -10,8 +10,6 @@
 
 #include "yaya_logger.h"
 
-#define NUM_RUN_CYCLES 10000
-
 void test_printf();
 
 void test_fputs();

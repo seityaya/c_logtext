@@ -3,18 +3,22 @@
 #Creation Date          : 2020.02
 #License Link           : https://spdx.org/licenses/LGPL-2.1-or-later.html
 #SPDX-License-Identifier: LGPL-2.1-or-later
-#Copyright © 2020-2022 Seityagiya Terlekchi. All rights reserved.
+#Copyright © 2020-2023 Seityagiya Terlekchi. All rights reserved.
 
 cmake_minimum_required(VERSION 3.0)
 set(CMAKE_C_STANDARD 11)
 add_definitions(-std=c11)
 
 set(VERSION 0.1)
-set(PROJECT_NAME yaya_logger)
+set(PROJECT_NAME yaya_logger_text)
 
 project(${PROJECT_NAME})
 
+
 add_definitions(-DYAYA_MEMORY_STATS_USE=1)
+add_definitions(-DYAYA_MEMORY_STATS_GLOBAL=0)
+add_definitions(-DYAYA_MEMORY_STATS_ON=1)
+
 
 set(SRC_LIST
     yaya_logger.c

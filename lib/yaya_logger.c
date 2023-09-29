@@ -46,7 +46,7 @@ logger_error yaya_log_init(void**          logger_ptr,
         return LE_ERR;
     }
 
-    mem_stats_t *mem_stats = NULL;
+    memory_stats_t *mem_stats = NULL;
 #if LOGGER_FORMAT_FREE
     if(!memory_stats_init(&mem_stats)){
         return LE_ERR;
@@ -54,8 +54,7 @@ logger_error yaya_log_init(void**          logger_ptr,
 #endif
 
     /*Выделение памяти для главной структуры*/
-    memory_new(mem_stats, (void*)(&(*lvg)), NULL, sizeof(___logger));
-    if((*lvg) == NULL){
+    if(!memory_new(mem_stats, (void*)(&(*lvg)), NULL, 1, sizeof(___logger))){
         yaya_log_free(logger_ptr);
         return LE_ALLOC;
     }
@@ -92,14 +91,14 @@ logger_error yaya_log_init(void**          logger_ptr,
 
     /*Инициализация переменных*/
     (*lvg)->tmp_buff_size = LOGGER_TMP_BUFF_SIZE;
-    logger_memory_new(*lvg, (void*)(&((*lvg)->tmp_buff)), NULL, sizeof(char) * (*lvg)->tmp_buff_size);
+    logger_memory_new(*lvg, (void*)(&((*lvg)->tmp_buff)), NULL, (*lvg)->tmp_buff_size, sizeof(char));
     if((*lvg)->tmp_buff == NULL){
         yaya_log_free(logger_ptr);
         return LE_ALLOC;
     }
 
     (*lvg)->out_buff_size = LOGGER_OUT_BUFF_SIZE;
-    logger_memory_new(*lvg, (void*)(&((*lvg)->out_buff)), NULL, sizeof(char) * (*lvg)->out_buff_size);
+    logger_memory_new(*lvg, (void*)(&((*lvg)->out_buff)), NULL, (*lvg)->out_buff_size, sizeof(char));
     if((*lvg)->out_buff == NULL){
         yaya_log_free(logger_ptr);
         return LE_ALLOC;
